@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Zemax generated files
+*.ZRD
+*.zrd
+*.ZDA
+*.zda
+*.CFG
+*.cfg
+*.PAF
+*.paf
+
+# Runtime / temporary files
+*.tmp
+*.bak
