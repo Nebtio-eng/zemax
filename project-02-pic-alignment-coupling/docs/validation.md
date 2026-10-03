@@ -472,3 +472,119 @@ separate config, not a one-cell variant of B. Lateral lands at 7.68 um (+9.7%
 against the paper's +/-7 um, against B's +16.3%), so 6.6 percentage points of
 the lateral discrepancy come from the literature pair. Angular moves the other
 way (+12.6% to +19.4%).
+
+---
+
+## Stage 9 — micro-lens parameter study on B (2026-10-03)
+
+Script: `python/parameter_study.py`. Outputs: `results/parameter_studies/<sweep>/`
+(CSV, `run_config.json` and plot per sweep; `radius_alone/` also holds the
+radius x gap loss surface and the radius tolerance against gap). One parameter
+changed at a time from B (630 um Si, R = -480 um, 20 um gap, 34 um MFD TEC).
+All values **numerically determined**.
+
+### Method
+
+- Tolerances are found by root-finding directly on POPD (brentq, xtol 1e-4 um
+  or deg), not by sampling. Gate: the root-finder reproduced Stage 7's B values
+  exactly (8.1399 um, 0.6758 deg, 713.3 um, 0.0004 dB) before any sweep ran.
+- Every Gaussian-physics point was predicted first (ABCD + numerical overlap).
+  The aperture used a truncated-Gaussian overlap formula. Conic and incidence
+  were predicted qualitatively (sag and Snell arguments).
+- Convergence was spot-checked at both ends of every sweep (grid x2; grid x2 +
+  window x2; at nominal and at the lateral tolerance point). Worst change:
+  **0.034%** (radius 300 um). All pass < 0.5%.
+- Two infrastructure faults were caught by the read-back assertion and fixed
+  without weakening it. (1) One CFG write did not land (fiber tilt 0.785 deg
+  written, 0.491 still held). Writes are now retried once and re-verified; zero
+  retries were needed in the completed runs. (2) OpticStudio's .NET number
+  parser occasionally rounds to the neighbouring double. Doubles are now
+  verified to 2 ulp (about 1e-18 um here); integers still exactly.
+- POP defines the receiver relative to the beam's chief ray. Verified: at 4 deg
+  incidence the optimal fiber tilt in POP is -0.003 deg, although the beam
+  physically leaves at 14.2 deg. The incidence sweep therefore measures the
+  re-pointed case. The physical fiber tilt needed is the Snell angle, reported
+  separately.
+
+### Results (rel / abs; product = lateral x angular in um rad, rel)
+
+| Sweep | Range | Loss | Lateral 1-dB | Angular 1-dB | Longitudinal 1-dB | Product |
+|---|---|---|---|---|---|---|
+| Thickness, R re-matched, 34 um fiber | 400 -> 1000 um | 0.70 -> 0.00 -> 0.80 dB | 6.93 -> 10.62 um (abs 3.81 / 4.74 at the ends) | 0.860 -> 0.568 deg | 490 -> 1177 um | 0.104 -> 0.0960 -> 0.105 |
+| Thickness, R re-matched, fiber matched | 400 -> 1000 um | < 0.005 dB | **5.44 -> 12.61 um** | **1.012 -> 0.436 deg** | **294 -> 1667 um** | **0.0960 throughout** |
+| Receiver MFD | 20 -> 48 um | 1.15 -> 0.00 -> 0.52 dB | 6.67 -> 9.97 um (abs none at 20 um) | 0.942 -> 0.586 deg | 483 -> 1064 um | 0.110 -> 0.0960 -> 0.102 |
+| Lens radius alone (630 um Si) | 300 -> 700 um | 3.42 -> 0.00 -> 1.18 dB | 6.50 -> 8.14 -> 7.40 um | 1.03 -> 0.676 -> 0.76 deg | 730 -> 966 (420 um) -> 293 um | 0.117 -> 0.0960 -> 0.098 |
+| Gap | 0 -> 700 um | 0.002 -> 0.92 dB | rel 8.14 -> 9.05; **abs 8.13 -> 2.61 um** | rel 0.676 -> 0.619; abs -> 0.179 deg | 734 -> 359 (abs 33) um | 0.0960 -> 0.0977 |
+| Conic constant | -10 -> +10 | 0.0002 -> 0.0019 dB | 8.142 -> 8.135 um | 0.6756 -> 0.6762 deg | 695 -> 732 um | 0.0960 throughout |
+| Aperture diameter | 20 -> 200 um | 6.00 -> 0.0004 dB | 6.27 -> 8.14 um | 1.21 -> 0.676 deg | 400 -> 713 um | 0.132 -> 0.0960 |
+| Incidence (in Si), fiber re-pointed | 0 -> 6 deg | 0.0004 -> 0.033 dB | 8.14 -> 7.86 um | 0.676 -> 0.702 deg | not measured | 0.0960 -> 0.0963 |
+
+Every Gaussian-physics point agrees with its prediction to within 0.025 dB of
+loss (largest: radius 300 um, 3.421 vs 3.397 dB), 0.08 um of lateral tolerance
+(0.02 um except at the radius-alone extremes), 0.002 deg of angular and 1.8 um
+of longitudinal tolerance.
+
+### Predictions tested
+
+- **Receiver MFD (confirmed).** 24 um: 0.504 dB, 7.040 um (predicted 0.50,
+  7.03). 34 um: 0.0004 dB, 8.140 um (8.13). 48 um: 0.519 dB, 9.965 um (0.52,
+  9.95). **Paper discrepancy, candidate 1:** a 24 um TEC mode brings lateral to
+  7.04 um (+0.6% against the paper's 7 um), but angular becomes 0.828 deg
+  (**+38%** against 0.6, from +13%). On the absolute convention lateral drops
+  to 4.96 um. A smaller real receiver can close the lateral gap or the angular
+  gap, never both: the invariant again. Candidate 1 alone does not explain the
+  paper.
+- **Lens radius alone, 20 um gap (partly confirmed: asymmetric).** 1 dB is
+  reached at **-21.7% (376 um) or +40.2% (673 um)**, not a symmetric ~30%. A
+  lens that is too strongly curved over-focuses and fails sooner. Radius error
+  also moves the working distance strongly (longitudinal 1-dB: 966 um at
+  420 um, 293 um at 700 um).
+- **Lens radius alone, 700 um gap (confirmed, on the absolute convention).**
+  Relative tolerance barely changes (-132 / +71 um). Absolute tolerance
+  collapses to **+6.7 um (+1.4%)** on the too-large side, because B is already
+  at 0.92 dB there. The radius x gap surface also shows the best radius drifting
+  from 475 um (gap <= 100 um) to 425 um (gap >= 400 um): at long working
+  distances a slightly *focusing* lens is better than a collimating one (0.54
+  instead of 0.92 dB at 700 um). Below 1 dB is reachable up to about a 900 um
+  gap with the radius re-chosen.
+- **Conic (confirmed negligible).** k from -10 to +10 changes loss by at most
+  0.0015 dB and lateral tolerance by at most 0.005 um. Negative k is very
+  slightly better (0.0002 dB at k = -10): it trims the residual spherical
+  aberration of the sphere. **Manufacturing conclusion: a spherical lens is
+  sufficient; no aspheric correction is needed.** (The prompt's "beam NA in
+  silicon 0.007" is not right: the beam half-angle in silicon is 0.026 rad. The
+  reason conic is irrelevant is that the beam covers only a small cap of the
+  lens, w/R = 0.035, so the conic changes the sag by about k x 0.0015 um at
+  twice the beam radius, about lambda/346 of path error per unit k.)
+- **Aperture (threshold confirmed, location corrected).** No measurable effect
+  at or above 80 um (0.0005 dB). The 1-dB point is at **D = 35.7 um**
+  (D/w = 2.11); 0.1 dB at 50.7 um (D/w = 3.0); 0.01 dB at 62.6 um. The
+  predicted 102 um is three times safer than needed. The transition is steep
+  but continuous: 2 dB to 0.002 dB between 30 and 70 um. Truncated-Gaussian
+  overlap predicted it within 0.015 dB. Below ~40 um the product rises
+  (0.132 at 20 um): the field is no longer Gaussian. Between 45 and 60 um it
+  dips 0.2% *below* 0.0960 (0.0958): the minimum is a property of
+  Gaussian-to-Gaussian coupling, and a slightly truncated field is not
+  Gaussian.
+- **Incidence (re-pointed penalty negligible; re-pointing mandatory).**
+  Residual loss after re-pointing: 0.0005 dB at 1 deg, 0.007 dB at 4 deg,
+  0.033 dB at 6 deg (coma and astigmatism of the tilted sphere, visible as a
+  slight left-right asymmetry). But silicon's index multiplies the angle on
+  exit: the fiber must be tilted by **3.5 deg at 1 deg incidence, 21.5 deg at
+  6 deg**, against a +/-0.68 deg angular tolerance. An un-re-pointed fiber
+  fails at any incidence above ~0.2 deg.
+- **Material.** Not a free parameter: the lens is etched into the substrate.
+  A hypothetical +/-1% silicon index (ABCD only) moves lateral tolerance by
+  +/-0.04 um and loss by < 0.002 dB.
+- **Thickness as a manufacturing tolerance** (analytic): dR_match/dt =
+  0.66 at 630 um, so a wafer-thickness error of 10 um acts like a lens-radius
+  error of 6.6 um.
+
+### Invariant as a diagnostic
+
+The product stayed at 0.0960 um rad whenever beam and receiver stayed matched
+and flat: thickness with matched fiber, conic, re-pointed incidence, gap
+< 200 um. It rose whenever a mismatch was introduced: receiver MFD (0.110 at
+20 um), radius error (0.117 at 300 um), thickness with a fixed fiber (0.105 at
+1000 um), aperture truncation (0.132 at 20 um). Every rise coincides with
+nominal loss, which confirms the diagnostic reading.

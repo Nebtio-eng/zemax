@@ -11,7 +11,7 @@ Microlens radius of curvature,R_L,480,um,"Mangal JSTQE 26(2)",REPORTED,yes,Si mi
 Microlens shape,-,spherical,-,"Mangal JSTQE 26(2)",REPORTED,yes,"Paper states spherical; valid under the assumption of principal rays normal to the lens surface"
 Microlens conic constant,k,0,-,implied by 'spherical',DERIVED,yes,Set to 0 in baseline microlens model; swept in Stage 9
 Microlens material,-,Silicon,-,"Mangal 2021 — monolithic etch into Si backside",REPORTED,yes,Monolithically etched; no adhesive layer in the optical path
-Microlens clear aperture,D_L,not modelled (unlimited),um,not reported,ASSUMED,yes,"No surface aperture in A1/B. Beam radius at the lens is 16.9 um, so any D_L above ~100 um truncates a negligible fraction. Truncation sensitivity deferred to Stage 9"
+Microlens clear aperture,D_L,not modelled (unlimited),um,not reported,ASSUMED,yes,"No surface aperture in A1/B. Stage 9 aperture sweep: no effect at D >= 80 um; 0.1 dB at 50.7 um; 1 dB at 35.7 um (results/parameter_studies/aperture). Any realistic etched lens is far above the threshold"
 Receiving fiber type,-,TEC single-mode,-,"Mangal 2021 — measurement section",REPORTED,yes,Thermally expanded core fiber
 Receiving fiber mode field diameter,MFD_f,34,um,"matched to the 33.9 um beam leaving 630 um of Si (CLAUDE.md Stage 7)",ASSUMED,yes,"Waist entry 17 um (MFD/2), used for both A1 and B. Not reported numerically in the paper"
 Baseline receiving fiber MFD (SMF),MFD_smf,9.2,um,standard SMF at 1310 nm,ASSUMED,yes,Used for the no-lens baseline architecture (Stage 3)

@@ -1,0 +1,56 @@
+[
+  {
+    "angle_deg": 0.0,
+    "exit_angle_deg_snell": 0.0,
+    "eta_fiber_on_chief_ray": 0.9999180219767019,
+    "eta_repointed": 0.9999180219767019,
+    "fiber_y_um": 0.0,
+    "fiber_tilt_deg": 0.0,
+    "nfev": 55
+  },
+  {
+    "angle_deg": 1.0,
+    "exit_angle_deg_snell": 3.5059222189771346,
+    "eta_fiber_on_chief_ray": 0.9998831020810208,
+    "eta_repointed": 0.9998838305146595,
+    "fiber_y_um": -0.012467899468454391,
+    "fiber_tilt_deg": -0.0005546713625641076,
+    "nfev": 52
+  },
+  {
+    "angle_deg": 2.0,
+    "exit_angle_deg_snell": 7.023982704998118,
+    "eta_fiber_on_chief_ray": 0.9997314289901807,
+    "eta_repointed": 0.9997344667191834,
+    "fiber_y_um": -0.025396005652055464,
+    "fiber_tilt_deg": -0.001210903877699821,
+    "nfev": 55
+  },
+  {
+    "angle_deg": 3.0,
+    "exit_angle_deg_snell": 10.566733755586785,
+    "eta_fiber_on_chief_ray": 0.9993122448681494,
+    "eta_repointed": 0.9993195679976837,
+    "fiber_y_um": -0.03924526809222151,
+    "fiber_tilt_deg": -0.0020104142245587664,
+    "nfev": 54
+  },
+  {
+    "angle_deg": 4.0,
+    "exit_angle_deg_snell": 14.147595263821819,
+    "eta_fiber_on_chief_ray": 0.9983378388948811,
+    "eta_repointed": 0.9983521903761469,
+    "fiber_y_um": -0.053228004084985514,
+    "fiber_tilt_deg": -0.0030884221096357583,
+    "nfev": 55
+  },
+  {
+    "angle_deg": 6.0,
+    "exit_angle_deg_snell": 21.485060280937354,
+    "eta_fiber_on_chief_ray": 0.9924336993692627,
+    "eta_repointed": 0.9924766626753597,
+    "fiber_y_um": -0.08490784786339844,
+    "fiber_tilt_deg": -0.006538429198818819,
+    "nfev": 58
+  }
+]

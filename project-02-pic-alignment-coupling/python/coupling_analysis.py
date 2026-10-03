@@ -170,6 +170,10 @@ def build_model(app, cfgd, zos):
     for i, spec in enumerate(cfgd["surfaces"]):
         s = lde.GetSurfaceAt(i)
         s.Comment = spec.get("comment", "")[:32]
+        if spec.get("type") == "CoordinateBreak":
+            s.ChangeType(s.GetSurfaceTypeSettings(zos.Editors.LDE.SurfaceType.CoordinateBreak))
+            s.Thickness = float(spec.get("thickness_mm", 0.0))
+            continue
         if spec.get("radius_mm", "inf") != "inf":
             s.Radius = float(spec["radius_mm"])
         if "thickness_mm" in spec and spec["thickness_mm"] != "inf":
@@ -190,6 +194,10 @@ def check_model(sysm, cfgd):
         raise SettingsMismatch("model has %d surfaces, config %d" % (lde.NumberOfSurfaces, len(cfgd["surfaces"])))
     for i, spec in enumerate(cfgd["surfaces"]):
         s = lde.GetSurfaceAt(i)
+        if spec.get("type") == "CoordinateBreak":
+            if "Coordinate Break" not in s.TypeName:
+                raise SettingsMismatch("surface %d should be a coordinate break, is %s" % (i, s.TypeName))
+            continue
         r = spec.get("radius_mm", "inf")
         if (r == "inf") != (abs(s.Radius) > 1e9) or (r != "inf" and abs(s.Radius - float(r)) > 1e-12):
             raise SettingsMismatch("surface %d radius %r != %r" % (i, s.Radius, r))
@@ -255,19 +263,33 @@ class PopSession:
     def _read(self, tok):
         return struct.unpack_from("<i" if tok in INT_TOKENS else "<d", Path(self.cfg).read_bytes(), self.off[tok])[0]
 
+    @staticmethod
+    def _same(tok, got, val):
+        """Integers exactly; doubles to 2 ulp (OpticStudio's .NET parser is not always correctly rounded)."""
+        if tok in INT_TOKENS:
+            return got == int(val)
+        return abs(got - float(val)) <= 2 * math.ulp(float(val))
+
     def verify(self):
-        """Permanent assertion: every setting reads back from the CFG exactly as written."""
+        """Permanent assertion: every setting reads back from the CFG as written (doubles to 2 ulp)."""
         for tok, val in self.tokens.items():
             got = self._read(tok)
-            if got != (int(val) if tok in INT_TOKENS else float(val)):
+            if not self._same(tok, got, val):
                 raise SettingsMismatch("%s: wrote %r, CFG holds %r" % (tok, val, got))
         self.nchecks += 1
 
     def set(self, tok, val):
+        val = int(val) if tok in INT_TOKENS else float(val)     # plain Python number: repr(np.float64) is not parseable
         if tok not in self.off:
             self.off[tok] = self._locate(tok)
+        text = str(val) if tok in INT_TOKENS else "%.12g" % val
+        val = int(text) if tok in INT_TOKENS else float(text)
         self.tokens[tok] = val
-        self.st.ModifySettings(self.cfg, tok, repr(val))
+        self.st.ModifySettings(self.cfg, tok, text)
+        if not self._same(tok, self._read(tok), val):
+            # an occasional write does not land (seen once in ~10^4 writes); rewrite once, then verify strictly
+            self.retries = getattr(self, "retries", 0) + 1
+            self.st.ModifySettings(self.cfg, tok, text)
         self.verify()
 
     def commit(self):

@@ -1,0 +1,304 @@
+{
+  "stage": "9",
+  "sweep": "gap",
+  "unit": " um",
+  "note": "longitudinal tolerance measured from each gap, gap increasing",
+  "base_config": "zemax\\microlens\\B\\run_config.json",
+  "values": [
+    0.0,
+    20.0,
+    50.0,
+    100.0,
+    200.0,
+    400.0,
+    700.0
+  ],
+  "opticstudio": {
+    "build": "260127",
+    "license": "EnterpriseEdition"
+  },
+  "pop_tokens": {
+    "POP_WAVE": 1,
+    "POP_FIELD": 1,
+    "POP_START": 1,
+    "POP_END": 3,
+    "POP_BEAMTYPE": 0,
+    "POP_PARAM1": 0.0046,
+    "POP_PARAM2": 0.0046,
+    "POP_PARAM3": 0.0,
+    "POP_PARAM4": 0.0,
+    "POP_SURFTOBEAM": 0.0,
+    "POP_SAMPX": 6,
+    "POP_SAMPY": 6,
+    "POP_WIDEX": 0.4,
+    "POP_WIDEY": 0.4,
+    "POP_COMPUTE": 1,
+    "POP_FIBERTYPE": 0,
+    "POP_FPARAM1": 0.017,
+    "POP_FPARAM2": 0.017,
+    "POP_FPARAM3": 0.0,
+    "POP_FPARAM4": 0.0,
+    "POP_TILTX": 0.0,
+    "POP_TILTY": 0.0
+  },
+  "surface_settings": {
+    "_comment": "Identical for A1 and B. Propagator choice re-examined for Si in Stage 7.",
+    "1": {
+      "UseAngularSpectrumPropagator": true
+    },
+    "2": {
+      "UseAngularSpectrumPropagator": true,
+      "ResampleAfterRefraction": false
+    }
+  },
+  "method": "tolerances by brentq on POPD (xtol 1e-4); rel = +1 dB from on-axis, abs = 1.000 dB total",
+  "settings_write_retries": 0,
+  "convergence": [
+    {
+      "at": "gap = 0.0 um",
+      "change_pct": {
+        "nominal": {
+          "grid x2": 1.1963275991497596e-05,
+          "grid x2, window x2": -3.444063689281624e-05
+        },
+        "off-axis": {
+          "grid x2": 0.0003647467343518002,
+          "grid x2, window x2": -0.0010423583271877094
+        }
+      },
+      "worst_pct": 0.0010423583271877094,
+      "passed": true
+    },
+    {
+      "at": "gap = 700.0 um",
+      "change_pct": {
+        "nominal": {
+          "grid x2": 0.0006500386054433347,
+          "grid x2, window x2": -0.0018574741029534934
+        },
+        "off-axis": {
+          "grid x2": 0.000855924144037117,
+          "grid x2, window x2": -0.002445657921243977
+        }
+      },
+      "worst_pct": 0.002445657921243977,
+      "passed": true
+    }
+  ],
+  "settings_readbacks_passed": 4571,
+  "results": [
+    {
+      "eta": 0.9994789051394358,
+      "S": 0.9999999999998864,
+      "T": 0.9994789051395493,
+      "loss_dB": 0.0022636760711315213,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.141637528066516,
+      "angular_rel": 0.675657594174784,
+      "longitudinal_rel": 734.0541459774628,
+      "product_rel": 0.09600985049170203,
+      "lateral_abs": 8.132417294897982,
+      "angular_abs": 0.6748925115614456,
+      "longitudinal_abs": 733.164551402517,
+      "product_abs": 0.09579252747519121,
+      "value": 0.0
+    },
+    {
+      "eta": 0.9999180219766973,
+      "S": 0.999999999999921,
+      "T": 0.9999180219767764,
+      "loss_dB": 0.00035604062552963326,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.13985526717912,
+      "angular_rel": 0.675806618632898,
+      "longitudinal_rel": 713.3045145842525,
+      "product_rel": 0.09601000476863174,
+      "lateral_abs": 8.138406079284922,
+      "angular_abs": 0.6756863140621793,
+      "longitudinal_abs": 713.1645514285352,
+      "product_abs": 0.0959758232244257,
+      "value": 20.0
+    },
+    {
+      "eta": 0.9997895544806357,
+      "S": 0.9999999999999332,
+      "T": 0.9997895544807025,
+      "loss_dB": 0.0009140494601923791,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.140386588987504,
+      "angular_rel": 0.6757619509954744,
+      "longitudinal_rel": 683.523840491544,
+      "product_rel": 0.09600992551249884,
+      "lateral_abs": 8.13666538323188,
+      "angular_abs": 0.6754530751001226,
+      "longitudinal_abs": 683.1645514577987,
+      "product_abs": 0.09592217264292227,
+      "value": 50.0
+    },
+    {
+      "eta": 0.9974815188476412,
+      "S": 0.9999999999998952,
+      "T": 0.9974815188477458,
+      "loss_dB": 0.010951420941893098,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.149812560793118,
+      "angular_rel": 0.674975381057171,
+      "longitudinal_rel": 637.4622004551794,
+      "product_rel": 0.09600921543461731,
+      "lateral_abs": 8.105063745927934,
+      "angular_abs": 0.6712696599102685,
+      "longitudinal_abs": 633.164551487769,
+      "product_abs": 0.0949578386142355,
+      "value": 100.0
+    },
+    {
+      "eta": 0.9851935379534639,
+      "S": 0.9999999999998952,
+      "T": 0.9851935379535671,
+      "loss_dB": 0.06478445432565282,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.20050449480426,
+      "angular_rel": 0.670838401465834,
+      "longitudinal_rel": 558.3719674129954,
+      "product_rel": 0.09601428540215229,
+      "lateral_abs": 7.930424909626823,
+      "angular_abs": 0.6487473520480551,
+      "longitudinal_abs": 533.1645515095861,
+      "product_abs": 0.08979443520026845,
+      "value": 200.0
+    },
+    {
+      "eta": 0.9332382571064799,
+      "S": 0.9999999999999232,
+      "T": 0.9332382571065516,
+      "loss_dB": 0.30007466074513955,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.425714959233593,
+      "angular_rel": 0.6541581732921442,
+      "longitudinal_rel": 446.2066246995332,
+      "product_rel": 0.09619819039470516,
+      "lateral_abs": 7.049083453230157,
+      "angular_abs": 0.5472847467131025,
+      "longitudinal_abs": 333.16455487546807,
+      "product_abs": 0.0673322866892792,
+      "value": 400.0
+    },
+    {
+      "eta": 0.8096845884484913,
+      "S": 0.999999999999812,
+      "T": 0.8096845884486435,
+      "loss_dB": 0.9168412701439295,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 9.045757696899232,
+      "angular_rel": 0.6190150771811725,
+      "longitudinal_rel": 358.9206772169817,
+      "product_rel": 0.0977290202959843,
+      "lateral_abs": 2.608551720604883,
+      "angular_abs": 0.17849525000382,
+      "longitudinal_abs": 33.164537270893874,
+      "product_abs": 0.008126498940658446,
+      "value": 700.0
+    }
+  ],
+  "predictions": [
+    {
+      "loss_dB": 0.002253043758969519,
+      "w_um": 16.935319570553457,
+      "R_um": -15371.260642143148,
+      "lateral_rel": 8.139954159209276,
+      "angular_rel": 0.675852015101683,
+      "longitudinal_rel": 733.5150501870272,
+      "product_rel": 0.09601762063610256,
+      "lateral_abs": 8.130779188850523,
+      "angular_abs": 0.6750902113345167,
+      "longitudinal_abs": 732.6300509254078,
+      "product_abs": 0.09580128741702672
+    },
+    {
+      "loss_dB": 0.0003625798234177394,
+      "w_um": 16.920452000677155,
+      "R_um": -43984.64942106398,
+      "lateral_rel": 8.138182717157557,
+      "angular_rel": 0.676000470980283,
+      "longitudinal_rel": 712.7725171599527,
+      "product_rel": 0.0960178113724061,
+      "lateral_abs": 8.136707219083254,
+      "angular_abs": 0.6758779058779485,
+      "longitudinal_abs": 712.6300509023212,
+      "product_abs": 0.09598299704990129
+    },
+    {
+      "loss_dB": 0.0009492216358092131,
+      "w_um": 16.925066355184544,
+      "R_um": 24452.295921441637,
+      "lateral_rel": 8.138732383298741,
+      "angular_rel": 0.6759543853165236,
+      "longitudinal_rel": 683.0029866443932,
+      "product_rel": 0.09601775021059362,
+      "lateral_abs": 8.134868751645532,
+      "angular_abs": 0.6756334887928068,
+      "longitudinal_abs": 682.6300508584962,
+      "product_abs": 0.09592660754865746
+    },
+    {
+      "loss_dB": 0.011041908245577952,
+      "w_um": 17.004353637026416,
+      "R_um": 6870.007426680377,
+      "lateral_rel": 8.148194747127215,
+      "angular_rel": 0.6751639628631378,
+      "longitudinal_rel": 636.9610975905819,
+      "product_rel": 0.09601697546317332,
+      "lateral_abs": 8.103084224019637,
+      "angular_abs": 0.6714259972084934,
+      "longitudinal_abs": 632.6300509215981,
+      "product_abs": 0.09495675688179687
+    },
+    {
+      "loss_dB": 0.06501297209035277,
+      "w_um": 17.425281447639087,
+      "R_um": 2952.682564482022,
+      "lateral_rel": 8.198982064289519,
+      "angular_rel": 0.6710141014080376,
+      "longitudinal_rel": 557.9135503128201,
+      "product_rel": 0.09602160279665387,
+      "lateral_abs": 7.927983898859677,
+      "angular_abs": 0.6488400304613967,
+      "longitudinal_abs": 532.6300466628894,
+      "product_abs": 0.08977962003744185
+    },
+    {
+      "loss_dB": 0.30067280510278394,
+      "w_um": 19.21128332887979,
+      "R_um": 1645.2296207710801,
+      "lateral_rel": 8.424472560860492,
+      "angular_rel": 0.6543076435245907,
+      "longitudinal_rel": 445.8355760019203,
+      "product_rel": 0.09620598298999676,
+      "lateral_abs": 7.045048025530845,
+      "angular_abs": 0.5471566629216883,
+      "longitudinal_abs": 332.6300506209034,
+      "product_abs": 0.06727799151231259
+    },
+    {
+      "loss_dB": 0.918123915068473,
+      "w_um": 23.629290023460843,
+      "R_um": 1373.300603117994,
+      "lateral_rel": 9.045154828842945,
+      "angular_rel": 0.619087218991691,
+      "longitudinal_rel": 358.65767806308025,
+      "product_rel": 0.09773389586329054,
+      "lateral_abs": 2.588177101931017,
+      "angular_abs": 0.17714136151094728,
+      "longitudinal_abs": 32.63004586593277,
+      "product_abs": 0.008001867145604243
+    }
+  ],
+  "wall_time_s": 229.29587483406067
+}

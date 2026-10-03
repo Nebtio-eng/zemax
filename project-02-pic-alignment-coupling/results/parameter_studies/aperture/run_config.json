@@ -1,0 +1,373 @@
+{
+  "stage": "9",
+  "sweep": "aperture",
+  "unit": " um",
+  "note": "hard circular aperture on the lens surface (diameter)",
+  "base_config": "zemax\\microlens\\B\\run_config.json",
+  "values": [
+    20.0,
+    25.0,
+    30.0,
+    35.0,
+    40.0,
+    45.0,
+    50.0,
+    60.0,
+    70.0,
+    80.0,
+    102.0,
+    150.0,
+    200.0
+  ],
+  "opticstudio": {
+    "build": "260127",
+    "license": "EnterpriseEdition"
+  },
+  "pop_tokens": {
+    "POP_WAVE": 1,
+    "POP_FIELD": 1,
+    "POP_START": 1,
+    "POP_END": 3,
+    "POP_BEAMTYPE": 0,
+    "POP_PARAM1": 0.0046,
+    "POP_PARAM2": 0.0046,
+    "POP_PARAM3": 0.0,
+    "POP_PARAM4": 0.0,
+    "POP_SURFTOBEAM": 0.0,
+    "POP_SAMPX": 6,
+    "POP_SAMPY": 6,
+    "POP_WIDEX": 0.4,
+    "POP_WIDEY": 0.4,
+    "POP_COMPUTE": 1,
+    "POP_FIBERTYPE": 0,
+    "POP_FPARAM1": 0.017,
+    "POP_FPARAM2": 0.017,
+    "POP_FPARAM3": 0.0,
+    "POP_FPARAM4": 0.0,
+    "POP_TILTX": 0.0,
+    "POP_TILTY": 0.0
+  },
+  "surface_settings": {
+    "_comment": "Identical for A1 and B. Propagator choice re-examined for Si in Stage 7.",
+    "1": {
+      "UseAngularSpectrumPropagator": true
+    },
+    "2": {
+      "UseAngularSpectrumPropagator": true,
+      "ResampleAfterRefraction": false
+    }
+  },
+  "method": "tolerances by brentq on POPD (xtol 1e-4); rel = +1 dB from on-axis, abs = 1.000 dB total",
+  "settings_write_retries": 0,
+  "convergence": [
+    {
+      "at": "aperture = 20.0 um",
+      "change_pct": {
+        "nominal": {
+          "grid x2": 0.017376777897982528,
+          "grid x2, window x2": -0.0060930412532240385
+        },
+        "off-axis": {
+          "grid x2": 0.018058200027907402,
+          "grid x2, window x2": -0.0064224403966199215
+        }
+      },
+      "worst_pct": 0.018058200027907402,
+      "passed": true
+    },
+    {
+      "at": "aperture = 200.0 um",
+      "change_pct": {
+        "nominal": {
+          "grid x2": 1.2609401043947957e-05,
+          "grid x2, window x2": -3.628678674063593e-05
+        },
+        "off-axis": {
+          "grid x2": 0.00036524463894706645,
+          "grid x2, window x2": -0.0010437809849575483
+        }
+      },
+      "worst_pct": 0.0010437809849575483,
+      "passed": true
+    }
+  ],
+  "settings_readbacks_passed": 6757,
+  "results": [
+    {
+      "eta": 0.25097158145083476,
+      "S": 0.5024524571283498,
+      "T": 0.4994931916249439,
+      "loss_dB": 6.003754526935782,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 6.268540529220787,
+      "angular_rel": 1.2059342343350332,
+      "longitudinal_rel": 399.52838077155445,
+      "product_rel": 0.13193725066220538,
+      "lateral_abs": NaN,
+      "angular_abs": NaN,
+      "longitudinal_abs": NaN,
+      "product_abs": NaN,
+      "value": 20.0
+    },
+    {
+      "eta": 0.43712948265880824,
+      "S": 0.6627253346320072,
+      "T": 0.6595937408995145,
+      "loss_dB": 3.593899010733132,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 6.536403270903813,
+      "angular_rel": 1.0037024549873461,
+      "longitudinal_rel": 439.5531494593015,
+      "product_rel": 0.11450414089043848,
+      "lateral_abs": NaN,
+      "angular_abs": NaN,
+      "longitudinal_abs": NaN,
+      "product_abs": NaN,
+      "value": 25.0
+    },
+    {
+      "eta": 0.6251553098004397,
+      "S": 0.7920703142589086,
+      "T": 0.7892674407137187,
+      "loss_dB": 2.040120757596621,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 6.8479412285967785,
+      "angular_rel": 0.8763222425725972,
+      "longitudinal_rel": 489.8836336076371,
+      "product_rel": 0.1047372645149032,
+      "lateral_abs": NaN,
+      "angular_abs": NaN,
+      "longitudinal_abs": NaN,
+      "product_abs": NaN,
+      "value": 30.0
+    },
+    {
+      "eta": 0.7759578128871975,
+      "S": 0.881976694909085,
+      "T": 0.879794009712676,
+      "loss_dB": 1.1016188973194279,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 7.169400461218248,
+      "angular_rel": 0.7958530934922243,
+      "longitudinal_rel": 545.8162096626071,
+      "product_rel": 0.09958481382110042,
+      "lateral_abs": NaN,
+      "angular_abs": NaN,
+      "longitudinal_abs": NaN,
+      "product_abs": NaN,
+      "value": 35.0
+    },
+    {
+      "eta": 0.8801246610273561,
+      "S": 0.9389009818443658,
+      "T": 0.9373988078044714,
+      "loss_dB": 0.5545580993853972,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 7.472964923342417,
+      "angular_rel": 0.7443243908447436,
+      "longitudinal_rel": 601.9092578664969,
+      "product_rel": 0.09708062464009135,
+      "lateral_abs": 4.993289186114307,
+      "angular_abs": 0.498070208610458,
+      "longitudinal_abs": 395.07867840826134,
+      "product_abs": 0.04340648836119664,
+      "value": 40.0
+    },
+    {
+      "eta": 0.9416276520624053,
+      "S": 0.9708434548461335,
+      "T": 0.969906782975265,
+      "loss_dB": 0.2612079638193001,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 7.722888825300473,
+      "angular_rel": 0.7128256876542877,
+      "longitudinal_rel": 649.8800850533003,
+      "product_rel": 0.09608165879505055,
+      "lateral_abs": 6.641671847056175,
+      "angular_abs": 0.6132420544932494,
+      "longitudinal_abs": 555.1720122554005,
+      "product_abs": 0.07108643120613671,
+      "value": 45.0
+    },
+    {
+      "eta": 0.9742438284641592,
+      "S": 0.987307814479704,
+      "T": 0.9867680718981959,
+      "loss_dB": 0.1133233664889775,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 7.905920744962673,
+      "angular_rel": 0.6943153711642445,
+      "longitudinal_rel": 685.00349659357,
+      "product_rel": 0.09580465338080461,
+      "lateral_abs": 7.445965595214655,
+      "angular_abs": 0.6539619820170752,
+      "longitudinal_abs": 643.1158936436839,
+      "product_abs": 0.08498668593147779,
+      "value": 50.0
+    },
+    {
+      "eta": 0.996104083882584,
+      "S": 0.9981389279297025,
+      "T": 0.9979613619004529,
+      "loss_dB": 0.01695279353285771,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.086234193324051,
+      "angular_rel": 0.6793867029555863,
+      "longitudinal_rel": 714.7206493908037,
+      "product_rel": 0.09588280384028604,
+      "lateral_abs": 8.017498624310958,
+      "angular_abs": 0.6736122879870893,
+      "longitudinal_abs": 708.1404680532718,
+      "product_abs": 0.09425974544987749,
+      "value": 60.0
+    },
+    {
+      "eta": 0.9995238012600237,
+      "S": 0.9998094324024978,
+      "T": 0.9997143144151104,
+      "loss_dB": 0.0020685974214524395,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.13177521919463,
+      "angular_rel": 0.6762751871998394,
+      "longitudinal_rel": 716.2219982544069,
+      "product_rel": 0.09598120237411564,
+      "lateral_abs": 8.123363031678991,
+      "angular_abs": 0.6755756518577857,
+      "longitudinal_abs": 715.4061411068798,
+      "product_abs": 0.09578273167835882,
+      "value": 70.0
+    },
+    {
+      "eta": 0.9998900536127098,
+      "S": 0.9999866084939887,
+      "T": 0.9999034438256885,
+      "loss_dB": 0.00047751734418792025,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.139047582866363,
+      "angular_rel": 0.6758475679911634,
+      "longitudinal_rel": 714.0954211028181,
+      "product_rel": 0.09600629507778323,
+      "lateral_abs": 8.137104175718893,
+      "angular_abs": 0.6756862131211583,
+      "longitudinal_abs": 713.907318401525,
+      "product_abs": 0.0959604556040376,
+      "value": 80.0
+    },
+    {
+      "eta": 0.999917997599596,
+      "S": 0.9999999885857768,
+      "T": 0.9999180090128833,
+      "loss_dB": 0.0003561465026164748,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.139853885020328,
+      "angular_rel": 0.6758075100915832,
+      "longitudinal_rel": 713.3074448317019,
+      "product_rel": 0.09601011511308356,
+      "lateral_abs": 8.138404266572875,
+      "angular_abs": 0.6756871735776481,
+      "longitudinal_abs": 713.1674376982832,
+      "product_abs": 0.09597592393445507,
+      "value": 102.0
+    },
+    {
+      "eta": 0.9999180219767162,
+      "S": 0.9999999999999144,
+      "T": 0.9999180219768018,
+      "loss_dB": 0.0003560406254476587,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.139855266364428,
+      "angular_rel": 0.6758074640450288,
+      "longitudinal_rel": 713.3045145789532,
+      "product_rel": 0.0960101248644201,
+      "lateral_abs": 8.138406078451991,
+      "angular_abs": 0.6756871633081848,
+      "longitudinal_abs": 713.164551423189,
+      "product_abs": 0.09597594384318876,
+      "value": 150.0
+    },
+    {
+      "eta": 0.9999180219766973,
+      "S": 0.999999999999921,
+      "T": 0.9999180219767764,
+      "loss_dB": 0.00035604062552963326,
+      "fiber_x_um": 0.0,
+      "fiber_tilt_deg": 0.0,
+      "lateral_rel": 8.139855266365789,
+      "angular_rel": 0.6758074640451031,
+      "longitudinal_rel": 713.3045145784337,
+      "product_rel": 0.0960101248644467,
+      "lateral_abs": 8.138406078451336,
+      "angular_abs": 0.6756871633082031,
+      "longitudinal_abs": 713.1645514225984,
+      "product_abs": 0.09597594384318364,
+      "value": 200.0
+    }
+  ],
+  "predictions": [
+    {
+      "loss_dB": 6.0071725472353315,
+      "S": 0.5021040262585892
+    },
+    {
+      "loss_dB": 3.579518746917914,
+      "S": 0.6636595623788444
+    },
+    {
+      "loss_dB": 2.04191161786831,
+      "S": 0.7917610897920617
+    },
+    {
+      "loss_dB": 1.1018421104030394,
+      "S": 0.8818355041359336
+    },
+    {
+      "loss_dB": 0.5570469131016174,
+      "S": 0.9385453913486909
+    },
+    {
+      "loss_dB": 0.26185677343322067,
+      "S": 0.9707069741305766
+    },
+    {
+      "loss_dB": 0.11382521620205989,
+      "S": 0.987202759267196
+    },
+    {
+      "loss_dB": 0.016808630877877415,
+      "S": 0.9981196117483443
+    },
+    {
+      "loss_dB": 0.001813438056278702,
+      "S": 0.9998050388734164
+    },
+    {
+      "loss_dB": 0.00019301359278714193,
+      "S": 0.9999857367718348
+    },
+    {
+      "loss_dB": 6.38580452982313e-05,
+      "S": 0.999999986739028
+    },
+    {
+      "loss_dB": 6.373460650896035e-05,
+      "S": 1.0
+    },
+    {
+      "loss_dB": 6.373460650896035e-05,
+      "S": 1.0
+    }
+  ],
+  "wall_time_s": 331.1849207878113
+}

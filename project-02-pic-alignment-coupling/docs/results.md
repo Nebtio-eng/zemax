@@ -221,8 +221,81 @@ Two further corrections both go against B, and must be stated alongside it:
 
 ## 6. Brief, section 20: the eleven questions
 
-**Pending.** The original project brief is not in the repository, and its
-section 20 questions are not reproduced in any project file (the docs cite the
-brief only by section number). The questions will be answered against their
-exact wording once the section is supplied, each with a number and a pointer to
-the table rows above.
+Questions as worded in `docs/brief-questions.md`. Questions 7 and 8 are answered
+here from the Stage 9 parameter study (`docs/validation.md`, Stage 9;
+data in `results/parameter_studies/`). The other nine are answered in a later
+pass.
+
+### Q7. Which lens parameters have the largest influence?
+
+"Influence" splits into two questions with different answers: which parameters
+you **choose** (design levers), and which you must **hold** (manufacturing
+sensitivities). Ranking by one yardstick alone gives a misleading order.
+
+**Design levers: what sets the tolerances you get.**
+
+| Rank | Parameter | Effect over a plausible range | Source |
+|---|---|---|---|
+| 1 | **Substrate thickness, with the lens radius re-matched** (and the receiver matched) | Lateral 5.44 -> 12.61 um and angular 1.01 -> 0.44 deg for 400 -> 1000 um of Si, loss < 0.005 dB, product fixed at 0.0960. Sets *where* the tolerance sits, never how much there is in total | `thickness_rematched_receiver_matched/` |
+| 2 | **Receiver MFD** | Must match the beam: +/-10% MFD costs 0.044 dB; 24 or 48 um costs 0.5 dB. A mismatched receiver widens the relative lateral window (6.67 -> 9.97 um for 20 -> 48 um) but shrinks the absolute one | `receiver_mfd/` |
+
+**Manufacturing sensitivities: what must be controlled.**
+
+| Rank | Parameter | Sensitivity | Source |
+|---|---|---|---|
+| 1 | **Lens radius** (and its twin, wafer thickness: 10 um of thickness acts like 6.6 um of radius) | +/-10% radius costs 0.19 / 0.10 dB at a 20 um gap. 1 dB at -21.7% / +40.2%. At a 700 um gap the absolute window is **+1.4%** (6.7 um) on the large side | `radius_alone/` |
+| 2 | **Incidence angle** (grating emission angle in Si) | Optically benign once the fiber is re-pointed (0.033 dB at 6 deg), but the fiber must then be tilted 3.5x the incidence angle (21.5 deg at 6 deg). An un-re-pointed fiber passes 1 dB at 0.19 deg | `incidence/` |
+| 3 | **Gap** | Negligible below 200 um (0.065 dB). The absolute lateral window falls from 8.1 to 2.6 um at 700 um | `gap/` |
+| 4 | **Aperture** | Threshold: none at or above 80 um diameter; 0.1 dB at 50.7 um (D = 3.0 w); 1 dB at 35.7 um (D = 2.1 w) | `aperture/` |
+| 5 | **Conic constant** | Negligible: |k| <= 10 changes loss by <= 0.0015 dB and lateral by <= 0.005 um. **A spherical lens is sufficient; no aspheric correction is needed** | `conic/` |
+| - | **Lens material** | Not a free parameter (monolithic silicon). A hypothetical +/-1% index moves lateral by +/-0.04 um | analytic, `validation.md` Stage 9 |
+
+**Corrections to the predicted ranking** (thickness, MFD, radius, gap, aperture,
+conic, material, incidence):
+
+- Thickness with the radius re-matched is the top *design* lever but not a
+  sensitivity: re-matching removes the loss penalty by construction. As a
+  *tolerance*, thickness acts through the radius-matching condition and ranks
+  with the radius.
+- The lens radius is the top *manufacturing* sensitivity, ahead of the receiver
+  MFD: +/-10% costs about 0.1-0.2 dB, against 0.04 dB for the MFD. Its
+  criticality grows sharply with working distance.
+- Incidence angle ranks higher than predicted, not for its optical penalty but
+  because it forces a fiber tilt of 3.5x the incidence angle.
+- The aperture threshold sits at about 36-51 um diameter, not 102 um.
+- Conic is confirmed negligible.
+
+### Q8. Is there a meaningful coupling-efficiency / alignment-tolerance trade-off?
+
+**Only if the receiver is mismatched, and then it is an unfavourable trade.
+The fundamental trade-off is between lateral and angular tolerance, not
+between efficiency and tolerance.**
+
+- **With the receiver matched, there is no efficiency cost to tolerance.**
+  Scaling the design (thickness, radius and receiver together) moves lateral
+  tolerance from 5.44 to 12.61 um at < 0.005 dB loss throughout
+  (`thickness_rematched_receiver_matched/`). What it costs is angular
+  tolerance: the lateral x angular product stays at 0.0960 um rad at every
+  point.
+- **Spending loss to buy tolerance works only on the relative convention.**
+  Oversizing the receiver from 34 to 48 um MFD raises the relative lateral
+  tolerance from 8.14 to 9.97 um (+22%) at a cost of 0.52 dB. On the absolute
+  convention the same change *reduces* lateral tolerance from 8.14 to 6.91 um
+  and angular from 0.676 to 0.406 deg (`receiver_mfd/`). The extra 1-dB window
+  is spent on the loss that bought it.
+- **Every deliberate mismatch tested raises the product above 0.0960 and adds
+  loss**: receiver (0.110 at 20 um MFD, 1.15 dB), radius error (0.117 at 300
+  um, 3.42 dB), aperture (0.132 at 20 um, 6.0 dB). There is no parameter
+  setting that buys total tolerance with efficiency.
+- **Across the architectures** (section 1): B's gain over A0 is also a
+  redistribution (lateral x3.6, angular /3.6), not an efficiency trade. The
+  only configuration with a large efficiency penalty, A1 (6.26 dB), is *less*
+  tolerant on every absolute measure.
+
+So the meaningful trade-off in this system is **positional against angular
+tolerance**, set by the beam size, at a fixed product. Efficiency is a separate
+axis that any mismatch degrades and nothing in the design space converts into
+tolerance.
+
+The remaining questions (1-6, 9-11) will be answered against their wording in a
+later pass.
