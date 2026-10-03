@@ -21,6 +21,12 @@ Projects involving laser beam delivery, diagnostic optics, imaging, spectroscopy
 
   [`Open project →`](integrated-photonics/project-01-led-collimator/)
 
+### Project index
+
+| Project | Description |
+| --- | --- |
+| [project-02-pic-alignment-coupling](project-02-pic-alignment-coupling/) | Alignment-tolerant fiber-to-PIC coupling using micro-optics, modelled in Zemax OpticStudio with Lumerical FDTD for the grating coupler. |
+
 ### Fusion Optics
 
 Future projects will be added here as they are developed.

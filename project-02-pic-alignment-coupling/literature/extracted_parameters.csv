@@ -1,0 +1,35 @@
+parameter,symbol,value,unit,source,provenance,used_in_model,notes
+Operating wavelength,lambda,1310,nm,"Mangal 2021, Opt. Express 29(5) 7601 — abstract",REPORTED,yes,O-band primary wavelength; single POP wavelength per run
+Grating-coupler output mode waist radius,w_gc,4.6,um,"Mangal 2021 — design section (i)",REPORTED,yes,"Stated as 4.6 um radius / 9.2 um diameter; becomes POP Beam Definition Waist X/Y"
+Grating-coupler output mode field diameter,MFD_gc,9.2,um,"Mangal 2021 — design section (i)",REPORTED,yes,= 2 x w_gc; 1/e^2 intensity diameter
+Beam propagation medium,-,Silicon,-,"Mangal 2021 — architecture",REPORTED,yes,Beam expands through the bulk Si substrate before the lens
+Silicon refractive index at 1310 nm,n_Si,3.504,-,Zemax material catalog (SILICON),ZEMAX_DATA,yes,Do not hand-enter; let OpticStudio evaluate the dispersion model
+Silicon substrate thickness,t_Si,"see Table 1 of P1",um,"Mangal 2021 — Table 1",REPORTED,yes,"Paired with ROC and expanded beam diameter; 630 um combined thickness reported in companion JSTQE paper"
+Expanded (collimated) beam diameter,MFD_exp,32,um,"Mangal 2021 — abstract",REPORTED,yes,Primary validation target for Stage 7
+Expanded beam diameter (companion),MFD_exp2,34,um,"Mangal JSTQE 26(2)",REPORTED,no,Over 630 um combined substrate thickness; cross-check only
+Microlens radius of curvature,R_L,480,um,"Mangal JSTQE 26(2)",REPORTED,yes,Si microlens ROC that achieves collimation
+Microlens shape,-,spherical,-,"Mangal JSTQE 26(2)",REPORTED,yes,"Paper states spherical; valid under the assumption of principal rays normal to the lens surface"
+Microlens conic constant,k,0,-,implied by 'spherical',DERIVED,yes,Set to 0 in baseline microlens model; swept in Stage 9
+Microlens material,-,Silicon,-,"Mangal 2021 — monolithic etch into Si backside",REPORTED,yes,Monolithically etched; no adhesive layer in the optical path
+Microlens clear aperture,D_L,TBD,um,not reported,ASSUMED,yes,"Must be >= 3 x expanded beam radius to avoid truncation; justify and record the assumed value"
+Receiving fiber type,-,TEC single-mode,-,"Mangal 2021 — measurement section",REPORTED,yes,Thermally expanded core fiber
+Receiving fiber mode field diameter,MFD_f,TBD,um,not reported numerically,ASSUMED,yes,"Must be assumed to match the 32 um expanded beam for the quoted tolerances to be consistent; state the assumption explicitly"
+Baseline receiving fiber MFD (SMF),MFD_smf,9.2,um,standard SMF at 1310 nm,ASSUMED,yes,Used for the no-lens baseline architecture (Stage 3)
+Measured 1-dB lateral alignment tolerance,d_1dB,7,um,"Mangal 2021 — abstract",REPORTED,no,"Validation target, NOT an input. Our model must predict it."
+Measured 1-dB angular alignment tolerance,theta_1dB,0.6,deg,"Mangal 2021 — abstract",REPORTED,no,Validation target; the axis where the lens is expected to lose
+Measured longitudinal tolerance (0.2 dB),z_02dB,300,um,"Mangal 2021 — abstract",REPORTED,no,Validation target
+Measured 1-dB longitudinal tolerance,z_1dB,700,um,"Mangal JSTQE 26(2)",REPORTED,no,Validation target
+Microlens-to-grating placement 1-dB tolerance,-,2.5,um,"Mangal JSTQE 26(2)",REPORTED,no,Assembly tolerance; a separate Stage 9 study if time allows
+Analytic 1-dB lateral tolerance coefficient,-,0.48,-,"Gradkowski & O'Brien, Appl. Opt. 63(32) 8407 (2024)",REPORTED,yes,"d_1dB = 0.48 x w; independent analytical check used in Stage 4"
+Analytic 1-dB angular tolerance coefficient,-,0.1528,-,derived from Gaussian overlap integral,DERIVED,yes,"theta_1dB = 0.1528 x lambda / (n x w); derivation recorded in docs/methodology.md"
+Analytic 1-dB longitudinal tolerance,-,1.018,-,derived from Gaussian overlap integral,DERIVED,yes,"z_1dB = 1.018 x Rayleigh range; derivation in docs/methodology.md"
+Benchmark insertion loss (dual-lens),IL_bench,1.7,dB,"Scarcella 2017, IEEE PTL 29(22) 1943",REPORTED,no,Benchmark only; different architecture
+Benchmark coupling efficiency,eta_bench,68,%,"Scarcella 2017",REPORTED,no,Benchmark only
+Benchmark 1-dB tolerance,-,30,um,"Scarcella 2017",REPORTED,no,"Benchmark only; implies a ~125 um collimated MFD, which our model should be able to predict"
+Ansys example microlens ROC,-,400,um,Ansys Optics application gallery,REPORTED,no,Methodology cross-check geometry
+Ansys example optimum ROC,-,500,um,Ansys Optics application gallery,DERIVED,no,2D sweep optimum for a 300 um lens-to-fiber distance
+Ansys example receiver waist,-,13,um,Ansys Optics application gallery,REPORTED,no,Expanded-core fiber used in the vendor example
+Ansys example ZBF plane tilt,-,5,deg,Ansys Optics application gallery,REPORTED,no,Grating diffraction angle off normal
+POP grid sampling,-,TBD,-,chosen by us,ASSUMED,yes,"Record the final value; convergence test required (double the grid, confirm <0.5% change)"
+POP analysis window width,-,TBD,mm,chosen by us,ASSUMED,yes,"Must be >= 4 x largest beam radius; record final value"
+OpticStudio version,-,TBD,-,local installation,ASSUMED,yes,Record exactly for reproducibility per brief section 18

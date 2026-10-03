@@ -1,0 +1,53 @@
+# ---------------------------------------------------------------- Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------- Zemax
+# KEEP the .zmx / .zprj model files - they are small and are the whole point
+# of the repo. Ignore the large or machine-specific by-products.
+*.ZBF
+*.zbf
+*.ZDA
+*.zda
+*.CFG
+*.cfg
+*.SES
+*.ses
+*.ZMF
+ZemaxSessionFiles/
+POP/BEAMFILES/
+
+# ---------------------------------------------------------------- Lumerical
+# .fsp project files are often 50 MB+. If you need to version one, use Git LFS.
+*.fsp
+*.ldev
+*.lms
+*.icp
+*.log
+*_p0/
+*.fsp_*
+
+# ---------------------------------------------------------------- Papers
+# Do NOT commit publisher PDFs - they are copyrighted and a public repo would
+# be redistribution. Cite them by DOI in literature/papers.md instead.
+literature/pdfs/
+*.pdf
+!report/project_report.pdf
+
+# ---------------------------------------------------------------- Data
+# Keep processed results (small, they ARE the findings).
+# Ignore bulky raw dumps - regenerate them from the scripts.
+data/raw/*
+!data/raw/.gitkeep
+
+# ---------------------------------------------------------------- OS / editor
+Thumbs.db
+desktop.ini
+.DS_Store
+*.swp
+.vscode/settings.json
