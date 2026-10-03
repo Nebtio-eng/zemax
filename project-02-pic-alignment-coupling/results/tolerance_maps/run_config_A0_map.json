@@ -1,0 +1,67 @@
+{
+  "stage": "6",
+  "configuration": "A0 conventional, 20 um gap",
+  "source_config": "zemax\\baseline\\run_config.json",
+  "opticstudio": {
+    "build": "260127",
+    "license": "EnterpriseEdition",
+    "mode": "Plugin"
+  },
+  "pop_tokens": {
+    "_comment": "Authoritative POP settings. python/alignment_sweep.py generates the POP .CFG from these and asserts a read-back. Anything not listed keeps the OpticStudio default for a new POP analysis.",
+    "POP_WAVE": 1,
+    "POP_FIELD": 1,
+    "POP_START": 1,
+    "POP_END": 2,
+    "POP_BEAMTYPE": 0,
+    "POP_PARAM1": 0.0046,
+    "POP_PARAM2": 0.0046,
+    "POP_PARAM3": 0.0,
+    "POP_PARAM4": 0.0,
+    "POP_SURFTOBEAM": 0.0,
+    "POP_SAMPX": 5,
+    "POP_SAMPY": 5,
+    "POP_WIDEX": 0.08,
+    "POP_WIDEY": 0.08,
+    "POP_COMPUTE": 1,
+    "POP_FIBERTYPE": 0,
+    "POP_FPARAM1": 0.0046,
+    "POP_FPARAM2": 0.0046,
+    "POP_FPARAM3": 0.0,
+    "POP_FPARAM4": 0.0
+  },
+  "surface_settings": {
+    "_comment": "Applied to the loaded model by python/alignment_sweep.py and read back. Beyond the Rayleigh range (51 um) the default POP propagator silently rescales its grid (window 0.08 -> 0.84 mm at 100 um gap); the angular-spectrum propagator keeps the stated window. eta is identical to ~1e-12 in both modes.",
+    "1": {
+      "UseAngularSpectrumPropagator": true
+    }
+  },
+  "grid": {
+    "half_width_um": 3.5,
+    "step_um": 0.25,
+    "points": 841
+  },
+  "radial_cuts": {
+    "n_angles": 24,
+    "r_max_um": 3.2,
+    "r_step_um": 0.1
+  },
+  "settings_readbacks_passed": 3223,
+  "results": {
+    "gap_um": 20.0,
+    "eta0": 0.9626177543813678,
+    "L0_dB": 0.16546132520752233,
+    "r_mean_um": 2.249773216926273,
+    "r_min_um": 2.24977321692603,
+    "r_max_um": 2.2497732169264597,
+    "circularity": 1.9118040484045196e-13,
+    "stage5_tolerance_um": 2.249773,
+    "A1dB_from_cuts_um2": 15.901106900199503,
+    "A1dB_from_grid_contour_um2": 15.838988255842294,
+    "pi_r2_stage5_um2": 15.901103833785813,
+    "area_cuts_vs_pi_r2_pct": 1.9284281904674572e-05,
+    "area_contour_vs_pi_r2_pct": -0.39063689283972414,
+    "circular": true
+  },
+  "wall_time_s": 214.02283215522766
+}

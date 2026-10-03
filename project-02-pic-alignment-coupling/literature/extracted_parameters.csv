@@ -3,17 +3,17 @@ Operating wavelength,lambda,1310,nm,"Mangal 2021, Opt. Express 29(5) 7601 — ab
 Grating-coupler output mode waist radius,w_gc,4.6,um,"Mangal 2021 — design section (i)",REPORTED,yes,"Stated as 4.6 um radius / 9.2 um diameter; becomes POP Beam Definition Waist X/Y"
 Grating-coupler output mode field diameter,MFD_gc,9.2,um,"Mangal 2021 — design section (i)",REPORTED,yes,= 2 x w_gc; 1/e^2 intensity diameter
 Beam propagation medium,-,Silicon,-,"Mangal 2021 — architecture",REPORTED,yes,Beam expands through the bulk Si substrate before the lens
-Silicon refractive index at 1310 nm,n_Si,3.504,-,Zemax material catalog (SILICON),ZEMAX_DATA,yes,Do not hand-enter; let OpticStudio evaluate the dispersion model
-Silicon substrate thickness,t_Si,"see Table 1 of P1",um,"Mangal 2021 — Table 1",REPORTED,yes,"Paired with ROC and expanded beam diameter; 630 um combined thickness reported in companion JSTQE paper"
+Silicon refractive index at 1310 nm,n_Si,3.50391,-,"Zemax INFRARED.AGF SILICON Sellmeier (Salzberg & Villa 1957), via zemax/glasscat/PROJECT02.AGF",ZEMAX_DATA,yes,"EXTRAPOLATED: catalogue range is 1.36-11 um and 1.31 um is 50 nm below it. Coefficients unchanged; only the LD lower limit moved to 1.30 um (material SILICON_1310). Without this OpticStudio silently uses n = 1.0"
+Silicon substrate thickness,t_Si,630,um,"Mangal JSTQE 26(2) combined thickness; paired with R_L (CLAUDE.md Stage 7)",REPORTED,yes,"Matched pair with R_L = 480 um: ideal collimating ROC for 630 um is 486 um (1.2% off). 592 um would need 461 um"
 Expanded (collimated) beam diameter,MFD_exp,32,um,"Mangal 2021 — abstract",REPORTED,yes,Primary validation target for Stage 7
 Expanded beam diameter (companion),MFD_exp2,34,um,"Mangal JSTQE 26(2)",REPORTED,no,Over 630 um combined substrate thickness; cross-check only
 Microlens radius of curvature,R_L,480,um,"Mangal JSTQE 26(2)",REPORTED,yes,Si microlens ROC that achieves collimation
 Microlens shape,-,spherical,-,"Mangal JSTQE 26(2)",REPORTED,yes,"Paper states spherical; valid under the assumption of principal rays normal to the lens surface"
 Microlens conic constant,k,0,-,implied by 'spherical',DERIVED,yes,Set to 0 in baseline microlens model; swept in Stage 9
 Microlens material,-,Silicon,-,"Mangal 2021 — monolithic etch into Si backside",REPORTED,yes,Monolithically etched; no adhesive layer in the optical path
-Microlens clear aperture,D_L,TBD,um,not reported,ASSUMED,yes,"Must be >= 3 x expanded beam radius to avoid truncation; justify and record the assumed value"
+Microlens clear aperture,D_L,not modelled (unlimited),um,not reported,ASSUMED,yes,"No surface aperture in A1/B. Beam radius at the lens is 16.9 um, so any D_L above ~100 um truncates a negligible fraction. Truncation sensitivity deferred to Stage 9"
 Receiving fiber type,-,TEC single-mode,-,"Mangal 2021 — measurement section",REPORTED,yes,Thermally expanded core fiber
-Receiving fiber mode field diameter,MFD_f,TBD,um,not reported numerically,ASSUMED,yes,"Must be assumed to match the 32 um expanded beam for the quoted tolerances to be consistent; state the assumption explicitly"
+Receiving fiber mode field diameter,MFD_f,34,um,"matched to the 33.9 um beam leaving 630 um of Si (CLAUDE.md Stage 7)",ASSUMED,yes,"Waist entry 17 um (MFD/2), used for both A1 and B. Not reported numerically in the paper"
 Baseline receiving fiber MFD (SMF),MFD_smf,9.2,um,standard SMF at 1310 nm,ASSUMED,yes,Used for the no-lens baseline architecture (Stage 3)
 Measured 1-dB lateral alignment tolerance,d_1dB,7,um,"Mangal 2021 — abstract",REPORTED,no,"Validation target, NOT an input. Our model must predict it."
 Measured 1-dB angular alignment tolerance,theta_1dB,0.6,deg,"Mangal 2021 — abstract",REPORTED,no,Validation target; the axis where the lens is expected to lose
@@ -35,7 +35,7 @@ POP analysis window width,-,0.08,mm,chosen by us,ASSUMED,yes,"A0 value (80 um = 
 OpticStudio version,-,2026 R1.00 build 260127,-,app.OpticStudioVersion on local install,ZEMAX_DATA,yes,Recorded in run_config.json per brief section 18
 Air/adhesive gap (nominal),g,20,um,"INCURE optical adhesive bond-line guidance: 3-50 um for fiber terminations",ASSUMED,yes,"Swept 0-100 um in Stage 5; not load-bearing for A1/B (Rayleigh range ~614 um) but load-bearing for A0 (~51 um)"
 Gap sweep range,-,0 to 100,um,chosen by us,ASSUMED,yes,Doubles as the Stage 5 Z-tolerance analysis
-Beam radius leaving back face (predicted),w_exit,16,um,derived from MFD_exp = 32 um,DERIVED,no,"Validation target; = MFD_exp/2"
+Beam radius leaving back face (predicted),w_exit,16.94,um,"derived: ABCD, w0 = 4.6 um through 630 um Si",DERIVED,no,"Validation target; POP pilot radius at the fiber for B is 16.920 um, ABCD 16.9205 um"
 Rayleigh range in air at w=16 um,z_R,614,um,"derived: pi*w^2/lambda",DERIVED,no,Justifies gap insensitivity for A1/B
 Rayleigh range in air at w=4.6 um,z_R0,51,um,"derived: pi*w^2/lambda",DERIVED,no,Shows gap IS load-bearing for A0
 Lateral 1-dB coefficient (unequal modes),-,0.339,-,derived from Gaussian overlap,DERIVED,yes,"d_1dB = 0.339*sqrt(w1^2+w2^2); reduces to 0.48*w when w1=w2"

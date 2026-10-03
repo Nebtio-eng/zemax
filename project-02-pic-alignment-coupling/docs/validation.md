@@ -240,3 +240,198 @@ give the same value.
 The API reports 0 POP messages at every gap. **By-eye check of the GUI Prop
 Report tab: pending.** Claude has no view of the OpticStudio screen, so this
 line is to be completed by the user.
+
+---
+
+## Stage 6 — A0 X-Y tolerance map (machinery check) (2026-10-03)
+
+Script: `python/tolerance_map.py`. Outputs: `results/tolerance_maps/`
+(`A0_xy_loss_map.csv`, `A0_radial_cuts.csv`, `A0_xy_tolerance_map.png`,
+`run_config_A0_map.json`). A0 at the 20 um gap.
+
+Purpose: A0's source and receiver are both circular, so the 1-dB contour must
+be a circle with the Stage 5 radius. Any ellipticity would mean the X and Y
+decenters, the grid or the code treat the two axes differently. No new physics.
+
+Token check first: `POP_FPARAM4` is the receiver Y decenter (a 4.6 um Y offset
+at zero gap gives 0.367879441, which is e^-1). `POP_TILTX`/`POP_TILTY` are
+receiver tilts in degrees. 2 deg gives 0.862084, against 0.862188 from the
+small-angle formula; POP matches exactly if the tilt enters as tan(theta),
+a difference of order theta^2/2, which is negligible below 2 deg.
+
+| Check | Result |
+|---|---|
+| 1-dB radius along 24 directions (spline-interpolated cuts) | 2.249773 um in every direction |
+| Stage 5 1-D tolerance | 2.249773 um |
+| Circularity, r_max / r_min - 1 | 1.9e-13 (limit set at 5e-3) |
+| A_1dB from radial cuts (integral of r^2/2) | 15.9011 um^2 |
+| pi r^2 with r = 2.249773 um | 15.9011 um^2 (difference 2e-5 %) |
+| A_1dB from the grid contour (0.25 um grid) | 15.839 um^2 (-0.39 %) |
+
+**PASSED: the contour is a circle.** The grid-contour area is 0.4% low because
+straight-line contour segments between grid points cut inside a curved
+contour. The radial-cut value is the accurate one.
+
+---
+
+## Stage 7 — A1 (flat exit) and B (micro-lens) (2026-10-03)
+
+Models: `zemax/microlens/A1/A1_flat_exit.zmx`, `zemax/microlens/B/B_microlens.zmx`,
+built in code from their `run_config.json` (`coupling_analysis.build_model`).
+Driver: `python/alignment_sweep.py` (`run_stage7`). Outputs:
+`results/coupling_curves/` (A1_*, B_*, `stage7_A1_vs_B.png`,
+`run_config_stage7.json`). All values **numerically determined**.
+
+### Configuration
+
+| Surface | A1 | B |
+|---|---|---|
+| 1 | Gaussian source, w0 = 4.6 um, 630 um of SILICON_1310 | same |
+| 2 | Si exit face, **R = infinity**, 20 um air | Si exit face, **R = -480 um**, 20 um air |
+| 3 | TEC fiber, MFD 34 um (waist entry 17 um) | same |
+
+The code refuses to run unless the two configs differ in exactly one cell
+(`surfaces[2].radius_mm`). Checked: that is the only difference.
+
+**Why 630 um and 480 um are a matched pair.** After 630 um of silicon the
+Gaussian wavefront has radius R = 680 um. A spherical Si-air surface collimates
+when (n - 1)/|R_lens| = n/R_wavefront, i.e. R_lens = 486 um. 480 um is 1.2% from
+that, so the beam leaves essentially flat (ABCD: wavefront radius -44 mm at the
+fiber, waist 31 um past the exit face).
+
+### Silicon index: an extrapolation, found and recorded
+
+OpticStudio's SILICON (INFRARED.AGF, Salzberg & Villa 1957) is defined only for
+1.36 to 11 um. At 1.31 um it is out of range, and OpticStudio **silently used
+n = 1.0** (POP then failed). Fix: `zemax/glasscat/PROJECT02.AGF` holds a copy of
+the same entry, renamed SILICON_1310, with only the lower wavelength limit moved
+to 1.30 um. n(1.31 um) = 3.50391, matching the CSV's 3.504. This is a 50 nm
+extrapolation of a smooth Sellmeier fit in silicon's transparent region, now
+labelled as such in `extracted_parameters.csv`. `build_model` installs the file
+into OpticStudio's glass directory.
+
+### Lens sign — verified empirically
+
+| Exit radius | Beam radius at fiber (POP pilot) | ABCD | Wavefront R | eta |
+|---|---|---|---|---|
+| **-480 um** | **16.920 um** | 16.920 um | -44 mm (flat) | **0.99992** |
+| +480 um | 20.449 um | 20.453 um | 116 um (diverging) | 0.071 (11.5 dB) |
+
+Negative radius collimates. In OpticStudio's convention a surface bulging toward
++z (toward the fiber) has its centre of curvature behind it, so R < 0, and its
+power (n2 - n1)/R = (1 - 3.504)/(-480 um) is positive. The wrong sign makes the
+beam diverge faster, as expected.
+
+### Sampling, window and propagator
+
+- **Window 400 um**, sized for the largest beam: B at a 2000 um gap has a
+  ~52 um radius (window = 7.7 x radius, rule >= 4x). The decentred receiver stays
+  inside too (24 um offset + 3 x 17 um = 75 um, against a 200 um half-width).
+- **Grid 1024, pixel 0.39 um**, sized for the smallest beam: the 4.6 um source
+  waist gets about 12 pixels per radius.
+- **Propagators agree.** Angular-spectrum vs default: eta identical to 1e-13
+  (A1) and 2.4e-7 (B). The default again rescales its grid (A1: 0.40 -> 0.67 mm;
+  B: 0.40 -> 0.60 mm). Angular-spectrum keeps the configured window (B: 0.39999
+  mm, a 0.0025% adjustment after the curved surface; the report check now allows
+  0.1%). The 630 um of silicon does not change the Stage 5 choice.
+- **Resample After Refraction stays OFF.** With RAR on and Auto off, POP
+  re-grids onto the surface's default 32 x 32 grid over 1 mm and the result is
+  meaningless (A1: eta 0.9996 instead of 0.2369). With Auto on it agrees to
+  0.03%. The methodology's plan to set RAR on the lens would only be safe with
+  Auto on. Nothing here needs it, so it is off and recorded.
+
+### Convergence — passes, and the test can fail
+
+| Point | A1, grid x2 / grid+window x2 | B, grid x2 / grid+window x2 |
+|---|---|---|
+| Nominal | 0.0000% / 0.0000% | 0.0000% / 0.0000% |
+| Lateral 8 um | 0.0000% / 0.0000% | +0.0004% / -0.0010% |
+| Tilt 0.6 deg | 0.0000% / 0.0000% | -0.0003% / +0.0008% |
+| Largest beam (A1 300 um gap, B 2000 um gap) | 0.0000% / 0.0000% | +0.0021% / -0.0061% |
+
+All far below 0.5%. To show this is not a test that always passes, B at nominal
+was run with deliberately bad settings: a 64-point grid gives eta 0.939 (-6%);
+a 40 um window gives 0.963 (-3.7%); a 60 um window gives -0.08%; a 128 grid
+gives -0.001%. The chosen settings sit well inside the converged region.
+
+POP messages: 0 for both models. 801 (A1) and 996 (B) settings read-backs passed.
+POP pilot radius matches the ABCD prediction to < 0.003% in both models.
+
+### Results against the predictions in CLAUDE.md
+
+"rel" = 1 dB above the value at the reference point; "abs" = total loss reaches
+1.000 dB. Both are reported because A1 and B have very different nominal losses.
+
+| Quantity | Predicted (CLAUDE.md) | Zemax | vs prediction | Paper | vs paper |
+|---|---|---|---|---|---|
+| A1 nominal loss | ~4.0 dB | **6.255 dB** | **+56%, investigated** | - | - |
+| B nominal loss | ~0 dB | **0.0004 dB** (eta 0.999918) | agrees | - | - |
+| B lateral 1-dB | 8.13 um | **8.140 um** (abs 8.138) | +0.1% | +/-7 um | **+16%** |
+| B angular 1-dB | 0.677 deg | **0.6758 deg** (abs 0.6757) | -0.2% | +/-0.6 deg | **+13%** |
+| B longitudinal 1-dB, from 20 um nominal | 700 um | **713.3 um** (abs 713.2) | +1.9% | 700 um | +1.9% |
+| B longitudinal 1-dB, from re-optimised gap (30.9 um) | 700 um | **702.3 um** | +0.3% | 700 um | +0.3% |
+
+| A1 | rel | abs |
+|---|---|---|
+| Lateral 1-dB | 6.188 um | **none**: nominal is already 6.26 dB |
+| Angular 1-dB | 1.318 deg | none |
+| Longitudinal 1-dB (gap increasing) | 240 um | none |
+| Best gap | 0 um (6.20 dB) | |
+
+Every Zemax number agrees with the independent ABCD + numerical-overlap
+calculation to within 0.2%.
+
+**A1 loss: 6.26 dB, not 4 dB — investigated, not adjusted.** The ~4 dB in
+CLAUDE.md is A1's loss with the *best possible* receiver for its beam, a 9.3 um
+mode radius (18.6 um MFD). Zemax gives exactly that: **4.036 dB** (analytic
+4.033). With the 34 um TEC receiver specified for both A1 and B it is 6.26 dB,
+and with standard SMF 6.88 dB. The prediction was right for a different fiber.
+Physics: A1's wavefront arrives curved (R = 213 um) while every fiber mode is
+flat. A smaller mode spans less of the curved wavefront, so the best fiber is
+*smaller* than the beam. The loss is entirely in T (receiver/modal); S = 1.000
+in both models, so none of it is geometric.
+
+**B vs the paper: lateral +16% and angular +13% — investigated, not adjusted.**
+The model matches its own analytic prediction to 0.2%, so the gap is between
+the idealised model and the experiment, not a setup error. Candidate
+explanations, none tested yet:
+
+1. **Receiver MFD is ASSUMED** (34 um, matched). The paper does not report it.
+   A smaller real TEC mode would narrow the lateral tolerance. For example, a
+   ~24 um MFD gives about 7.0 um lateral at a 0.55 dB mismatch penalty. This is
+   a sensitivity to check (Stage 9), not a value to adopt.
+2. **The real grating beam is elliptical** (`limitations.md` section 1), so the
+   measured tolerance is axis-dependent. A circular model cannot reproduce that.
+   Stage 8b tests it directly.
+3. **Angular measurement pivot.** If the experiment rotated the fiber about a
+   point behind its facet, every tilt also adds a lateral offset, which lowers
+   the measured angular tolerance. The model tilts about the facet centre.
+4. **Real lens imperfections** (sag error, roughness), absent from the model.
+
+Longitudinal agrees with the paper to 0.3-1.9%.
+
+**Invariant check.** For B, lateral x angular = 8.140 um x 0.011795 rad =
+0.0960 um rad. The predicted invariant 0.0733 lambda/n = 0.0960 um rad (air).
+Confirmed numerically. For A1 the product is 0.142: the invariant holds only
+for flat-phase, matched modes, which A1 is not.
+
+### The revised Stage 2 hypothesis, tested
+
+1. *A1 loss >> A0 and >> B:* **supported.** 6.26 dB vs 0.17 dB vs 0.0004 dB.
+2. *A1 and B lateral similar (~8 um):* **not supported.** Relative: A1 6.19 um vs
+   B 8.14 um. Absolute: A1 has no 1-dB window at all. The curvature that costs
+   A1 its loss also narrows its lateral tolerance.
+3. *B's advantage grows with gap:* **supported.** A1 goes from 6.20 dB at 0 um to
+   7.46 dB at 300 um. B stays within 1 dB out to 713 um.
+
+Overall: the substrate supplies the beam *width* (A1 and B reach 18.7 and 16.9
+um); the lens makes it *usable* by flattening the phase. On these numbers that
+is worth 6.25 dB of loss and turns a configuration with no 1-dB window into one
+with +/-8.1 um, +/-0.68 deg and 700 um. The relative-only view would have hidden
+most of that: it rates A1's angular tolerance (1.32 deg) *better* than B's
+(0.68 deg), because a coupling that is already losing 76% of the light changes
+little, proportionally, when tilted.
+
+**Mismatched control (B with SMF, 9.2 um MFD):** 5.92 dB nominal, lateral 5.95 um
+relative and no absolute window. Expanding the beam without expanding the
+receiver buys little and costs 6 dB, consistent with the Stage 2 decision.

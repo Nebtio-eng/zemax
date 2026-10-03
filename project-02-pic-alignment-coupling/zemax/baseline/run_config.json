@@ -145,5 +145,8 @@
     "1": {
       "UseAngularSpectrumPropagator": true
     }
-  }
+  },
+  "id": "A0",
+  "model": "zemax/baseline/A0_conventional.zmx",
+  "gap_surface": 1
 }

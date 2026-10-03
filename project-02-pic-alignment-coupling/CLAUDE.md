@@ -301,3 +301,72 @@ efficiency cost.
 **Both receiver cases are run** — matched as the headline, mismatched as an
 instructive control, because the mismatched case is the clearest single
 demonstration of the loss-versus-tolerance trade.
+
+---
+
+## Stage 7 predictions, recorded BEFORE building (2026-10-03)
+
+### Substrate thickness and lens ROC are a matched pair — use 630 um
+
+Collimation requires the surface to cancel the Gaussian wavefront curvature
+arriving at it, `R(z) = z(1 + (z_R/z)^2)`, with `z_R = 177.8 um` in silicon.
+Condition: `(n_Si - 1)/|R_surf| = n_Si/R(z)`.
+
+| Substrate | Beam diameter | Wavefront R | ROC needed for collimation |
+|---|---|---|---|
+| 592 um | 32.0 um | 645 um | 461 um |
+| **630 um** | **33.9 um** | **680 um** | **486 um** |
+
+The paper's 480 um ROC therefore pairs with the companion paper's **630 um**
+substrate (1.2% from ideal), **not** with the 592 um that the 2021 paper's 32 um
+beam implies (4.1% off). **Use 630 um substrate + 480 um ROC + 34 um TEC
+receiver.** Mixing 592 um with 480 um ROC leaves the beam imperfectly
+collimated and would look like a modelling fault.
+
+### Predicted results
+
+| | A0 | A1 (flat exit) | B (lens) |
+|---|---|---|---|
+| Beam radius at fiber | 4.94 um | 18.7 um | 16.93 um |
+| Wavefront at fiber | nearly flat, R = 149 um | strongly curved, R = 214 um | flat |
+| Nominal loss | 0.17 dB (measured) | **~4.0 dB** | **~0 dB** |
+| Lateral 1-dB | 2.25 um (measured) | ~8 um | **8.13 um** |
+| Angular 1-dB | - | - | **0.677 deg** |
+| Longitudinal 1-dB | - | - | **700 um** |
+
+Paper measured, for comparison with B: +/-7 um lateral, +/-0.6 deg angular,
+700 um longitudinal.
+
+Coupling formula used (validated: reproduces POP's A0 eta = 0.962618 to 6 dp):
+
+```
+eta = 4 / [ (w/wf + wf/w)^2 + (pi*w*wf/(lambda*R))^2 ]
+```
+
+with `w` the arriving beam radius, `R` its wavefront radius, `wf` the fiber mode
+radius. The second term is the **phase** mismatch, and it is what kills A1.
+
+### The Stage 2 hypothesis is REVISED
+
+Stage 2 predicted that most of the lateral tolerance gain would come from the
+substrate (A0 -> A1) rather than the lens (A1 -> B). The calculation above says
+that framing is wrong.
+
+A1 has nearly the same beam size as B and a similar lateral tolerance, but
+**~4 dB of loss** even with an optimally chosen fiber, because the beam arrives
+with a wavefront radius of ~214 um while a fiber mode has flat phase. Expanding
+the beam without flattening its phase produces a wide beam no fiber can accept.
+
+**Revised prediction, to be tested not assumed:**
+
+> The substrate supplies the beam *width*; the lens makes that width *usable* by
+> flattening the wavefront. Neither alone is a working interface. The lens's
+> contribution is primarily **phase**, not size — which is why its benefit shows
+> up in nominal loss and in longitudinal/working-distance tolerance rather than
+> in lateral tolerance at close range.
+
+Falsifiable consequences to check at Stage 7/8:
+1. A1 nominal loss >> A0 and >> B (predicted ~4 dB).
+2. A1 and B lateral 1-dB tolerances similar (~8 um) despite that loss gap.
+3. B's advantage over A1 grows with gap, since A1's beam keeps diverging while
+   B's does not.

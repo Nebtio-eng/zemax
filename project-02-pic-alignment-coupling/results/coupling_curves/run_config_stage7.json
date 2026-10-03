@@ -1,0 +1,531 @@
+{
+  "stage": "7",
+  "configs": [
+    "zemax\\microlens\\A1\\run_config.json",
+    "zemax\\microlens\\B\\run_config.json"
+  ],
+  "date": "2026-10-03",
+  "opticstudio": {
+    "build": "260127",
+    "license": "EnterpriseEdition",
+    "mode": "Plugin"
+  },
+  "tolerance_method": "cubic spline of loss, brentq root. rel: 1 dB above the reference point; abs: total loss 1.000 dB",
+  "results": {
+    "A1": {
+      "n_after": {
+        "0": 1.0,
+        "1": 3.5039127043661025,
+        "2": 1.0
+      },
+      "nominal_popd": [
+        0.23686351257696867,
+        0.9999999999998664,
+        0.2368635125770003
+      ],
+      "nominal_loss_dB": 6.255018346209752,
+      "predicted": {
+        "w_um": 18.686631057362852,
+        "R_um": 212.68728608194056,
+        "eta": 0.2371618999942987,
+        "loss_dB": 6.249550790146508
+      },
+      "pilot": {
+        "pilot_size_um": 18.686999999999998,
+        "pilot_waist_um": 4.6,
+        "pilot_pos_um": 199.8,
+        "width_mm": 0.4,
+        "grid": 1024
+      },
+      "pop_messages": 0,
+      "propagators": {
+        "angular_spectrum": {
+          "popd": [
+            0.23686351257696867,
+            0.9999999999998664,
+            0.2368635125770003
+          ],
+          "reported_window_mm": 0.4,
+          "point_spacing_um": 0.390625
+        },
+        "default": {
+          "popd": [
+            0.23686351257691288,
+            0.9999999999999629,
+            0.23686351257692165
+          ],
+          "reported_window_mm": 0.67005,
+          "point_spacing_um": 0.6543457031250001
+        }
+      },
+      "convergence": [
+        {
+          "point": "nominal",
+          "eta": {
+            "base": 0.23686351257696867,
+            "grid x2": 0.2368635125771527,
+            "grid x2, window x2": 0.2368635125769634
+          },
+          "change_pct": {
+            "grid x2": 7.770180383837265e-11,
+            "grid x2, window x2": -2.226412717431881e-12
+          }
+        },
+        {
+          "point": "lateral 8 um",
+          "eta": {
+            "base": 0.16118709774506315,
+            "grid x2": 0.1611870977451089,
+            "grid x2, window x2": 0.16118709774506004
+          },
+          "change_pct": {
+            "grid x2": 2.8377698497246758e-11,
+            "grid x2, window x2": -1.928581451269197e-12
+          }
+        },
+        {
+          "point": "tilt 0.6 deg",
+          "eta": {
+            "base": 0.22582390895031754,
+            "grid x2": 0.22582390895041057,
+            "grid x2, window x2": 0.22582390895032292
+          },
+          "change_pct": {
+            "grid x2": 4.1198777355349336e-11,
+            "grid x2, window x2": 2.3844161118549435e-12
+          }
+        },
+        {
+          "point": "gap 300 um (largest beam)",
+          "eta": {
+            "base": 0.17937632793660363,
+            "grid x2": 0.17937632793681035,
+            "grid x2, window x2": 0.1793763279366046
+          },
+          "change_pct": {
+            "grid x2": 1.152457124990683e-10,
+            "grid x2, window x2": 5.415681978339675e-13
+          }
+        }
+      ],
+      "receiver_variants": {
+        "SMF, 9.2 um MFD": {
+          "waist_um": 4.6,
+          "popd": [
+            0.20508309948864598,
+            0.9999999999998664,
+            0.20508309948867337
+          ],
+          "loss_dB": 6.880701275460344,
+          "predicted_eta": 0.20510326174719523
+        },
+        "best fibre, 9.3 um radius": {
+          "waist_um": 9.300000000000006,
+          "popd": [
+            0.3947787430745395,
+            0.9999999999998664,
+            0.3947787430745922
+          ],
+          "loss_dB": 4.03646240029676,
+          "predicted_eta": 0.39507044711367073
+        }
+      },
+      "tolerances": {
+        "z_opt_um": 4.192436055268408e-10,
+        "L_min_dB": 6.199165613783149,
+        "longitudinal_nominal": {
+          "x0": 20.0,
+          "L0": 6.255018346209752,
+          "rel_plus": 240.2738387530042,
+          "rel_minus": NaN,
+          "rel": 240.2738387530042,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "longitudinal_zopt": {
+          "x0": 4.192436055268408e-10,
+          "L0": 6.199165613783149,
+          "rel_plus": 249.2862475014833,
+          "rel_minus": NaN,
+          "rel": 249.2862475014833,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "longitudinal_nominal_predicted": {
+          "x0": 20.0,
+          "L0": 6.249550790146508,
+          "rel_plus": 240.0972880117447,
+          "rel_minus": NaN,
+          "rel": 240.0972880117447,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "longitudinal_zopt_predicted": {
+          "x0": 4.192436055268408e-10,
+          "L0": 6.193607675142785,
+          "rel_plus": 249.0961303572403,
+          "rel_minus": NaN,
+          "rel": 249.0961303572403,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "lateral_nominal": {
+          "x0": 0.0,
+          "L0": 6.255018346209752,
+          "rel_plus": 6.187470771279406,
+          "rel_minus": 6.187470771279402,
+          "rel": 6.187470771279404,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "lateral_nominal_predicted": {
+          "x0": 0.0,
+          "L0": 6.249550790146508,
+          "rel_plus": 6.187486163204214,
+          "rel_minus": 6.187486163204216,
+          "rel": 6.187486163204215,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "angular_nominal": {
+          "x0": 0.0,
+          "L0": 6.255018346209752,
+          "rel_plus": 1.3177405630624617,
+          "rel_minus": 1.3177405630625698,
+          "rel": 1.3177405630625159,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "angular_nominal_predicted": {
+          "x0": 0.0,
+          "L0": 6.249550790146508,
+          "rel_plus": 1.3179765384720132,
+          "rel_minus": 1.317976538472013,
+          "rel": 1.317976538472013,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "lateral_zopt": {
+          "x0": 0.0,
+          "L0": 6.19916561378332,
+          "rel_plus": 6.147807198706675,
+          "rel_minus": 6.147807198706696,
+          "rel": 6.147807198706685,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "lateral_zopt_predicted": {
+          "x0": 0.0,
+          "L0": 6.193607675142787,
+          "rel_plus": 6.1477625493677435,
+          "rel_minus": 6.147762549367746,
+          "rel": 6.147762549367744,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "angular_zopt": {
+          "x0": 0.0,
+          "L0": 6.19916561378332,
+          "rel_plus": 1.3782916890556747,
+          "rel_minus": 1.3782916890558474,
+          "rel": 1.378291689055761,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        },
+        "angular_zopt_predicted": {
+          "x0": 0.0,
+          "L0": 6.193607675142787,
+          "rel_plus": 1.378641841724076,
+          "rel_minus": 1.3786418417240756,
+          "rel": 1.3786418417240758,
+          "abs_plus": NaN,
+          "abs_minus": NaN,
+          "abs": NaN
+        }
+      },
+      "settings_readbacks_passed": 801
+    },
+    "B": {
+      "n_after": {
+        "0": 1.0,
+        "1": 3.5039127043661025,
+        "2": 1.0
+      },
+      "nominal_popd": [
+        0.9999180219766973,
+        0.999999999999921,
+        0.9999180219767764
+      ],
+      "nominal_loss_dB": 0.00035604062552963326,
+      "predicted": {
+        "w_um": 16.920452000677155,
+        "R_um": -43984.64942106398,
+        "eta": 0.9999165163953079,
+        "loss_dB": 0.0003625798234177394
+      },
+      "pilot": {
+        "pilot_size_um": 16.92,
+        "pilot_waist_um": 16.918,
+        "pilot_pos_um": -10.711,
+        "width_mm": 0.39999,
+        "grid": 1024
+      },
+      "pop_messages": 0,
+      "sign_test": {
+        "R = -480 um": {
+          "pop_pilot_radius_um": 16.92,
+          "abcd_radius_um": 16.920452000677155,
+          "reported_window_mm": 0.39999,
+          "abcd_wavefront_R_um": -43984.64942106398,
+          "eta": 0.9999180219766973
+        },
+        "R = +480 um": {
+          "pop_pilot_radius_um": 20.448999999999998,
+          "abcd_radius_um": 20.452927177774473,
+          "reported_window_mm": 0.39992,
+          "abcd_wavefront_R_um": 116.12677489706489,
+          "eta": 0.07126873387779194
+        }
+      },
+      "propagators": {
+        "angular_spectrum": {
+          "popd": [
+            0.9999180219766973,
+            0.999999999999921,
+            0.9999180219767764
+          ],
+          "reported_window_mm": 0.39999,
+          "point_spacing_um": 0.390615234375
+        },
+        "default": {
+          "popd": [
+            0.999917652611527,
+            0.9999999999999815,
+            0.9999176526115455
+          ],
+          "reported_window_mm": 0.60293,
+          "point_spacing_um": 0.588798828125
+        }
+      },
+      "convergence": [
+        {
+          "point": "nominal",
+          "eta": {
+            "base": 0.9999180219766973,
+            "grid x2": 0.9999181480603708,
+            "grid x2, window x2": 0.9999176591385771
+          },
+          "change_pct": {
+            "grid x2": 1.2609401043947957e-05,
+            "grid x2, window x2": -3.628678674063593e-05
+          }
+        },
+        {
+          "point": "lateral 8 um",
+          "eta": {
+            "base": 0.8005181556086236,
+            "grid x2": 0.8005209832875783,
+            "grid x2, window x2": 0.8005100747145194
+          },
+          "change_pct": {
+            "grid x2": 0.00035323108349784435,
+            "grid x2, window x2": -0.0010094579426568016
+          }
+        },
+        {
+          "point": "tilt 0.6 deg",
+          "eta": {
+            "base": 0.8339570598146546,
+            "grid x2": 0.8339548268019595,
+            "grid x2, window x2": 0.8339634375338595
+          },
+          "change_pct": {
+            "grid x2": -0.0002677611117749443,
+            "grid x2, window x2": 0.0007647539078668656
+          }
+        },
+        {
+          "point": "gap 2000 um (largest beam)",
+          "eta": {
+            "base": 0.3294209322012085,
+            "grid x2": 0.32942795255228463,
+            "grid x2, window x2": 0.3294008747839118
+          },
+          "change_pct": {
+            "grid x2": 0.0021311186964430248,
+            "grid x2, window x2": -0.0060886893746217655
+          }
+        }
+      ],
+      "receiver_variants": {
+        "SMF, 9.2 um MFD": {
+          "waist_um": 4.6,
+          "popd": [
+            0.25615386554308706,
+            0.999999999999921,
+            0.2561538655431073
+          ],
+          "loss_dB": 5.914990859271475,
+          "predicted_eta": 0.25634038800229003,
+          "lateral": {
+            "x0": 0.0,
+            "L0": 5.914990859271475,
+            "rel_plus": 5.951926245663957,
+            "rel_minus": 5.951926245663949,
+            "rel": 5.9519262456639535,
+            "abs_plus": NaN,
+            "abs_minus": NaN,
+            "abs": NaN
+          }
+        },
+        "best fibre, 16.9 um radius": {
+          "waist_um": 16.900000000000013,
+          "popd": [
+            0.9999343993345247,
+            0.999999999999921,
+            0.9999343993346037
+          ],
+          "loss_dB": 0.00028490941547702086,
+          "predicted_eta": 0.9999377706947605
+        }
+      },
+      "tolerances": {
+        "z_opt_um": 30.921175737983585,
+        "L_min_dB": 8.412123745276125e-05,
+        "longitudinal_nominal": {
+          "x0": 20.0,
+          "L0": 0.00035604062552963326,
+          "rel_plus": 713.3045150171677,
+          "rel_minus": NaN,
+          "rel": 713.3045150171677,
+          "abs_plus": 713.1645518689407,
+          "abs_minus": NaN,
+          "abs": 713.1645518689407
+        },
+        "longitudinal_zopt": {
+          "x0": 30.921175737983585,
+          "L0": 8.412123745276125e-05,
+          "rel_plus": 702.2764465162525,
+          "rel_minus": NaN,
+          "rel": 702.2764465162525,
+          "abs_plus": 702.2433761309571,
+          "abs_minus": NaN,
+          "abs": 702.2433761309571
+        },
+        "longitudinal_nominal_predicted": {
+          "x0": 20.0,
+          "L0": 0.0003625798234177394,
+          "rel_plus": 712.7725175805882,
+          "rel_minus": NaN,
+          "rel": 712.7725175805882,
+          "abs_plus": 712.6300513300289,
+          "abs_minus": NaN,
+          "abs": 712.6300513300289
+        },
+        "longitudinal_zopt_predicted": {
+          "x0": 30.715455900399753,
+          "L0": 0.00010058870791319456,
+          "rel_plus": 701.9541208352842,
+          "rel_minus": NaN,
+          "rel": 701.9541208352842,
+          "abs_plus": 701.9145954296291,
+          "abs_minus": NaN,
+          "abs": 701.9145954296291
+        },
+        "lateral_nominal": {
+          "x0": 0.0,
+          "L0": 0.00035604062552963326,
+          "rel_plus": 8.13985529722121,
+          "rel_minus": 8.139855297221214,
+          "rel": 8.139855297221212,
+          "abs_plus": 8.138406109303958,
+          "abs_minus": 8.138406109303961,
+          "abs": 8.13840610930396
+        },
+        "lateral_nominal_predicted": {
+          "x0": 0.0,
+          "L0": 0.0003625798234177394,
+          "rel_plus": 8.138182918314248,
+          "rel_minus": 8.138182918314248,
+          "rel": 8.138182918314248,
+          "abs_plus": 8.136707414092541,
+          "abs_minus": 8.136707414092541,
+          "abs": 8.136707414092541
+        },
+        "angular_nominal": {
+          "x0": 0.0,
+          "L0": 0.00035604062552963326,
+          "rel_plus": 0.6758134046805178,
+          "rel_minus": 0.6758134046805198,
+          "rel": 0.6758134046805188,
+          "abs_plus": 0.675693096669494,
+          "abs_minus": 0.6756930966694961,
+          "abs": 0.675693096669495
+        },
+        "angular_nominal_predicted": {
+          "x0": 0.0,
+          "L0": 0.0003625798234177394,
+          "rel_plus": 0.6760009018347397,
+          "rel_minus": 0.6760009018347397,
+          "rel": 0.6760009018347397,
+          "abs_plus": 0.6758783328943355,
+          "abs_minus": 0.6758783328943355,
+          "abs": 0.6758783328943355
+        },
+        "lateral_zopt": {
+          "x0": 0.0,
+          "L0": 8.409890251031044e-05,
+          "rel_plus": 8.139603519746338,
+          "rel_minus": 8.139603519746341,
+          "rel": 8.13960351974634,
+          "abs_plus": 8.139261246881016,
+          "abs_minus": 8.139261246881018,
+          "abs": 8.139261246881016
+        },
+        "lateral_zopt_predicted": {
+          "x0": 0.0,
+          "L0": 0.0001006629039871425,
+          "rel_plus": 8.137937520807359,
+          "rel_minus": 8.137937520807363,
+          "rel": 8.13793752080736,
+          "abs_plus": 8.137527916287496,
+          "abs_minus": 8.137527916287498,
+          "abs": 8.137527916287496
+        },
+        "angular_zopt": {
+          "x0": 0.0,
+          "L0": 8.409890251031044e-05,
+          "rel_plus": 0.6758344235054617,
+          "rel_minus": 0.675834423505454,
+          "rel": 0.6758344235054579,
+          "abs_plus": 0.6758060070933786,
+          "abs_minus": 0.6758060070933707,
+          "abs": 0.6758060070933747
+        },
+        "angular_zopt_predicted": {
+          "x0": 0.0,
+          "L0": 0.0001006629039871425,
+          "rel_plus": 0.6760214833186388,
+          "rel_minus": 0.6760214833186391,
+          "rel": 0.6760214833186389,
+          "abs_plus": 0.675987455740583,
+          "abs_minus": 0.6759874557405834,
+          "abs": 0.6759874557405832
+        }
+      },
+      "settings_readbacks_passed": 996
+    }
+  },
+  "wall_time_s": 920.747565984726
+}
