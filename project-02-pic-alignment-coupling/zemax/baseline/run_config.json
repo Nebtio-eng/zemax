@@ -1,0 +1,105 @@
+{
+  "stage": "3",
+  "configuration": "A0 conventional top-side baseline",
+  "date": "2026-10-03",
+  "opticstudio": {
+    "version": "2026 R1.00",
+    "build": "260127",
+    "license": "EnterpriseEdition",
+    "connection_mode": "Plugin"
+  },
+  "lens_units": "Millimeters (enum has no micron option)",
+  "wavelength_um": 1.31,
+  "pop": {
+    "start_surface": 1,
+    "end_surface": 2,
+    "beam_type": "Gaussian Waist (POP_BEAMTYPE=0)",
+    "waist_x_mm": 0.0046,
+    "waist_y_mm": 0.0046,
+    "waist_x_um": 4.6,
+    "waist_y_um": 4.6,
+    "surface_to_beam_mm": 0.0,
+    "sampling_x": "512 (POP_SAMPX=5)",
+    "sampling_y": "512 (POP_SAMPY=5)",
+    "window_width_x_mm": 0.08,
+    "window_width_y_mm": 0.08,
+    "point_spacing_mm": 0.00015625,
+    "compute_fiber_coupling": true,
+    "fiber_type": "Gaussian (POP_FIBERTYPE=0)",
+    "receiver_waist_x_mm": 0.0046,
+    "receiver_waist_y_mm": 0.0046,
+    "receiver_mfd_um": 9.2,
+    "receiver_decenter_mm": [
+      0.0,
+      0.0
+    ],
+    "receiver_waist_entry": "MFD/2 (1/e^2 intensity radius)"
+  },
+  "surfaces": [
+    {
+      "surface": 0,
+      "comment": "OBJ unused (POP starts at 1)",
+      "type": "Standard",
+      "radius_of_curvature_mm": "infinity (plane)",
+      "thickness_mm": "infinity",
+      "material": "AIR (vacuum-index 1.0)",
+      "resample_after_refraction": false,
+      "auto_resample": false
+    },
+    {
+      "surface": 1,
+      "comment": "Gaussian source + 20um air",
+      "type": "Standard",
+      "radius_of_curvature_mm": "infinity (plane)",
+      "thickness_mm": 0.02,
+      "material": "AIR (vacuum-index 1.0)",
+      "resample_after_refraction": false,
+      "auto_resample": false
+    },
+    {
+      "surface": 2,
+      "comment": "SMF facet (receiver here)",
+      "type": "Standard",
+      "radius_of_curvature_mm": "infinity (plane)",
+      "thickness_mm": "infinity",
+      "material": "AIR (vacuum-index 1.0)",
+      "resample_after_refraction": false,
+      "auto_resample": false
+    }
+  ],
+  "coordinate_breaks": "none in A0",
+  "sweep": "none (single nominal point)",
+  "optimisation": "none",
+  "popd_raw": {
+    "data0_total_eta": 0.9626177543813678,
+    "data1_system_S": 1.0,
+    "data2_receiver_T": 0.9626177543813678
+  },
+  "coupling_loss_dB": 0.16546132520752233,
+  "convergence": {
+    "rule": "double grid, require <0.5% change in eta",
+    "runs": {
+      "512@80um": 0.962618,
+      "1024@80um": 0.962618,
+      "2048@80um": 0.962618,
+      "1024@160um": 0.962618
+    },
+    "max_change_percent": 0.0,
+    "note": "Weakly discriminating for A0: ideal Gaussian, no aperture/refraction"
+  },
+  "null_test": {
+    "identical_modes_zero_distance_eta": 1.0,
+    "control_receiver_entered_as_diameter_eta": 0.64,
+    "control_receiver_decentred_by_w_eta": 0.367879,
+    "expected": [
+      1.0,
+      0.64,
+      0.367879
+    ]
+  },
+  "prop_report": {
+    "warnings_via_api": [],
+    "messages_count": 0,
+    "note": "API exposes no Prop Report tab; GUI tab to be checked by user"
+  }
+}

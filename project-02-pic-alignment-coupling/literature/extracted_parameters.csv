@@ -30,9 +30,9 @@ Ansys example microlens ROC,-,400,um,Ansys Optics application gallery,REPORTED,n
 Ansys example optimum ROC,-,500,um,Ansys Optics application gallery,DERIVED,no,2D sweep optimum for a 300 um lens-to-fiber distance
 Ansys example receiver waist,-,13,um,Ansys Optics application gallery,REPORTED,no,Expanded-core fiber used in the vendor example
 Ansys example ZBF plane tilt,-,5,deg,Ansys Optics application gallery,REPORTED,no,Grating diffraction angle off normal
-POP grid sampling,-,TBD,-,chosen by us,ASSUMED,yes,"Record the final value; convergence test required (double the grid, confirm <0.5% change)"
-POP analysis window width,-,TBD,mm,chosen by us,ASSUMED,yes,"Must be >= 4 x largest beam radius; record final value"
-OpticStudio version,-,TBD,-,local installation,ASSUMED,yes,Record exactly for reproducibility per brief section 18
+POP grid sampling,-,512 x 512,-,chosen by us; A0 convergence 512/1024/2048 in docs/validation.md,ASSUMED,yes,"A0 value; 0.0000% change on doubling. Re-test for every new configuration (A1, B)"
+POP analysis window width,-,0.08,mm,chosen by us,ASSUMED,yes,"A0 value (80 um = 16 x waist radius, 16 x beam radius at fiber). Must be >= 4 x largest beam radius; re-set for A1/B (~16 um radius)"
+OpticStudio version,-,2026 R1.00 build 260127,-,app.OpticStudioVersion on local install,ZEMAX_DATA,yes,Recorded in run_config.json per brief section 18
 Air/adhesive gap (nominal),g,20,um,"INCURE optical adhesive bond-line guidance: 3-50 um for fiber terminations",ASSUMED,yes,"Swept 0-100 um in Stage 5; not load-bearing for A1/B (Rayleigh range ~614 um) but load-bearing for A0 (~51 um)"
 Gap sweep range,-,0 to 100,um,chosen by us,ASSUMED,yes,Doubles as the Stage 5 Z-tolerance analysis
 Beam radius leaving back face (predicted),w_exit,16,um,derived from MFD_exp = 32 um,DERIVED,no,"Validation target; = MFD_exp/2"
