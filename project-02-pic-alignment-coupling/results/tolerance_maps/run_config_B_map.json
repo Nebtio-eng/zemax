@@ -1,0 +1,78 @@
+{
+  "configuration": "B backside, monolithic Si micro-lens (R = -480 um) on exit face",
+  "source_config": "zemax\\microlens\\B\\run_config.json",
+  "opticstudio": {
+    "build": "260127",
+    "license": "EnterpriseEdition",
+    "mode": "Plugin"
+  },
+  "pop_tokens": {
+    "_comment": "Window and sampling justified in docs/validation.md Stage 7",
+    "POP_WAVE": 1,
+    "POP_FIELD": 1,
+    "POP_START": 1,
+    "POP_END": 3,
+    "POP_BEAMTYPE": 0,
+    "POP_PARAM1": 0.0046,
+    "POP_PARAM2": 0.0046,
+    "POP_PARAM3": 0.0,
+    "POP_PARAM4": 0.0,
+    "POP_SURFTOBEAM": 0.0,
+    "POP_SAMPX": 6,
+    "POP_SAMPY": 6,
+    "POP_WIDEX": 0.4,
+    "POP_WIDEY": 0.4,
+    "POP_COMPUTE": 1,
+    "POP_FIBERTYPE": 0,
+    "POP_FPARAM1": 0.017,
+    "POP_FPARAM2": 0.017,
+    "POP_FPARAM3": 0.0,
+    "POP_FPARAM4": 0.0,
+    "POP_TILTX": 0.0,
+    "POP_TILTY": 0.0
+  },
+  "surface_settings": {
+    "_comment": "Identical for A1 and B. Propagator choice re-examined for Si in Stage 7.",
+    "1": {
+      "UseAngularSpectrumPropagator": true
+    },
+    "2": {
+      "UseAngularSpectrumPropagator": true,
+      "ResampleAfterRefraction": false
+    }
+  },
+  "grid": {
+    "half_width_um": 12,
+    "step_um": 1.0,
+    "points": 625
+  },
+  "radial_cuts": {
+    "n_angles": 16,
+    "r_max_um": 12,
+    "r_step_um": 0.5
+  },
+  "settings_readbacks_passed": 2023,
+  "results": {
+    "config": "B",
+    "gap_um": 20,
+    "eta0": 0.9999180219766973,
+    "L0_dB": 0.00035604062552963326,
+    "r_rel_mean_um": 8.139855291161645,
+    "r_rel_min_um": 8.139855285106178,
+    "r_rel_max_um": 8.13985529721722,
+    "x_rel_um": 8.139855297216839,
+    "y_rel_um": 8.139855297216467,
+    "x_abs_um": 8.138406109299417,
+    "y_abs_um": 8.138406109299044,
+    "circularity": 1.4878696052988971e-09,
+    "circular": true,
+    "A1dB_rel_from_cuts_um2": 208.15327150346684,
+    "A1dB_abs_from_cuts_um2": 208.07916051697,
+    "A1dB_rel_from_grid_contour_um2": 207.1805812900648,
+    "A1dB_abs_from_grid_contour_um2": 207.10669059435787,
+    "reference_radius_um": 8.1399,
+    "pi_r2_reference_um2": 208.15555810837418,
+    "area_rel_vs_pi_r2_pct": -0.0010985077353309336
+  },
+  "wall_time_s": 453.82070302963257
+}

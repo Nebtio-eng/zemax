@@ -528,16 +528,148 @@ def plot_stage7(curves, path):
     plt.close(fig)
 
 
+# =============================================================================== Stage 8
+B592_CONFIG = ROOT / "zemax" / "microlens" / "B592" / "run_config.json"
+
+
+def a0_beam(gap_um, w0=4.6, lam=1.31):
+    zr = math.pi * w0 ** 2 / lam
+    return w0 * math.sqrt(1 + (gap_um / zr) ** 2), (math.inf if gap_um == 0 else gap_um * (1 + (zr / gap_um) ** 2))
+
+
+def run_stage8(app, zos):
+    """Fill the data gaps: A0 angular and longitudinal; B rebuilt with the 2021-paper pair (B592)."""
+    OUT.mkdir(parents=True, exist_ok=True)
+    out, t0 = {}, time.time()
+    # ---- A0 angular and longitudinal ---------------------------------------------------
+    cfgd = json.loads(CONFIG.read_text())
+    ps = PopSession(app, cfgd, zos)
+    try:
+        gap0, lam = cfgd["sweep_lateral"]["nominal_gap_um"], cfgd["wavelength_um"]
+        ps.set_gap_um(gap0)
+        if abs(ps.popd()[0] - 0.962617754) > 1e-6:
+            raise SettingsMismatch("A0 does not reproduce the Stage 3 nominal eta")
+        w1, R1 = a0_beam(gap0)
+        th = frange(-5.0, 5.0, 0.02)
+        rows = sweep(ps, "angular", th)
+        arr = np.array(rows)
+        if np.max(np.abs(arr[:, 1] - arr[::-1, 1])) > 1e-6:
+            raise RuntimeError("A0 angular sweep not symmetric")
+        pred = np.array([C.overlap(w1, R1, 4.6, lam, theta_deg=v) for v in th])
+        write_csv(OUT / "A0_angular.csv", ["tilt_deg", "popd0_eta_total", "popd1_S_system", "popd2_T_receiver",
+                                           "loss_dB", "predicted_loss_dB"],
+                  [r + (float(loss_db(p)),) for r, p in zip(rows, pred)])
+        ang = C.tolerance(arr[:, 0], arr[:, 4], 0.0)
+        ang_p = C.tolerance(th, loss_db(pred), 0.0)
+        gaps = frange(0.0, 150.0, 0.5)
+        rows = sweep(ps, "longitudinal", gaps)
+        ps.set_gap_um(gap0)
+        arr = np.array(rows)
+        pred = np.array([1 / (1 + (g / (2 * math.pi * 4.6 ** 2 / lam)) ** 2) for g in gaps])
+        write_csv(OUT / "A0_longitudinal.csv", ["gap_um", "popd0_eta_total", "popd1_S_system", "popd2_T_receiver",
+                                                "loss_dB", "predicted_loss_dB"],
+                  [r + (float(loss_db(p)),) for r, p in zip(rows, pred)])
+        zopt, lmin = C.peak(arr[:, 0], arr[:, 4])
+        conv = convergence_a0(ps, gap0)
+        out["A0"] = dict(angular_nominal=ang, angular_nominal_predicted=ang_p,
+                         longitudinal_nominal=C.tolerance(arr[:, 0], arr[:, 4], gap0),
+                         longitudinal_zopt=C.tolerance(arr[:, 0], arr[:, 4], zopt), z_opt_um=zopt, L_min_dB=lmin,
+                         longitudinal_nominal_predicted=C.tolerance(gaps, loss_db(pred), gap0),
+                         longitudinal_zopt_predicted=C.tolerance(gaps, loss_db(pred), 0.0),
+                         convergence=conv, settings_readbacks_passed=ps.nchecks)
+        log("A0 angular: rel %.4f abs %.4f deg (predicted %.4f / %.4f) [%.0fs]" % (
+            ang["rel"], ang["abs"], ang_p["rel"], ang_p["abs"], time.time() - t0))
+        log("A0 longitudinal: z_opt %.2f um; from 20 um rel +%.2f abs +%.2f; from z_opt rel +%.2f um" % (
+            zopt, out["A0"]["longitudinal_nominal"]["rel_plus"], out["A0"]["longitudinal_nominal"]["abs_plus"],
+            out["A0"]["longitudinal_zopt"]["rel_plus"]))
+        log("A0 convergence: %s" % conv)
+    finally:
+        ps.set_gap_um(cfgd["sweep_lateral"]["nominal_gap_um"])
+        ps.set("POP_TILTX", 0.0)
+        ps.commit()
+        ps.close()
+    # ---- B592: the 2021-paper literature pair -------------------------------------------
+    cfgd = json.loads(B592_CONFIG.read_text())
+    C.build_model(app, cfgd, zos)
+    ps = PopSession(app, cfgd, zos)
+    try:
+        lam, gap0 = cfgd["wavelength_um"], cfgd["parameters"]["gap_um"]
+        n_after = {i: ps.index_after(i) for i in range(len(cfgd["surfaces"]) - 1)}
+        rep = ps.report()
+        w_p, R_p, eta_p = predicted(ps, gap0, n_after)
+        if abs(rep["pilot_size_um"] - w_p) / w_p > 1e-3:
+            raise SettingsMismatch("B592: POP pilot radius %.4f um != ABCD %.4f um" % (rep["pilot_size_um"], w_p))
+        nominal = ps.popd()
+        conv = convergence(ps, [("nominal", lambda: None), ("lateral 8 um", lambda: ps.set("POP_FPARAM3", 0.008)),
+                                ("tilt 0.6 deg", lambda: ps.set("POP_TILTX", 0.6))])
+        if any(abs(v) > 0.5 for c in conv for v in c["change_pct"].values()):
+            raise RuntimeError("B592 convergence failed: %s" % conv)
+        res = dict(nominal_popd=nominal, nominal_loss_dB=float(loss_db(nominal[0])),
+                   pilot_radius_um=rep["pilot_size_um"], abcd=dict(w_um=w_p, R_um=R_p, eta=eta_p),
+                   convergence=conv, n_after=n_after)
+        wf = ps.tokens["POP_FPARAM1"] * 1000
+        for kind, rng in (("lateral", cfgd["sweeps"]["lateral_um"]), ("angular", cfgd["sweeps"]["angular_deg"])):
+            vals = frange(*rng)
+            rows = sweep(ps, kind, vals)
+            arr = np.array(rows)
+            kw = (lambda v: dict(d=v)) if kind == "lateral" else (lambda v: dict(theta_deg=v))
+            pred = np.array([C.overlap(w_p, R_p, wf, lam, **kw(v)) for v in vals])
+            res[kind] = C.tolerance(arr[:, 0], arr[:, 4], 0.0)
+            res[kind + "_predicted"] = C.tolerance(vals, loss_db(pred), 0.0)
+            write_csv(OUT / ("B592_%s.csv" % kind), ["offset_um" if kind == "lateral" else "tilt_deg", "popd0_eta_total",
+                      "popd1_S_system", "popd2_T_receiver", "loss_dB", "predicted_loss_dB"],
+                      [r + (float(loss_db(p)),) for r, p in zip(rows, pred)])
+        res["settings_readbacks_passed"] = ps.nchecks
+        out["B592"] = res
+        log("B592 nominal %.4f dB, w %.3f um (ABCD %.3f); lateral rel %.4f abs %.4f um; angular rel %.4f deg [%.0fs]" % (
+            res["nominal_loss_dB"], rep["pilot_size_um"], w_p, res["lateral"]["rel"], res["lateral"]["abs"],
+            res["angular"]["rel"], time.time() - t0))
+        c2 = dict(cfgd)
+        c2["opticstudio"] = dict(version="2026 R1.00", build=str(app.OpticStudioVersion),
+                                 license=str(app.LicenseStatus), mode=str(app.Mode))
+        c2["results_nominal"] = dict(popd0_eta_total=nominal[0], popd1_S_system=nominal[1], popd2_T_receiver=nominal[2],
+                                     loss_dB=res["nominal_loss_dB"], pilot_radius_um=rep["pilot_size_um"],
+                                     index_after_surface=n_after)
+        B592_CONFIG.write_text(json.dumps(c2, indent=2))
+    finally:
+        ps.close()
+    (OUT / "run_config_stage8.json").write_text(json.dumps(dict(
+        stage="8", date=time.strftime("%Y-%m-%d"),
+        opticstudio=dict(build=str(app.OpticStudioVersion), license=str(app.LicenseStatus), mode=str(app.Mode)),
+        sweeps=dict(A0_angular_deg=[-5, 5, 0.02], A0_gap_um=[0, 150, 0.5]), results=out,
+        wall_time_s=time.time() - t0), indent=2, default=str))
+    return out
+
+
+def convergence_a0(ps, gap0):
+    """Double the A0 grid at the angular tolerance point and at the largest gap."""
+    res = {}
+    for label, setter in (("tilt 2.4 deg", lambda: ps.set("POP_TILTX", 2.4)), ("gap 150 um", lambda: ps.set_gap_um(150.0))):
+        setter()
+        base = ps.popd()[0]
+        for k in ("POP_SAMPX", "POP_SAMPY"):
+            ps.set(k, ps.tokens[k] + 1)
+        fine = ps.popd()[0]
+        for k in ("POP_SAMPX", "POP_SAMPY"):
+            ps.set(k, ps.tokens[k] - 1)
+        res[label] = 100 * (fine - base) / base
+        if abs(res[label]) > 0.5:
+            raise RuntimeError("A0 convergence failed at %s: %.3f%%" % (label, res[label]))
+        ps.set("POP_TILTX", 0.0)
+        ps.set_gap_um(gap0)
+    return res
+
+
 # --------------------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--stage", choices=("5", "7"), default="7")
+    ap.add_argument("--stage", choices=("5", "7", "8"), default="8")
     ap.add_argument("--mode", choices=("standalone", "extension"), default="standalone")
     args = ap.parse_args()
     zos = load_zosapi()
     conn, app = C.connect(args.mode, zos)
     try:
-        run(app, zos=zos) if args.stage == "5" else run_stage7(app, zos)
+        {"5": lambda: run(app, zos=zos), "7": lambda: run_stage7(app, zos), "8": lambda: run_stage8(app, zos)}[args.stage]()
     finally:
         if args.mode == "standalone":
             app.CloseApplication()

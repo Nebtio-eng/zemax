@@ -98,6 +98,25 @@ the grating's own field.
 Fabry-Perot effects between chip facets, and reflection at the silicon-air
 interface, are not modelled.
 
+**The source papers are not self-consistent.** The 2021 paper pairs a 32 um
+expanded beam with its +/-7 um lateral tolerance. The companion JSTQE paper pairs
+the 480 um lens radius with a 630 um substrate, which gives a 34 um beam. A
+32 um beam needs 592 um of silicon and a 461 um lens. The model adopts the
+630/480 pair (B). Rebuilding on the 592/461 pair (B592, `docs/results.md`
+section 3) moves the lateral tolerance from 8.14 to 7.68 um: 6.6 of the 16.3
+percentage points of disagreement with the paper come from this choice, not
+from missing physics. Separately, the paper's own tolerance pair
+(7 um x 0.6 deg = 0.0733 um rad) lies 24% below the minimum lateral x angular
+product for peak-referenced Gaussian coupling (0.0960 um rad at 1310 nm). The
+tolerances are therefore probably referenced differently from this model's
+convention, and must not be compared without stating that.
+
+**Fresnel reflection is not counted.** POP reports system efficiency S = 1.000
+in every configuration. An uncoated Si-air exit face (A1, B) reflects 30.9%
+(1.61 dB) at normal incidence; an oxide-air exit (A0) about 3.3% (0.15 dB). The
+model therefore flatters the backside configurations unless the real exit face
+is anti-reflection coated.
+
 **Two assumed parameters.** The microlens clear aperture and the receiving
 fiber's mode field diameter are not reported in the primary paper. Both are
 recorded as `ASSUMED` in `literature/extracted_parameters.csv` with the

@@ -435,3 +435,40 @@ little, proportionally, when tilted.
 **Mismatched control (B with SMF, 9.2 um MFD):** 5.92 dB nominal, lateral 5.95 um
 relative and no absolute window. Expanding the beam without expanding the
 receiver buys little and costs 6 dB, consistent with the Stage 2 decision.
+
+---
+
+## Stage 8 — data gaps filled (2026-10-03)
+
+Driver: `python/alignment_sweep.py` (`run_stage8`); maps: `python/tolerance_map.py`.
+Outputs: `results/coupling_curves/A0_angular.csv`, `A0_longitudinal.csv`,
+`B592_*.csv`, `run_config_stage8.json`; `results/tolerance_maps/A1_*`, `B_*`.
+Synthesis, comparison table and headline claim: **`docs/results.md`**.
+
+| Quantity | Predicted (prompt) | Predicted (ABCD + overlap, before running) | Zemax |
+|---|---|---|---|
+| A0 angular 1-dB, 20 um gap | 2.32 deg | 2.448 deg (abs 2.236) | **2.446 deg** (abs 2.234) |
+| A0 longitudinal 1-dB, from best gap (0 um) | 52 um | 51.6 um | **51.6 um** |
+| A0 longitudinal 1-dB, from 20 um nominal | - | rel 36.3 / abs 31.6 um | **36.3 / 31.6 um** |
+| A0 lateral x angular | 0.0911 um rad | 0.0961 | **0.0960** |
+| B area A_1dB | ~208 um^2 | 208.2 | **208.2 um^2** (abs 208.1) |
+| A1 area A_1dB | - | 120.3 rel, 0 abs | **120.3 um^2** rel, **0** abs |
+| B592 lateral 1-dB | ~7.7 um | 7.677 um | **7.678 um** (abs 7.674) |
+| B592 angular 1-dB | - | 0.717 deg | **0.7165 deg** |
+
+The B and A1 maps are circular (circularity 1.5e-9 and 2.6e-13 over 16
+directions), and X and Y tolerances are identical. Convergence: A0 grid
+doubling at 2.4 deg tilt and at a 150 um gap changes eta by 3e-11%. B592 meets
+the < 0.5% rule at nominal, at 8 um lateral and at 0.6 deg. B592's POP pilot
+radius (15.999 um) matches ABCD to < 0.01%.
+
+**A0 invariant prediction (0.0911, 5% below ideal) did not hold.** A0 sits on the
+ideal 0.0960 um rad, as B does. The ideal is a minimum for matched flat modes;
+mismatch raises the product (A1: 0.142), so curvature cannot pull A0 below it.
+Explained in `results.md` section 2.
+
+**B592 (2021-paper pair: 592 um Si, R = -461 um, 32 um MFD receiver)** is a
+separate config, not a one-cell variant of B. Lateral lands at 7.68 um (+9.7%
+against the paper's +/-7 um, against B's +16.3%), so 6.6 percentage points of
+the lateral discrepancy come from the literature pair. Angular moves the other
+way (+12.6% to +19.4%).
