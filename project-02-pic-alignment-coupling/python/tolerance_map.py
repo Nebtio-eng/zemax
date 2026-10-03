@@ -16,8 +16,10 @@ from pathlib import Path
 
 import numpy as np
 
+import analytic as AN
 import coupling_analysis as C
-from coupling_analysis import ROOT, PopSession, loss_db
+from analytic import loss_db
+from coupling_analysis import ROOT, PopSession
 
 A0_CONFIG = ROOT / "zemax" / "baseline" / "run_config.json"
 OUT = ROOT / "results" / "tolerance_maps"
@@ -61,7 +63,7 @@ def run_map(app, zos, cfg_path=A0_CONFIG, tag="A0", ref_radius_um=STAGE5_TOL_UM,
                 e = eta_at(ps, r * math.cos(phi), r * math.sin(phi))
                 rows.append((r, *e, float(loss_db(e[0]))))
             arr = np.array(rows)
-            t = C.tolerance(arr[:, 0], arr[:, 4], 0.0)
+            t = AN.tolerance(arr[:, 0], arr[:, 4], 0.0)
             cuts.append((math.degrees(phi), t["rel_plus"], t["abs_plus"]))
         xs = [float(v) for v in np.round(np.arange(-half, half + step / 2, step), 6)]
         grid = np.zeros((len(xs), len(xs)))

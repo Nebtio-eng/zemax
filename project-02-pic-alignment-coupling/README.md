@@ -4,8 +4,10 @@ Master's project, Optical Technologies. System-level optical modelling of a
 fiber-to-photonic-integrated-circuit coupling interface in Ansys Zemax
 OpticStudio, with Lumerical FDTD used for the grating coupler.
 
-**Status:** Stage 0 complete (literature selection and methodology). Zemax
-implementation not yet started.
+**Status:** Zemax phase complete through Stage 11 (baseline, three
+architectures, parameter study, Pareto front, consolidated code). Stage 8b
+(Lumerical FDTD source) is next. Results: [`docs/results.md`](docs/results.md);
+stage-by-stage record: [`docs/validation.md`](docs/validation.md).
 
 ---
 
@@ -85,16 +87,44 @@ POP model, and the primary paper's measurements. The report distinguishes
 throughout between what was *experimentally demonstrated* in the literature and
 what was *numerically determined* here.
 
+## Current results (numerically determined, 1310 nm, 4.6 um source waist)
+
+| | A0 top-side | A1 backside, flat | B backside + lens | B paper (measured) |
+|---|---|---|---|---|
+| Nominal loss | 0.165 dB | 6.26 dB | 0.0004 dB | - |
+| Lateral 1-dB (rel / abs) | 2.25 / 2.06 um | 6.19 um / none | 8.14 / 8.14 um | +/-7 um |
+| Angular 1-dB | 2.45 deg | 1.32 deg / none | 0.676 deg | +/-0.6 deg |
+| Longitudinal 1-dB | 52 um | 249 um / none | ~700 um | 700 um |
+| 2-D area A_1dB (abs) | 13.3 um^2 | 0 | 208 um^2 | - |
+
+- The lens converts positional into angular tolerance at a fixed exchange rate:
+  lateral x angular = 0.0960 um rad for every matched design. Longitudinal is
+  the only net gain.
+- The substrate supplies the beam width; the lens makes it usable by
+  flattening the phase. Without it (A1) there is no 1-dB window at all.
+- A spherical lens is optically sufficient; the conic constant has no effect.
+  The lens ROC is the critical manufacturing tolerance (1 dB at -21.7% / +40.2%).
+- Passive alignment (+/-10 um lateral) is reached at >= 786 um of silicon with
+  the ROC and fibre scaled to it, paid for in angular tolerance (0.55 deg),
+  not in loss.
+- Excluded from every number: grating directionality and Fresnel reflection
+  (an uncoated Si-air face would cost 1.6 dB). See
+  [`docs/limitations.md`](docs/limitations.md).
+
 ## Repository layout
 
 ```
-literature/   paper screening and extracted parameters
-zemax/        OpticStudio models (baseline, conventional, microlens, optimized)
-python/       analysis, sweeps, tolerance maps, parameter studies, optimisation
-data/         literature values, raw output, processed results
-results/      coupling curves, tolerance maps, parameter studies, optimisation
-docs/         methodology, validation, limitations
-report/       final report
+literature/   paper screening and extracted parameters (with provenance)
+zemax/        OpticStudio models + run_config.json per model
+              baseline/ (A0)  microlens/ (A1, B, B592, B_incidence)  glasscat/ (SILICON_1310)
+python/       analytic.py          independent Gaussian model (never imports the Zemax path)
+              coupling_analysis.py OpticStudio session, verified POP settings, convergence test
+              alignment_sweep.py   Stages 3/5/7/8 sweeps     tolerance_map.py  2-D maps
+              parameter_study.py   Stage 9                   optimization.py   Stage 10
+              run.py               single entry point        test_validated.py regression tests
+results/      coupling_curves/ tolerance_maps/ parameter_studies/ optimization/
+docs/         methodology, validation, results, limitations, brief-questions,
+              zosapi_gotchas (every API pitfall met in this project)
 ```
 
 ## Environment
@@ -104,9 +134,25 @@ Ansys Zemax OpticStudio 2026 R1.00 (Enterprise), driven through ZOS-API with
 
 ## Reproducing
 
-Not yet reproducible — implementation begins at Stage 1. Each run will write a
-`run_config.json` recording wavelength, software version, POP sampling and window
-width, beam and receiver definitions, geometry, sweep ranges and raw POPD values.
+Requirements: Windows, OpticStudio with ZOS-API (Professional or above), 64-bit
+Python 3 (pythonnet will not load the ZOS-API assemblies from 32-bit).
+
+```
+python -m venv .venv
+.venv\Scripts\pip install -r python\requirements.txt
+cd python
+..\.venv\Scripts\python test_validated.py                 # analytic checks, no OpticStudio
+set ZEMAX_MODE=standalone
+..\.venv\Scripts\python test_validated.py                 # + null test, A0 0.962617754, B 8.140 um, invariant
+..\.venv\Scripts\python run.py 7                          # any stage: 3 5 6 7 8 9 10, or all
+```
+
+Every stage reads its settings from a `run_config.json` (models, POP tokens,
+surface settings, sweep ranges) and writes one beside its results. The binary
+POP settings file is generated from that JSON and every value is read back and
+asserted. Default mode is a headless standalone instance (never run two at
+once); `--mode extension` drives an open OpticStudio with the Interactive
+Extension armed. Runs append to `results/progress.log`.
 
 ## Limitations
 

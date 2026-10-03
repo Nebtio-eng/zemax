@@ -27,12 +27,12 @@ from pathlib import Path
 
 import numpy as np
 
+import analytic as AN
 import coupling_analysis as C
 import parameter_study as P
 from coupling_analysis import ROOT
 
 OUT = ROOT / "results" / "optimization"
-LOG = ROOT / "results" / "progress.log"
 T_GRID = [400.0, 500.0, 630.0, 700.0, 786.0, 800.0, 900.0, 1000.0, 1200.0]
 RHO_GRID = [0.80, 0.85, 0.90, 0.95, 1.00, 1.05]
 ROC_ERR = 0.05                      # ASSUMED +/-5% lens ROC manufacturing tolerance, for the robustness metric
@@ -41,14 +41,11 @@ EPS_REL, EPS_LOSS_DB = 0.01, 0.01   # epsilon-dominance: 1% on tolerances, 0.01 
 
 
 def log(m):
-    print(m, flush=True)
-    with open(LOG, "a") as f:
-        f.write(time.strftime("%Y-%m-%d %H:%M:%S ") + "[stage10] " + m + "
-")
+    C.progress("stage10", m)
 
 
 def design(t, rho, mfd=None):
-    return dict(t_um=t, rho=rho, roc_um=rho * P.r_match_um(t), mfd_um=mfd or 2 * P.w_exit_um(t))
+    return dict(t_um=t, rho=rho, roc_um=rho * AN.r_match_um(t), mfd_um=mfd or 2 * AN.w_exit_um(t))
 
 
 def apply(b, d):
@@ -60,7 +57,7 @@ def apply(b, d):
 def evaluate(b, d):
     b.restore()
     apply(b, d)
-    p = P.gauss_prediction(d["t_um"], -d["roc_um"], mfd_um=d["mfd_um"])
+    p = AN.gauss_prediction(d["t_um"], -d["roc_um"], mfd_um=d["mfd_um"])
     guess = {k: p[k + "_rel"] for k in ("lateral", "angular", "longitudinal") if not math.isnan(p[k + "_rel"])}
     m = b.metrics(guess=guess)
     # robustness: worst nominal loss under a +/-5% ROC error (thickness and fibre unchanged)
@@ -73,15 +70,15 @@ def evaluate(b, d):
                                          "angular_abs", "longitudinal_rel", "longitudinal_abs", "product_rel", "product_abs")})
     row.update(area_rel_um2=math.pi * m["lateral_rel"] ** 2,
                area_abs_um2=(math.pi * m["lateral_abs"] ** 2) if not math.isnan(m["lateral_abs"]) else 0.0,
-               product_excess_pct=100 * (m["product_rel"] / P.IDEAL_PRODUCT - 1),
+               product_excess_pct=100 * (m["product_rel"] / AN.IDEAL_PRODUCT - 1),
                worst_loss_roc5_dB=max(rob), pred_loss_dB=p["loss_dB"], pred_lateral_abs=p["lateral_abs"],
                pred_angular_abs=p["angular_abs"], pred_longitudinal_abs=p["longitudinal_abs"],
                pred_product_rel=p["product_rel"])
     # window rule: 4x the largest beam met in the sweeps (beam at the far longitudinal point)
     surf = [{"thickness_mm": "inf"}, {"thickness_mm": d["t_um"] / 1000}, {"radius_mm": -d["roc_um"] / 1000}, {}]
     zfar = 20 + (m["longitudinal_rel"] if not math.isnan(m["longitudinal_rel"]) else 0)
-    wfar = C.beam_at(surf, zfar, {0: 1.0, 1: P.N_SI, 2: 1.0}, 4.6, P.LAM, 2)[0]
-    row["largest_beam_um"] = max(wfar, P.w_exit_um(d["t_um"]), d["mfd_um"] / 2)
+    wfar = AN.beam_at(surf, zfar, {0: 1.0, 1: AN.N_SI, 2: 1.0}, 4.6, AN.LAM, 2)[0]
+    row["largest_beam_um"] = max(wfar, AN.w_exit_um(d["t_um"]), d["mfd_um"] / 2)
     row["window_ok"] = b.ps.tokens["POP_WIDEX"] * 1000 >= 4 * row["largest_beam_um"]
     return row
 
@@ -110,8 +107,8 @@ def run(app, zos):
     rows, conv = [], []
     try:
         # --- gate part 1: reproduce the Stage 9 below-collimation point and B itself (34 um fibre) ---
-        gate_pts = [dict(design(630.0, 420.0 / P.r_match_um(630.0), 34.0), role="gate: Stage 9 ROC 420 um"),
-                    dict(design(630.0, 480.0 / P.r_match_um(630.0), 34.0), role="gate: B as built")]
+        gate_pts = [dict(design(630.0, 420.0 / AN.r_match_um(630.0), 34.0), role="gate: Stage 9 ROC 420 um"),
+                    dict(design(630.0, 480.0 / AN.r_match_um(630.0), 34.0), role="gate: B as built")]
         for d in gate_pts:
             r = evaluate(b, d)
             r["role"] = d["role"]
@@ -215,7 +212,7 @@ def plots(rows, front):
     # 1. lateral vs angular, colour = loss, invariant curve
     fig, ax = plt.subplots(figsize=(7, 5), dpi=150)
     d = np.linspace(3, 14, 200)
-    ax.plot(d, np.degrees(P.IDEAL_PRODUCT / d), color=ink2, ls="--", lw=1, label="invariant floor, 0.0960 um rad")
+    ax.plot(d, np.degrees(AN.IDEAL_PRODUCT / d), color=ink2, ls="--", lw=1, label="invariant floor, 0.0960 um rad")
     sc = ax.scatter([r["lateral_abs"] for r in g], [r["angular_abs"] for r in g], c=[r["loss_dB"] for r in g],
                     cmap="Blues", vmin=0, vmax=0.8, s=36, edgecolors=ink2, linewidths=0.4, zorder=3)
     fr = [r for r in front if r["role"] == "grid"]

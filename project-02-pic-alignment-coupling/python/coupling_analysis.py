@@ -1,7 +1,8 @@
-"""Shared POP machinery: connection, verified POP settings, model building,
-Gaussian-beam analytics and 1-dB tolerance extraction.
+"""Shared OpticStudio machinery: connection, model building, verified POP settings,
+convergence test, progress log and small I/O helpers.
 
-Used by alignment_sweep.py (1-D sweeps) and tolerance_map.py (2-D maps).
+The independent analytic model lives in analytic.py and never imports from here.
+Its functions are re-exported below only for convenience of the Zemax-side scripts.
 
 Every POP setting comes from a run_config.json ("pop_tokens", "surface_settings").
 The binary POP .CFG is generated from it, and every write is read back out of the
@@ -9,121 +10,71 @@ CFG; any mismatch raises SettingsMismatch. POPD reads the *saved default* POP
 settings, so commit() loads the CFG into the analysis and saves it before any
 POPD evaluation.
 """
-import glob, math, os, re, struct, tempfile
+import csv, glob, math, os, re, struct, tempfile, time
 from pathlib import Path
 
 import numpy as np
-from scipy.interpolate import CubicSpline
-from scipy.optimize import brentq, minimize_scalar
+
+from analytic import (ONE_DB, loss_db, q_param, w_R, refract, beam_at, overlap,   # noqa: F401 (re-export)
+                      tolerance, peak, level_crossing)
 
 ROOT = Path(__file__).resolve().parents[1]
+PROGRESS_LOG = ROOT / "results" / "progress.log"
 INT_TOKENS = {"POP_WAVE", "POP_FIELD", "POP_START", "POP_END", "POP_BEAMTYPE",
               "POP_SAMPX", "POP_SAMPY", "POP_COMPUTE", "POP_FIBERTYPE"}
-ONE_DB = math.log(10) / 10          # ln(10^0.1): eta falls 1 dB when ln(eta) drops by this
 
 
 class SettingsMismatch(AssertionError):
     """A setting did not read back as written, or POP reported something else."""
 
 
-def loss_db(eta):
-    return -10 * np.log10(eta)
+# ============================================================================ helpers
+def progress(tag, msg):
+    """Print and append to results/progress.log so a long run can be inspected in flight."""
+    print(msg, flush=True)
+    PROGRESS_LOG.parent.mkdir(parents=True, exist_ok=True)
+    with open(PROGRESS_LOG, "a") as f:
+        f.write(time.strftime("%Y-%m-%d %H:%M:%S ") + "[%s] %s\n" % (tag, msg))
 
 
-# =========================================================== Gaussian-beam analytics
-def q_param(w, R, n, lam):
-    """Complex beam parameter from 1/e^2 radius w, wavefront radius R, index n."""
-    return 1 / ((0 if math.isinf(R) else 1 / R) - 1j * lam / (math.pi * n * w * w))
+def write_csv(path, header, rows):
+    with open(path, "w", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(header)
+        for r in rows:
+            w.writerow([("%.9g" % v) if isinstance(v, float) else v for v in r])
 
 
-def w_R(q, n, lam):
-    iq = 1 / q
-    return math.sqrt(-lam / (math.pi * n * iq.imag)), (math.inf if abs(iq.real) < 1e-18 else 1 / iq.real)
+def frange(lo, hi, step):
+    return [float(v) for v in np.round(np.arange(lo, hi + step / 2, step), 6)]
 
 
-def refract(q, n1, n2, radius):
-    """Refraction at a spherical surface (OpticStudio sign convention for radius)."""
-    c = 0 if math.isinf(radius) else (n1 - n2) / (radius * n2)
-    return q / (c * q + n1 / n2)
+def convergence(ps, points, after=None, limit_pct=0.5):
+    """The project convergence test: grid x2 (half pixel) and grid x2 + window x2 (same pixel).
 
-
-def beam_at(surfaces, gap_um, n_after, w0, lam, gap_surface):
-    """Pilot-beam (w, R) in um at the last surface for a sequential surface list.
-
-    surfaces: run_config "surfaces" list. The source waist sits on surface 1 and
-    propagates through each thickness; refraction at each later surface uses
-    n_after[i], the index of the medium after surface i (from OpticStudio).
+    points: list of (label, setter) where setter() puts the system in the state to test.
+    after(): restores the nominal state between points. Returns per-point % changes in eta.
     """
-    q = q_param(w0, math.inf, n_after[1], lam)
-    for i in range(1, len(surfaces) - 1):
-        if i > 1:
-            r = surfaces[i].get("radius_mm", "inf")
-            q = refract(q, n_after[i - 1], n_after[i], math.inf if r == "inf" else float(r) * 1000)
-        t = gap_um if i == gap_surface else float(surfaces[i]["thickness_mm"]) * 1000
-        q = q + t
-    return w_R(q, n_after[len(surfaces) - 2], lam)
-
-
-def overlap(w1, R1, w2, lam, d=0.0, theta_deg=0.0, n=1.0, half=None, npts=40001):
-    """Numerical power overlap of a curved Gaussian (w1, R1) with a flat Gaussian
-    receiver (w2) decentred by d and tilted by theta. Independent of OpticStudio.
-    Separable in x and y; the y factor has neither offset nor tilt."""
-    half = half or 8 * max(w1, w2) + abs(d)
-    x = np.linspace(-half, half, npts)
-    k = 2 * math.pi * n / lam
-    curv = 0 if math.isinf(R1) else k / (2 * R1)
-
-    def one(dd, th):
-        e1 = np.exp(-x ** 2 / w1 ** 2 - 1j * curv * x ** 2)
-        e2 = np.exp(-(x - dd) ** 2 / w2 ** 2 + 1j * k * math.sin(math.radians(th)) * x)
-        num = abs(np.trapezoid(e1 * np.conj(e2), x)) ** 2
-        return num / (np.trapezoid(abs(e1) ** 2, x) * np.trapezoid(abs(e2) ** 2, x))
-    return one(d, theta_deg) * one(0.0, 0.0)
-
-
-# ================================================================ tolerance extraction
-def tolerance(x, loss, x0):
-    """1-dB tolerance either side of x0, both conventions, by spline interpolation.
-
-    rel: loss rises 1 dB above its value at x0.   abs: total loss reaches 1.000 dB.
-    Returns distances from x0 (positive), nan where the level is not reached inside
-    the sweep or, for abs, where L(x0) is already at or above 1 dB.
-    """
-    x, loss = np.asarray(x, float), np.asarray(loss, float)
-    order = np.argsort(x)
-    x, loss = x[order], loss[order]
-    spl = CubicSpline(x, loss)
-    l0 = float(spl(x0))
-    out = dict(x0=float(x0), L0=l0)
-    for name, level in (("rel", l0 + 1.0), ("abs", 1.0)):
-        for side in ("plus", "minus"):
-            out[name + "_" + side] = float("nan")
-            if level <= l0:
-                continue
-            xs = x[x > x0 + 1e-12] if side == "plus" else x[x < x0 - 1e-12][::-1]
-            hit = np.nonzero(spl(xs) >= level)[0]
-            if len(hit):
-                j = hit[0]
-                prev = x0 if j == 0 else xs[j - 1]
-                root = brentq(lambda v: float(spl(v)) - level, min(prev, xs[j]), max(prev, xs[j]), xtol=1e-10)
-                out[name + "_" + side] = abs(root - x0)
-        vals = [out[name + "_plus"], out[name + "_minus"]]
-        out[name] = float(np.nanmean(vals)) if not all(math.isnan(v) for v in vals) else float("nan")
+    s0, w0 = ps.tokens["POP_SAMPX"], ps.tokens["POP_WIDEX"]
+    out = []
+    for label, setter in points:
+        setter()
+        etas = {}
+        for name, s_, w_ in (("base", s0, w0), ("grid x2", s0 + 1, w0), ("grid x2, window x2", s0 + 1, 2 * w0)):
+            for k in ("POP_SAMPX", "POP_SAMPY"):
+                ps.set(k, s_)
+            for k in ("POP_WIDEX", "POP_WIDEY"):
+                ps.set(k, w_)
+            etas[name] = ps.popd()[0]
+        ch = {k: 100 * (v - etas["base"]) / etas["base"] for k, v in etas.items() if k != "base"}
+        out.append(dict(point=label, eta=etas, change_pct=ch, passed=max(abs(v) for v in ch.values()) < limit_pct))
+        for k in ("POP_SAMPX", "POP_SAMPY"):
+            ps.set(k, s0)
+        for k in ("POP_WIDEX", "POP_WIDEY"):
+            ps.set(k, w0)
+        if after:
+            after()
     return out
-
-
-def peak(x, loss):
-    """Interpolated position and value of minimum loss."""
-    x, loss = np.asarray(x, float), np.asarray(loss, float)
-    order = np.argsort(x)
-    x, loss = x[order], loss[order]
-    i = int(np.argmin(loss))
-    spl = CubicSpline(x, loss)
-    lo, hi = x[max(i - 1, 0)], x[min(i + 1, len(x) - 1)]
-    if lo == hi:
-        return float(x[i]), float(loss[i])
-    r = minimize_scalar(lambda v: float(spl(v)), bounds=(lo, hi), method="bounded", options=dict(xatol=1e-9))
-    return float(r.x), float(r.fun)
 
 
 # ======================================================================= OpticStudio

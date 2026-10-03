@@ -21,75 +21,19 @@ from pathlib import Path
 import numpy as np
 from scipy.optimize import brentq, minimize
 
+import analytic as AN
 import coupling_analysis as C
-from coupling_analysis import ROOT, PopSession, SettingsMismatch, loss_db
+from analytic import (LAM, N_SI, ZR_SI, IDEAL_PRODUCT, loss_db, r_match_um, w_exit_um,   # noqa: F401
+                      gauss_prediction, aperture_prediction, level_crossing)
+from coupling_analysis import ROOT, PopSession, SettingsMismatch
 
 B_CONFIG = ROOT / "zemax" / "microlens" / "B" / "run_config.json"
 OUT = ROOT / "results" / "parameter_studies"
-LAM = 1.31
-N_SI = 3.5039127043661025           # OpticStudio SILICON_1310 at 1.31 um (Stage 7)
-ZR_SI = math.pi * 4.6 ** 2 * N_SI / LAM
-IDEAL_PRODUCT = 0.0733 * LAM        # um rad, minimum for matched flat Gaussian modes
 INK, INK2, GRID, BLUE, ORANGE = "#0b0b0b", "#52514e", "#e4e3de", "#2a78d6", "#eb6834"
 
 
 def log(m):
-    print(m, flush=True)
-    with open(OUT / "progress.log", "a") as f:
-        f.write(time.strftime("%H:%M:%S ") + m + "\n")
-
-
-def r_match_um(t_um, n=N_SI):
-    """Lens radius magnitude that collimates the Gaussian after t_um of silicon."""
-    return (n - 1) / n * t_um * (1 + (ZR_SI / t_um) ** 2)
-
-
-def w_exit_um(t_um):
-    return 4.6 * math.sqrt(1 + (t_um / ZR_SI) ** 2)
-
-
-# ============================================================================ analytics
-def gauss_prediction(t_um=630.0, radius_um=-480.0, gap_um=20.0, mfd_um=34.0, n_si=N_SI):
-    """ABCD + overlap prediction of loss and all tolerances (aberration-free Gaussian physics)."""
-    surf = [{"thickness_mm": "inf"}, {"thickness_mm": t_um / 1000}, {"radius_mm": radius_um / 1000}, {}]
-    n_after = {0: 1.0, 1: n_si, 2: 1.0}
-    wf = mfd_um / 2
-
-    def beam(g):
-        return C.beam_at(surf, g, n_after, 4.6, LAM, 2)
-
-    w, R = beam(gap_um)
-    lat = lambda d: float(loss_db(C.overlap(w, R, wf, LAM, d=d)))
-    ang = lambda a: float(loss_db(C.overlap(w, R, wf, LAM, theta_deg=a)))
-    lon = lambda dz: float(loss_db(C.overlap(*beam(gap_um + dz), wf, LAM)))
-    l0 = lat(0.0)
-    out = dict(loss_dB=l0, w_um=w, R_um=R)
-    for conv, level in (("rel", l0 + 1.0), ("abs", 1.0)):
-        for name, f, s0, hmax in (("lateral", lat, 5.0, 200.0), ("angular", ang, 0.4, 20.0), ("longitudinal", lon, 200.0, 20000.0)):
-            out["%s_%s" % (name, conv)] = level_crossing(f, level, s0, hmax, l0) if level > l0 else float("nan")
-        out["product_" + conv] = out["lateral_" + conv] * math.radians(out["angular_" + conv])
-    return out
-
-
-def aperture_prediction(diam_um, w_um=16.935, wf=17.0):
-    """Hard circular aperture on a Gaussian of radius w, matched receiver, diffraction over the gap ignored."""
-    a = diam_um / 2
-    c = 1 / w_um ** 2 + 1 / wf ** 2
-    eta = 4 * (1 - math.exp(-c * a * a)) ** 2 / (c * c * w_um ** 2 * wf ** 2)
-    return dict(loss_dB=float(loss_db(eta)), S=1 - math.exp(-2 * a * a / w_um ** 2))
-
-
-# =========================================================================== root finding
-def level_crossing(f, level, step0, hi_max, f0, xtol=1e-4):
-    """Smallest d > 0 with f(d) = level, for f rising (eventually) from f(0) = f0 < level."""
-    lo, hi = 0.0, step0
-    fhi = f(hi)
-    while fhi < level:
-        lo, hi = hi, hi * 1.6
-        if hi > hi_max:
-            return float("nan")
-        fhi = f(hi)
-    return float(brentq(lambda d: f(d) - level, lo, hi, xtol=xtol))
+    C.progress("stage9", m)
 
 
 # ================================================================================ bench
@@ -200,26 +144,13 @@ class Bench:
         return out
 
     def convergence(self, label, extra=None):
-        """Grid x2 and grid x2 + window x2 at nominal and at one off-axis point."""
-        s0, w0 = self.ps.tokens["POP_SAMPX"], self.ps.tokens["POP_WIDEX"]
-        res = {}
-        for pname, kw in (("nominal", {}), ("off-axis", extra or dict(x=self.x0 + 8.0))):
-            etas = {}
-            for name, s_, w_ in (("base", s0, w0), ("grid x2", s0 + 1, w0), ("grid x2, window x2", s0 + 1, 2 * w0)):
-                for k in ("POP_SAMPX", "POP_SAMPY"):
-                    self.ps.set(k, s_)
-                for k in ("POP_WIDEX", "POP_WIDEY"):
-                    self.ps.set(k, w_)
-                etas[name] = self.popd(**kw)[0]
-            res[pname] = {k: 100 * (v - etas["base"]) / etas["base"] for k, v in etas.items() if k != "base"}
-        for k in ("POP_SAMPX", "POP_SAMPY"):
-            self.ps.set(k, s0)
-        for k in ("POP_WIDEX", "POP_WIDEY"):
-            self.ps.set(k, w0)
-        self.popd()
-        worst = max(abs(v) for d in res.values() for v in d.values())
-        log("  convergence @ %s: %s (worst %.4f%%)" % (label, res, worst))
-        return dict(at=label, change_pct=res, worst_pct=worst, passed=worst < 0.5)
+        """Shared project convergence test at nominal and at one off-axis point."""
+        res = C.convergence(self.ps, [("nominal", lambda: self.popd()),
+                                      ("off-axis", lambda: self.popd(**(extra or dict(x=self.x0 + 8.0))))],
+                            after=lambda: self.popd())
+        worst = max(abs(v) for c in res for v in c["change_pct"].values())
+        log("  convergence @ %s: %s (worst %.4f%%)" % (label, {c["point"]: c["change_pct"] for c in res}, worst))
+        return dict(at=label, change_pct={c["point"]: c["change_pct"] for c in res}, worst_pct=worst, passed=worst < 0.5)
 
     def restore(self):
         p = self.cfgd
