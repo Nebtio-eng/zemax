@@ -1,0 +1,11 @@
+# Text files: stored with LF in the repository, checked out as CRLF on Windows.
+* text=auto eol=crlf
+
+# Binary types: never diff, merge or convert line endings.
+*.zos  binary
+*.zmx  binary
+*.zprj binary
+*.zbf  binary
+*.fsp  binary
+*.png  binary
+*.pdf  binary
