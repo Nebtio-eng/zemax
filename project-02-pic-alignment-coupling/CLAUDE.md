@@ -232,3 +232,72 @@ OpticStudio version and build, POP grid sampling X/Y, analysis window width,
 beam type and waist, receiver waist, Resample-After-Refraction state per surface,
 all radii/thicknesses/materials, coordinate-break values, sweep range and step,
 optimisation operands and bounds, and raw POPD 0/1/2.
+---
+
+## Stage 2 decisions (settled 2026-10-03)
+
+### Three configurations, not two
+
+The improvement is decomposed rather than lumped, so that the substrate's
+contribution is separated from the lens's.
+
+| | Configuration | Isolates |
+|---|---|---|
+| **A0** | Conventional top-side: fiber above the grating, short air gap, no substrate traversal | The industry baseline (the ~±2 um case everyone quotes) |
+| **A1** | Backside through the Si substrate, flat back face, no lens | What free beam expansion through existing material contributes |
+| **B** | Backside with the monolithic etched micro-lens | What the lens adds on top of A1 |
+
+Headline comparison is A0 -> B. The decomposition A0 -> A1 -> B is a result the
+source papers do not report.
+
+Working hypothesis to be tested, not assumed: **most of the lateral tolerance
+gain comes from the substrate (A0 -> A1), not the lens (A1 -> B)**, because the
+substrate takes the beam from 4.6 um to ~16 um radius while the lens only
+collimates. If true, the lens's real contribution is to the longitudinal and
+angular axes.
+
+### Air / adhesive gap: 20 um nominal, swept
+
+Chip back face (or top face, for A0) to fiber. Tagged ASSUMED.
+
+Sourced from published optical-adhesive bond-line data: 3-50 um is the
+documented range for fiber terminations and high-performance lens assemblies.
+20 um sits inside that range at neither extreme.
+
+The gap is swept 0-100 um regardless, which *is* the Stage 5 Z-tolerance
+analysis, so it costs nothing extra and demonstrates the choice did not
+determine the result.
+
+Quantitative justification that the gap is not load-bearing for A1/B: the beam
+leaving the back face has a radius of ~16 um, giving a Rayleigh range in air of
+~614 um. A 20 um gap is ~3% of that, changing the beam radius by under 0.1%.
+
+For A0 the gap *is* load-bearing (Rayleigh range only ~51 um for a 4.6 um
+beam, so a 50 um gap grows it ~40%). A0 baseline tolerance must therefore be
+reported as a curve against gap, not as a single number.
+
+### Receiver mode is part of the configuration
+
+Coupling efficiency is maximised when the receiving fiber mode matches the
+arriving beam, so each configuration is paired with the fiber a packaging
+engineer would actually choose:
+
+| Config | Arriving beam radius | Matched receiver |
+|---|---|---|
+| A0 | 4.6 um | standard SMF, 9.2 um MFD |
+| A1 | ~16 um, diverging | TEC fiber, ~32 um MFD (ASSUMED) |
+| B | ~16 um, collimated | TEC fiber, ~32 um MFD (ASSUMED) |
+
+Consequence, from `d_1dB = 0.339*sqrt(w1^2 + w2^2)` and
+`eta_0 = 4*w1^2*w2^2/(w1^2+w2^2)^2`:
+
+- A1/B with matched TEC: d_1dB = 7.7 um, eta_0 = 1. Reproduces the paper's +/-7 um.
+- A1/B with SMF retained: d_1dB = 5.6 um but eta_0 = 0.28, i.e. a 5.5 dB penalty.
+
+So the published tolerance **requires** the matched large-mode fiber. Expanding
+the beam without also expanding the receiver buys some tolerance at a severe
+efficiency cost.
+
+**Both receiver cases are run** — matched as the headline, mismatched as an
+instructive control, because the mismatched case is the clearest single
+demonstration of the loss-versus-tolerance trade.
