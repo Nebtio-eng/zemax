@@ -1,0 +1,65 @@
+{
+  "stage": "5",
+  "description": "A0 lateral X decenter of the receiver",
+  "date": "2026-10-03",
+  "opticstudio": {
+    "build": "260127",
+    "license": "EnterpriseEdition",
+    "mode": "Plugin"
+  },
+  "source_config": "zemax\\baseline\\run_config.json",
+  "model": "zemax\\baseline\\A0_conventional.zmx",
+  "pop_tokens": {
+    "POP_WAVE": 1,
+    "POP_FIELD": 1,
+    "POP_START": 1,
+    "POP_END": 2,
+    "POP_BEAMTYPE": 0,
+    "POP_PARAM1": 0.0046,
+    "POP_PARAM2": 0.0046,
+    "POP_PARAM3": 0.0,
+    "POP_PARAM4": 0.0,
+    "POP_SURFTOBEAM": 0.0,
+    "POP_SAMPX": 5,
+    "POP_SAMPY": 5,
+    "POP_WIDEX": 0.08,
+    "POP_WIDEY": 0.08,
+    "POP_COMPUTE": 1,
+    "POP_FIBERTYPE": 0,
+    "POP_FPARAM1": 0.0046,
+    "POP_FPARAM2": 0.0046,
+    "POP_FPARAM3": 0.0,
+    "POP_FPARAM4": 0.0
+  },
+  "sweep": {
+    "gaps_um": [
+      0,
+      5,
+      10,
+      20,
+      50,
+      100
+    ],
+    "nominal_gap_um": 20,
+    "range_um": 6.0,
+    "step_um": 0.1,
+    "nominal_step_um": 0.05,
+    "convergence_samp_index": 6
+  },
+  "convergence_rule": "double grid, <0.5% change in eta, checked at d=0 and d=tolerance for every gap",
+  "settings_readbacks_passed": 926,
+  "resample_after_refraction": "False on all surfaces (no refracting surface in A0)",
+  "surface_settings": {
+    "_comment": "Applied to the loaded model by python/alignment_sweep.py and read back. Beyond the Rayleigh range (51 um) the default POP propagator silently rescales its grid (window 0.08 -> 0.84 mm at 100 um gap); the angular-spectrum propagator keeps the stated window. eta is identical to ~1e-12 in both modes.",
+    "1": {
+      "UseAngularSpectrumPropagator": true
+    }
+  },
+  "tolerance_method": "cubic spline of loss(d), brentq root; both sides, mean reported",
+  "tolerance_conventions": {
+    "rel": "loss rises 1 dB above on-axis value (primary)",
+    "abs": "total loss reaches 1.000 dB"
+  },
+  "interpolation_resolution_check_um": 6.515476442814361e-07,
+  "wall_time_s": 115.93648672103882
+}

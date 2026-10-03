@@ -98,7 +98,7 @@ from the on-axis peak:
   (Rayleigh range only 51 um), so Stage 5 reports tolerance against gap, not a
   single number.
 
-### ZOS-API facts learned this stage
+### ZOS-API facts learned this stage (Stage 3)
 
 - Lens units cannot be micrometres (mm, cm, in, m only).
 - POP settings are set with `ModifySettings(cfgFile, token, value)`. It returns
@@ -116,3 +116,127 @@ from the on-axis peak:
   Param4 = Data (0 total, 1 system, 2 receiver).
 - The Interactive Extension arming is consumed by the first connection that uses
   it. Keep one process connected for the whole session.
+
+---
+
+## Stage 4 — Validation of A0 against the literature (PARTIAL)
+
+**Stage 4 validation of A0 is partial.** The primary paper (Mangal et al. 2021)
+reports no conventional top-side measurement, only the backside expanded-beam
+device, so there is no paper number to compare A0 against. A0 is therefore
+checked against the analytic Gaussian-overlap relations (`methodology.md`
+section 5) and the general literature figure of roughly +/-2 um for conventional
+top-side coupling only. The comparison against the paper is deferred to Stage 8,
+where A1 and B can be set against the paper's measured +/-7 um, +/-0.6 deg and
+700 um.
+
+---
+
+## Stage 5 — A0 lateral (X) tolerance (2026-10-03)
+
+Script: `python/alignment_sweep.py`. Outputs: `results/coupling_curves/`
+(per-gap sweep CSVs, `a0_tolerance_vs_gap.csv`, `a0_tolerance_vs_gap.png`,
+`run_config_a0_lateral.json`). All values **numerically determined**.
+
+### Method
+
+- Receiver X decenter (`POP_FPARAM3`) swept from -6 to +6 um: 0.05 um steps at
+  the 20 um nominal gap, 0.1 um elsewhere. POPD 0, 1 and 2 logged at every point.
+- 1-dB tolerance = the decenter at which loss rises 1 dB above its on-axis value,
+  found by cubic-spline interpolation of loss(d) plus a root find, on each side
+  separately. Not the nearest sample.
+- The extractor is self-tested on analytic data first (recovers 2.249773 um).
+- Thinning the nominal sweep from 0.05 to 0.2 um changes the tolerance by
+  6.5e-7 um, so the step size is far finer than three significant figures need.
+
+### Review fixes made before the sweep
+
+1. **Read-back is now a permanent assertion.** The POP .CFG is binary, and
+   `ModifySettings` returns True for any token. The script locates each
+   setting's byte offset in the CFG (by writing two marker values and
+   diffing), then after every write reads the value back and raises
+   `SettingsMismatch` on any difference. The POP text report is also checked
+   against the configuration: grid size, window, wavelength, end surface,
+   source waist, pilot position = gap, and beam radius = analytic. The on-axis
+   eta must match the analytic eta0 to 1e-4, which checks the receiver waist.
+   926 read-backs passed in the full run. A deliberate mismatch was confirmed
+   to raise.
+2. **The CFG is generated from `run_config.json`** (`pop_tokens`,
+   `surface_settings`). This matters because POPD does not read the analysis
+   window. It reads the *saved default* POP settings, a binary file outside
+   git. Without generating it from text, the committed `.zmx` would silently
+   give POPD = 0, or results computed with whatever settings were saved last.
+   The generated CFG reproduces the committed Stage 3 eta (0.962617754)
+   exactly, and the script checks this before every sweep.
+3. Stage 4 partial-validation note added above.
+
+### Result at the nominal 20 um gap
+
+| | Tolerance | Measured vs it |
+|---|---|---|
+| **Zemax POP, interpolated** | **2.2498 um** | — |
+| Prediction, 0.339 sqrt(w1^2 + w2^2) | 2.2894 um | -1.73% |
+| Prediction, exact overlap incl. wavefront curvature | 2.2498 um | 0.000% |
+
+Both sides agree (symmetry eta(+d) = eta(-d) within 1e-6, enforced). Within the
+10% threshold, so no investigation was triggered. The 0.339 relation is slightly
+optimistic because it ignores the curvature of the arriving wavefront.
+
+### Tolerance against gap
+
+| Gap (um) | eta0 | L0 (dB) | d_1dB measured (um) | Exact | 0.339 relation | vs 0.339 | Absolute 1 dB (um) |
+|---|---|---|---|---|---|---|---|
+| 0 | 1.0000 | 0.000 | 2.2073 | 2.2073 | 2.2053 | +0.09% | 2.207 |
+| 5 | 0.9976 | 0.011 | 2.2100 | 2.2100 | 2.2107 | -0.03% | 2.198 |
+| 10 | 0.9904 | 0.042 | 2.2180 | 2.2180 | 2.2266 | -0.39% | 2.171 |
+| 20 | 0.9626 | 0.165 | 2.2498 | 2.2498 | 2.2894 | -1.73% | 2.055 |
+| 50 | 0.8047 | 0.944 | 2.4607 | 2.4607 | 2.6878 | -8.45% | 0.584 |
+| 100 | 0.5074 | 2.947 | 3.0988 | 3.0988 | 3.7824 | **-18.07%** | none (L0 > 1 dB) |
+
+"Absolute 1 dB" is the decenter at which total loss reaches 1.000 dB.
+
+**The 100 um disagreement with the 0.339 relation (-18%) was investigated, not
+adjusted.** It is explained in full by wavefront curvature. The 0.339 relation
+assumes both modes have flat phase. By 100 um the beam is past its Rayleigh
+range (51 um) and strongly curved (R = 126 um). Including the curvature term in
+the overlap reproduces Zemax to better than 1e-4 um at every gap. The simple
+relation is valid only for gaps well inside z_R.
+
+**Interpretation.** Measured relative to its own peak, the A0 lateral tolerance
+depends only *weakly* on gap: 2.21 to 3.10 um over 0 to 100 um. The strong gap
+dependence is in the **loss**: eta0 falls from 1.00 to 0.51. A larger gap
+"buys" tolerance only by first spending loss. On the absolute convention, the
+1-dB window collapses from 2.2 um to 0.58 um at 50 um and does not exist at
+100 um. Reporting only the relative number would make a large gap look
+better than it is.
+
+### Agreement level, and what it does and does not show
+
+POP agrees with the exact Gaussian overlap to about 1e-12 in eta at every gap,
+and grid doubling changes nothing (0.0000% at d = 0 and at d = tolerance, every
+gap). This is consistent with a correct grid calculation: the trapezoid rule on
+a well-sampled Gaussian converges exponentially. It confirms the *setup*
+(waist convention, decenter, gap, wavelength) is what we think it is. It does
+**not** exercise POP's numerical propagation in any demanding way, because A0
+contains no aperture, lens or aberration. That test starts with A1 and B.
+
+### POP propagator: a silent grid change found and fixed
+
+At gaps beyond the Rayleigh range, the default POP propagator **rescales its own
+grid**: the window went from the configured 0.08 mm to 0.67 mm at 80 um and
+0.84 mm at 100 um (1.64 um pixels). The report assertion caught this and
+stopped the first sweep. eta was unaffected (identical to 1e-12 with the
+alternative), but the configured window and the convergence test no longer
+described what POP was doing. **Fix:** surface 1 uses
+`UseAngularSpectrumPropagator = True` (in `run_config.json` →
+`surface_settings`, applied and read back by the script). The window then stays
+at 0.08 mm (>= 4x the largest beam radius, 10.2 um) at every gap. This is not
+tuning: the results are identical in both modes, and the change keeps the stated
+sampling true. The Stage 3 run used the default propagator; at 20 um the two
+give the same value.
+
+### Prop Report
+
+The API reports 0 POP messages at every gap. **By-eye check of the GUI Prop
+Report tab: pending.** Claude has no view of the OpticStudio screen, so this
+line is to be completed by the user.
