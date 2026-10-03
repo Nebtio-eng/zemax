@@ -141,6 +141,25 @@ that the remaining discrepancy is about the experiment's definitions or real
 hardware, not about the simulation. It is recorded as a limitation of the
 source material in `limitations.md`.
 
+### Status: closed as far as this model can close it (after Stage 9)
+
+Two independent attempts to close the lateral gap both reach the paper's lateral
+value, and both fail the same way:
+
+| Attempt | Lateral 1-dB | vs paper 7 um | Angular 1-dB | vs paper 0.6 deg | Source |
+|---|---|---|---|---|---|
+| B as built (630 um, 34 um fibre) | 8.140 um | +16.3% | 0.676 deg | +12.6% | Stage 7 |
+| B592: smaller beam (2021-paper pair) | 7.678 um | +9.7% | 0.717 deg | **+19.4%** | Stage 8 |
+| B with a 24 um receiver (candidate 1) | 7.040 um | **+0.6%** | 0.828 deg | **+38.0%** | Stage 9, `receiver_mfd/` |
+
+Lateral improves and angular worsens by the same factor each time: that is the
+lateral x angular invariant. Together with the paper's own pair sitting 24%
+below the theoretical floor of that product, the remaining discrepancy is
+attributed to the experiment's definitions or measurement geometry, not to a
+parameter this Gaussian model omits. No further parameter hunting is warranted.
+One structural hypothesis remains testable: candidate 2, the real (elliptical)
+grating beam, which is not a Gaussian-model parameter. Stage 8b tests it.
+
 ---
 
 ## 4. Headline claim
@@ -243,10 +262,10 @@ sensitivities). Ranking by one yardstick alone gives a misleading order.
 
 | Rank | Parameter | Sensitivity | Source |
 |---|---|---|---|
-| 1 | **Lens radius** (and its twin, wafer thickness: 10 um of thickness acts like 6.6 um of radius) | +/-10% radius costs 0.19 / 0.10 dB at a 20 um gap. 1 dB at -21.7% / +40.2%. At a 700 um gap the absolute window is **+1.4%** (6.7 um) on the large side | `radius_alone/` |
-| 2 | **Incidence angle** (grating emission angle in Si) | Optically benign once the fiber is re-pointed (0.033 dB at 6 deg), but the fiber must then be tilted 3.5x the incidence angle (21.5 deg at 6 deg). An un-re-pointed fiber passes 1 dB at 0.19 deg | `incidence/` |
+| 1 | **Lens radius** (and its twin, wafer thickness: 10 um of thickness acts like 6.6 um of radius) | +/-10% radius costs 0.19 / 0.10 dB at a 20 um gap. 1 dB at -21.7% / +40.2% (nearly symmetric in surface power, +28% / -29%; section 7.2). At a 700 um gap the absolute window is **+1.4%** (6.7 um) on the large side | `radius_alone/` |
+| 2 | **Incidence angle** (grating emission angle in Si) | Optically benign once the fiber is re-pointed (0.033 dB at 6 deg; 4th by loss alone, section 7.1), but ranked here by its system consequence: the fiber must be tilted 3.5x the incidence angle (21.5 deg at 6 deg), and an un-re-pointed fiber passes 1 dB at 0.19 deg | `incidence/` |
 | 3 | **Gap** | Negligible below 200 um (0.065 dB). The absolute lateral window falls from 8.1 to 2.6 um at 700 um | `gap/` |
-| 4 | **Aperture** | Threshold: none at or above 80 um diameter; 0.1 dB at 50.7 um (D = 3.0 w); 1 dB at 35.7 um (D = 2.1 w) | `aperture/` |
+| 4 | **Aperture** | Threshold: none at or above 80 um diameter (radius 2.4 w, not the 3 w rule of thumb); 0.1 dB at 50.7 um; 1 dB at 35.7 um (radius 1.05 w) | `aperture/` |
 | 5 | **Conic constant** | Negligible: |k| <= 10 changes loss by <= 0.0015 dB and lateral by <= 0.005 um. **A spherical lens is sufficient; no aspheric correction is needed** | `conic/` |
 | - | **Lens material** | Not a free parameter (monolithic silicon). A hypothetical +/-1% index moves lateral by +/-0.04 um | analytic, `validation.md` Stage 9 |
 
@@ -298,4 +317,102 @@ axis that any mismatch degrades and nothing in the design space converts into
 tolerance.
 
 The remaining questions (1-6, 9-11) will be answered against their wording in a
-later pass.
+later pass. The Stage 9 evidence behind Q7 and Q8 is set out in section 7.
+
+---
+
+## 7. Stage 9 — what each lens parameter does (configuration B)
+
+One parameter changed at a time from B. Data: `results/parameter_studies/`;
+method, convergence and full tables: `docs/validation.md`, Stage 9. All values
+numerically determined.
+
+### 7.1 Sensitivity ranking
+
+Ranked by how far each parameter moves loss or tolerance over its plausible
+range. "Design lever" = something you choose; "sensitivity" = something you must
+hold in manufacture.
+
+| Rank | Parameter | Kind | Measured effect | Prediction |
+|---|---|---|---|---|
+| 1 | Substrate thickness, ROC re-matched, receiver matched | design lever | 400 -> 1000 um: lateral 5.44 -> 12.61 um, angular 1.01 -> 0.44 deg, working distance 294 -> 1667 um, loss < 0.005 dB, product 0.0960 throughout | right |
+| 2 | Receiver MFD | design lever | 20 um: 1.15 dB / 6.67 um; 34 um: 0.0004 dB / 8.14 um; 48 um: 0.52 dB / 9.97 um. +/-10% costs 0.044 dB | right, to 2 dp |
+| 3 | Lens ROC alone (630 um fixed) | sensitivity | 1 dB at **-21.7% / +40.2%** at a 20 um gap; +/-10% costs 0.19 / 0.10 dB. Absolute window **+1.4%** at a 700 um gap | magnitude right, **symmetry wrong** |
+| 4 | Incidence angle (in Si) | sensitivity | Residual 0.033 dB at 6 deg once the fibre is re-pointed; the fibre must tilt by the Snell angle (3.5x) | right on loss |
+| 5 | Gap | sensitivity | 0.011 dB at 100 um, 0.065 dB at 200 um; absolute lateral window 8.1 -> 2.6 um at 700 um | right |
+| 6 | Aperture diameter | sensitivity | Flat at >= 80 um (radius **2.4 w**); 0.11 dB at 50 um; 1 dB at 35.7 um | threshold right, **value too conservative** |
+| 7 | Conic constant | sensitivity | -10 to +10: loss 0.0002 -> 0.0019 dB, lateral 8.142 -> 8.135 um | right |
+| 8 | Lens material | not free | Monolithic Si; a hypothetical +/-1% index moves lateral by +/-0.04 um | - |
+
+Incidence angle is optically 4th, but it carries a system cost the ranking by
+loss hides: the fibre must be tilted by 3.5x the incidence angle, and an
+un-re-pointed fibre passes 1 dB at only 0.19 deg (Q7 answer below).
+
+### 7.2 Why each trend looks the way it does
+
+- **Thickness (ROC re-matched).** A thicker wafer gives the beam more distance to
+  spread before the lens collimates it, so the beam leaving the chip is wider.
+  A wider matched beam forgives more sideways offset (lateral proportional to
+  w), forgives less tilt (angular proportional to 1/w), and stays collimated
+  over a longer distance (longitudinal proportional to w^2). Lateral x angular
+  cannot change: 0.0960 at every thickness. With a *fixed* 34 um receiver the
+  same sweep also adds size-mismatch loss away from 630 um (0.70 dB at 400 um,
+  0.80 dB at 1000 um) and lifts the product to 0.104-0.105.
+- **Receiver MFD.** The fibre mode is the target the beam must land on. A bigger
+  target forgives more offset; a smaller one forgives more tilt. Any size
+  mismatch costs loss as 4 w1^2 w2^2 / (w1^2 + w2^2)^2, which is flat at the
+  match and rises on both sides (hence 0.044 dB for +/-10%).
+- **ROC alone: why asymmetric.** With the substrate fixed, the wrong ROC leaves
+  the beam converging (ROC too small: lens too strong) or diverging (ROC too
+  large). The two errors are not mirror images. Surface power goes as 1/R, so
+  -21.7% of radius is +28% of power, while +40.2% of radius is only -29% of
+  power: in *power* the 1-dB window is nearly symmetric (+28% / -29%), and the
+  asymmetry is an artefact of measuring a 1/R quantity in R. A too-strong lens
+  also pulls the waist out to several hundred microns, so it *lengthens* the
+  working distance (966 um at 420 um ROC) while a too-weak lens shortens it
+  (293 um at 700 um). This is the origin of Stage 10's one-sided trade.
+- **Gap.** B's beam is collimated with a ~686 um Rayleigh range, so nothing
+  changes until the gap becomes a sizeable fraction of that. At 700 um the beam
+  has grown and curved enough that B starts at 0.92 dB, and the absolute window
+  collapses.
+- **Aperture: a threshold, not a slope.** A Gaussian carries almost no power
+  beyond about 2w. An aperture is invisible until it cuts into the beam, then
+  removes power (S falls) *and* distorts the mode (T falls) together:
+  0.002 dB at 70 um, 0.11 dB at 50 um, 1.1 dB at 35 um, 6 dB at 20 um. The
+  truncated-Gaussian overlap formula predicted every point within 0.015 dB.
+- **Conic.** The beam (radius 17 um) uses only a small cap of a 480 um-radius
+  lens. Over that cap a conic changes the surface height by about k x 0.0015 um
+  at twice the beam radius, about lambda/346 of path error per unit k. Negative
+  k very slightly helps (0.0002 dB at k = -10) by trimming the sphere's residual
+  aberration.
+- **Incidence.** Off-axis use of a sphere adds coma and astigmatism, visible as a
+  slight left-right asymmetry in the lateral scan, but at 0.033 dB at 6 deg it
+  is negligible. The large effect is geometric: Snell refraction from silicon
+  (n = 3.5) multiplies the angle by about 3.5 on exit.
+
+### 7.3 Predictions: where they were right and wrong
+
+Right: the thickness and receiver trends (to 2 dp), the conic null, the gap
+behaviour, the incidence penalty, and the existence of an aperture threshold.
+Every Gaussian-physics point agreed with its ABCD prediction to within
+0.025 dB.
+
+Three corrections:
+
+1. **The lens ROC tolerance is asymmetric: 1 dB at -21.7% / +40.2%**, not a
+   symmetric ~30%. The asymmetry comes from measuring a 1/R quantity in R; in
+   surface power the window is nearly symmetric (+28% / -29%).
+2. **The aperture threshold sits at 2.4x the beam radius** (flat above 80 um
+   diameter, w = 16.9 um), **not the 3x rule of thumb** (102 um) quoted
+   beforehand. 3x is safe but over-conservative. The 1-dB point is at 1.05x the
+   beam radius (35.7 um diameter).
+3. **The conic constant does nothing**, and that is a manufacturing
+   recommendation, not a dull result: **a spherical lens is optically
+   sufficient; no aspheric correction is required.** Lens-process effort should
+   go into ROC control (rank 3), not surface shape.
+
+One statement in CLAUDE.md needs qualifying: the invariant product "never falls
+below 0.0960". It did, by 0.2%, in the aperture sweep (0.0958 at 50-60 um
+diameter). 0.0960 is the floor for Gaussian-to-Gaussian coupling; a slightly
+truncated beam is no longer Gaussian, so that floor no longer strictly binds it.
+As a mismatch meter for Gaussian configurations the rule stands.

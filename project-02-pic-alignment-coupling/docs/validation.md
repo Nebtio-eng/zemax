@@ -588,3 +588,24 @@ and flat: thickness with matched fiber, conic, re-pointed incidence, gap
 20 um), radius error (0.117 at 300 um), thickness with a fixed fiber (0.105 at
 1000 um), aperture truncation (0.132 at 20 um). Every rise coincides with
 nominal loss, which confirms the diagnostic reading.
+
+### Stage 9 narrative: corrections to the predictions
+
+Full discussion in `docs/results.md` section 7. In brief:
+
+1. **ROC tolerance is asymmetric:** 1 dB at -21.7% / +40.2% of radius (predicted
+   symmetric, about 30%). In surface power (proportional to 1/R) it is nearly
+   symmetric, +28% / -29%.
+2. **Aperture threshold at 2.4x the beam radius** (flat above 80 um diameter),
+   not the 3x quoted beforehand. The 1-dB point is at 1.05x the beam radius.
+3. **Conic constant: no effect.** A spherical lens is optically sufficient; no
+   aspheric correction is required.
+4. **Qualification of "the product never falls below 0.0960":** it fell to
+   0.0958 in the aperture sweep (50-60 um). The floor applies to
+   Gaussian-to-Gaussian coupling, and a truncated beam is not Gaussian.
+
+**Paper discrepancy: closed as far as this model can close it.** B592 (smaller
+beam) and a 24 um receiver both reach the paper's lateral value (7.68 and
+7.04 um) while the angular discrepancy grows (+19.4% and +38.0%). That is the
+invariant, and the paper's own pair sits 24% below its floor. Only the
+elliptical-beam hypothesis (Stage 8b) remains as a structural test.

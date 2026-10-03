@@ -370,3 +370,70 @@ Falsifiable consequences to check at Stage 7/8:
 2. A1 and B lateral 1-dB tolerances similar (~8 um) despite that loss gap.
 3. B's advantage over A1 grows with gap, since A1's beam keeps diverging while
    B's does not.
+
+---
+
+## Stage 9 findings (2026-10-03) — read before Stage 10
+
+### Sensitivity ranking, measured
+
+| Rank | Parameter | Effect | Predicted? |
+|---|---|---|---|
+| 1 | Substrate thickness (ROC re-matched) | Sets beam width: lateral ∝ w, longitudinal ∝ w². 400→630 um gives lateral 5.44→8.13 um, working distance 294→681 um | yes |
+| 2 | Receiver MFD | 20 um: 1.15 dB / 6.67 um. 34 um: 0.0004 dB / 8.14 um. 48 um: 0.52 dB / 9.97 um | yes, to 2 dp |
+| 3 | Lens ROC alone | 1 dB at about **-21% / +42%** — **asymmetric** | magnitude yes, asymmetry NO |
+| 4 | Incidence angle | 0.033 dB at 6 deg off normal. Negligible | yes |
+| 5 | Gap | 0.011 dB at 100 um, 0.065 at 200 um | yes |
+| 6 | Aperture | Flat above ~80 um diameter (**2.4x** beam radius, not the 3x rule of thumb); 0.11 dB at 50 um | threshold yes, value too conservative |
+| 7 | Conic constant | **Nothing.** -10 to +10 moves loss 0.0002→0.0019 dB, lateral 8.142→8.135 um | yes |
+| 8 | Lens material | Not a free parameter (monolithic Si) | - |
+
+### Three findings that matter for Stage 10
+
+**1. A deliberately over-strong lens buys working distance.** Going *below* the
+collimating ROC trades loss for working distance; going *above* it is strictly
+worse on both counts. One-sided trade.
+
+| ROC | Loss | Working distance |
+|---|---|---|
+| 380 um | 0.91 dB | 966 um |
+| **420 um** | **0.30 dB** | **965 um** |
+| 450 um | 0.071 dB | 862 um |
+| 480 um (collimating) | 0.0004 dB | 713 um |
+| 510 um | 0.042 dB | 578 um |
+| 600 um | 0.51 dB | 366 um |
+
+**This is the first real Pareto point and it must appear on the Stage 10 front.**
+If the optimiser does not find the ROC < 480 branch, it has not searched properly.
+
+**2. The optimisation is two-dimensional, not eight.** From the ranking above,
+conic, aperture (above the cliff), gap, incidence angle and material are all
+flat. The only real freedoms are:
+
+- **Beam size** (substrate thickness + matched receiver MFD) — chooses *where on
+  the lateral/angular invariant curve* you sit. Cannot change the product.
+- **ROC relative to collimation** — chooses how much *loss* you pay for *working
+  distance*.
+
+Stage 10 should optimise over those two axes and state explicitly that the others
+were shown flat. A high-dimensional search would be dishonest about Stage 9.
+
+**3. The invariant product is a mismatch meter, confirmed across all 8 sweeps.**
+Flat at 0.09601 whenever the configuration stays matched (conic: all 7 points;
+gap: 0 to 200 um). Rises whenever it does not (receiver 20 um: 0.1096; ROC
+300 um: 0.1172). **Never falls below 0.0960.** Use it as a diagnostic in Stage 10:
+any Pareto point whose product exceeds 0.0960 is mismatched, and the amount of
+excess quantifies by how much.
+
+### The paper discrepancy is now closed as far as this model can close it
+
+A 24 um receiver MFD gives lateral 7.04 um — matching the paper's +/-7 um
+exactly — but its angular tolerance rises to 0.83 deg, now **+38%** off the
+paper's 0.6 deg (worse than B's +12.6%).
+
+So **two independent attempts** to close the lateral gap (B592's smaller beam,
+and a smaller receiver) both fail the same way: lateral improves, angular
+worsens. That is the invariant. Combined with the paper's own pair sitting 24%
+below the theoretical floor, the remaining discrepancy is attributable to the
+experiment's definitions or measurement geometry, **not** to anything this model
+omits. Do not keep hunting for a parameter that closes both.
