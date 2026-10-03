@@ -16,16 +16,10 @@ Projects involving laser beam delivery, diagnostic optics, imaging, spectroscopy
 
 ### Integrated Photonics
 
-- **Project 01 — LED Collimator & Uniform Illumination**  
-  Zemax NSC modeling of a baseline single-lens and extended two-lens LED illumination system, with Python/ZOS-API automation, detector analysis, and an architecture-level capture diagnostic.
-
-  [`Open project →`](integrated-photonics/project-01-led-collimator/)
-
-### Project index
-
 | Project | Description |
 | --- | --- |
-| [project-02-pic-alignment-coupling](project-02-pic-alignment-coupling/) | Alignment-tolerant fiber-to-PIC coupling using micro-optics, modelled in Zemax OpticStudio with Lumerical FDTD for the grating coupler. |
+| [Project 01 — LED collimator](project-01-integrated-photonics/project-01-led-collimator/) | Zemax NSC model of a single-lens and two-lens LED collimator, with ZOS-API automation and detector analysis. |
+| [Project 02 — PIC alignment coupling](project-02-pic-alignment-coupling/) | Alignment-tolerant fiber-to-PIC coupling using micro-optics, modelled in Zemax OpticStudio with Lumerical FDTD for the grating coupler. |
 
 ### Fusion Optics
 

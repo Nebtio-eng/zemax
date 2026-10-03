@@ -1,0 +1,16 @@
+Pin = getdata("Input_Monitor","power");
+P25 = getdata("Monitor_25um","power");
+P40 = getdata("Monitor_40um","power");
+Pout = getdata("Output_Monitor","power");
+
+?"Input power:";
+?Pin;
+
+?"25 um monitor power:";
+?P25;
+
+?"40 um monitor power:";
+?P40;
+
+?"Output power:";
+?Pout;
