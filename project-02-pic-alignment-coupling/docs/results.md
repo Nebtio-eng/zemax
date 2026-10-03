@@ -416,3 +416,115 @@ below 0.0960". It did, by 0.2%, in the aperture sweep (0.0958 at 50-60 um
 diameter). 0.0960 is the floor for Gaussian-to-Gaussian coupling; a slightly
 truncated beam is no longer Gaussian, so that floor no longer strictly binds it.
 As a mismatch meter for Gaussian configurations the rule stands.
+
+---
+
+## 8. Stage 10 — Pareto front and the passive-alignment design
+
+Script: `python/optimization.py`. Outputs: `results/optimization/`
+(`design_grid.csv`, `pareto_front.csv`, `run_config.json`, three plots). All
+values numerically determined (POP); every point was predicted first (ABCD +
+overlap; worst disagreement 0.010 dB in loss and 0.11 um in lateral tolerance).
+
+### 8.1 Why two dimensions
+
+Stage 9 showed conic, aperture (above its 80 um threshold), gap (below
+~200 um), incidence angle (once the fibre is re-pointed) and material to be
+flat. Searching them would add dimensions with no effect. The optimisation is
+over the only two real freedoms:
+
+- **Beam size**: substrate thickness t, with the receiver MFD matched (2 w(t))
+  and the ROC scaled with it. This chooses *where on the lateral/angular
+  invariant* the design sits.
+- **rho = ROC / collimating ROC**: below 1 the lens is slightly focusing, which
+  buys working distance at a loss.
+
+Grid: t = 400, 500, 630, 700, 786, 800, 900, 1000, 1200 um x rho = 0.80-1.05
+(54 designs) plus the two Stage 9 reference points. Objectives (absolute
+convention): minimum loss; maximum lateral, angular and longitudinal 1-dB and
+area A_1dB. The front uses epsilon-dominance (1% on tolerances, 0.01 dB on
+loss) so that differences below measurement significance do not keep a design
+alive. Robustness: worst loss under a +/-5% ROC error (5% is ASSUMED; no
+manufacturing tolerance is reported in the sources). Convergence at the three
+grid corners: worst change 0.0074%.
+
+### 8.2 Validation gate
+
+| Check | Result |
+|---|---|
+| Stage 9 point (630 um, ROC 420 um, 34 um fibre) reproduced | **0.2975 dB, 964.8 um** (Stage 9: 0.2975 dB, 964.8 um) |
+| Below-collimation branch on the front | **yes: 18 of 25 front designs have rho < 1** |
+| Above-collimation designs on the front | **none**: rho > 1 is dominated, as Stage 9 implied |
+
+**The specific Stage 9 point is itself dominated** once thickness is free, by
+t = 700 um, rho = 0.95: longer working distance (981 vs 864 um, absolute), at
+one eighth of the loss (0.037 vs 0.298 dB), with more lateral (8.75 vs
+6.57 um) and more angular tolerance (0.606 vs 0.59 deg). The branch is real;
+it is cheaper to use it on a thicker wafer than on the 630 um one.
+
+Working distance does not grow without limit as rho falls. It saturates or
+peaks at rho = 0.80-0.90 (630 um: 976 um, plateau over 0.80-0.85; 800 um:
+1557 um at 0.85; 1000 um: 2388 um at 0.90) and then falls, because the lens
+starts focusing the beam too tightly. Past the peak a design pays more loss for
+the same or *less* distance.
+
+### 8.3 The invariant across the front
+
+Every matched, collimated design sits on the floor: lateral x angular =
+0.09600-0.09601 um rad against the exact floor (ln10/10) lambda/pi =
+0.096015 um rad, i.e. -0.011% to -0.002%. That is within the 1e-4 precision of
+POP's tan(theta) tilt convention (`docs/zosapi_gotchas.md` #30). The focusing
+(rho < 1) front designs sit slightly above it: +0.003% to +0.22%, rising as rho
+falls. Their curvature mismatch is real but small. The largest excess on the
+whole grid is +10.3%, at a dominated rho = 0.80 design. Note:
+`design_grid.csv` column `product_excess_pct` was computed against the rounded
+0.0733 lambda (0.096023); the figures here use the exact floor.
+
+### 8.4 Engineering criterion: passive alignment
+
+Passively aligned fibre interfaces (registration features, alignment detents)
+are reported at about +/-10 um in all three axes, a few microns in the
+best-constrained direction (prompt; not yet in `literature/papers.md`). The
+criterion is therefore an **absolute** 1-dB lateral tolerance of at least
+10 um.
+
+| Design | t (um) | ROC (um) | Fibre MFD (um) | Loss (dB) | Lateral abs (um) | Angular abs (deg) | Working distance (um) | Worst loss, ROC +/-5% |
+|---|---|---|---|---|---|---|---|---|
+| A0 (top-side) | - | - | 9.2 | 0.165 | 2.06 | 2.23 | 32 (from 20 um) | - |
+| B (as built) | 630 | 480 | 34 | 0.0004 | 8.14 | 0.676 | 713 | 0.046 dB |
+| **Threshold design** | **786** | **590** | **41.7** | **0.0004** | **10.01** | **0.550** | **1042** | **0.057 dB** |
+| Predicted design | 800 | 600 | 42.4 | 0.0004 | 10.17 | 0.541 | 1078 | 0.058 dB |
+| Thick design | 1000 | 737 | 52.6 | 0.0002 | 12.61 | 0.436 | 1666 | 0.087 dB |
+| Thickest tested | 1200 | 876 | 62.8 | 0.0001 | 15.06 | 0.365 | 2386 | 0.129 dB |
+
+**Predictions tested.** 800 um, ~42 um MFD, ~600 um ROC: predicted ~10.2 um
+lateral, ~0 dB, ~1.1 mm working distance, ~0.54 deg. Measured 10.17 um,
+0.0004 dB, 1.078 mm, 0.541 deg: **confirmed**. 1000 um: predicted 12.6 um and
+0.44 deg; measured 12.61 um and 0.436 deg: **confirmed**.
+
+**A0 cannot be passively aligned** (2.06 um absolute, five times short).
+**B as built is close** (8.14 um). The threshold is reached at **786 um of
+silicon**, and every thicker design exceeds it.
+
+**What it costs**, in order of size:
+
+1. **Angular tolerance**: 0.676 -> 0.550 deg at the threshold (0.436 at
+   1000 um). The passive-alignment features must therefore also hold fibre
+   tilt to about +/-0.55 deg (+/-9.6 mrad). Whether a given scheme does is a
+   requirement to check, not something this model knows.
+2. **A larger-mode receiver**: 41.7 um MFD instead of 34 um, which must exist
+   as a thermally expanded core fibre (not verified here).
+3. **Tighter ROC control**: the worst loss for a +/-5% ROC error rises from
+   0.046 dB (B) to 0.057 dB (786 um) and 0.129 dB (1200 um). A longer working
+   distance amplifies de-collimation.
+4. **A thicker chip** (786 vs 630 um), and the same anti-reflection coating
+   requirement as B (Fresnel is not counted by POP).
+
+**Not a cost: loss.** Every collimated, matched design on the thickness axis
+is at <= 0.005 dB, so the lateral gain is not bought with efficiency.
+
+**Headline.** Passive alignment at +/-10 um is reachable by using a thicker
+wafer (>= 786 um, with ROC and fibre scaled to it). It is paid for entirely in
+angular tolerance (about -19% against B) and in receiver mode size, not in
+coupling loss. The invariant guarantees there is no design that improves
+lateral and angular tolerance together.

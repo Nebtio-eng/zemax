@@ -609,3 +609,27 @@ beam) and a 24 um receiver both reach the paper's lateral value (7.68 and
 7.04 um) while the angular discrepancy grows (+19.4% and +38.0%). That is the
 invariant, and the paper's own pair sits 24% below its floor. Only the
 elliptical-beam hypothesis (Stage 8b) remains as a structural test.
+
+---
+
+## Stage 10 — Pareto front (2026-10-03)
+
+Script: `python/optimization.py`; outputs in `results/optimization/`; synthesis
+in `docs/results.md` section 8.
+
+- Two free dimensions only (thickness with matched fibre and scaled ROC; ROC
+  relative to collimation). Conic, aperture, gap, incidence and material were
+  held at their Stage 9 flat values, stated explicitly in `run_config.json`.
+- 56 designs, each predicted first: worst disagreement 0.010 dB in loss and
+  0.11 um in absolute lateral tolerance.
+- Convergence at the grid corners (400/0.80, 1200/0.80, 1200/1.05): worst
+  0.0074%. POP window >= 4x the largest beam met at every point (asserted).
+- Gate passed: the Stage 9 ROC-420 point is reproduced exactly (0.2975 dB,
+  964.8 um). 18 of 25 front designs are below collimation; none above. The
+  Stage 9 point itself is dominated by 700 um / rho 0.95.
+- Matched collimated designs: product 0.09600-0.09601 um rad against the exact
+  floor 0.096015 (-0.011% to -0.002%).
+- Predictions confirmed: 800 um -> 10.17 um / 0.541 deg / 1078 um / 0.0004 dB;
+  1000 um -> 12.61 um / 0.436 deg.
+- Passive alignment (absolute lateral >= 10 um) first reached at 786 um:
+  10.005 um, 0.550 deg, 1042 um, 0.0004 dB.
