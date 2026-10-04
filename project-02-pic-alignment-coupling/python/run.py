@@ -5,9 +5,10 @@
     python run.py 6            # A0 X-Y tolerance map                 -> results/tolerance_maps/
     python run.py 7            # build A1 and B, all 1-D sweeps        -> results/coupling_curves/
     python run.py 8            # A0 angular/longitudinal, B592, A1/B maps
+    python run.py 8b           # FDTD grating beam in B (first: python fdtd_source.py, Lumerical) -> results/fdtd/
     python run.py 9            # parameter study on B                  -> results/parameter_studies/
     python run.py 10           # Pareto front                          -> results/optimization/
-    python run.py all          # 3, 5, 6, 7, 8, 9, 10 in order
+    python run.py all          # 3, 5, 6, 7, 8, 9, 10 in order (8b is separate: it needs Lumerical)
     add --mode extension to drive an open OpticStudio (Interactive Extension armed);
     the default is a headless standalone instance (never run two at once).
 
@@ -73,6 +74,9 @@ def stage(name, app, zos):
             T.run_map(app, zos, C.ROOT / "zemax" / "microlens" / cid / "run_config.json", tag=cid, ref_radius_um=ref,
                       half=12, step=1.0, n_angles=16, r_max=12, r_step=0.5)
         return r
+    if name == "8b":
+        import fdtd_coupling as FC
+        return FC.run_all(app, zos, "grating_20p")
     if name == "9":
         import parameter_study as P
         return P.run_all(app, zos)
@@ -84,7 +88,7 @@ def stage(name, app, zos):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("stage", choices=("3", "5", "6", "7", "8", "9", "10", "all"))
+    ap.add_argument("stage", choices=("3", "5", "6", "7", "8", "8b", "9", "10", "all"))
     ap.add_argument("--mode", choices=("standalone", "extension"), default="standalone")
     args = ap.parse_args()
     zos = C.load_zosapi()

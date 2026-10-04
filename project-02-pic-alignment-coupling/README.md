@@ -4,10 +4,12 @@ Master's project, Optical Technologies. System-level optical modelling of a
 fiber-to-photonic-integrated-circuit coupling interface in Ansys Zemax
 OpticStudio, with Lumerical FDTD used for the grating coupler.
 
-**Status:** Zemax phase complete through Stage 11 (baseline, three
-architectures, parameter study, Pareto front, consolidated code). Stage 8b
-(Lumerical FDTD source) is next. Results: [`docs/results.md`](docs/results.md);
-stage-by-stage record: [`docs/validation.md`](docs/validation.md).
+**Status:** Stages 1-11 and 8b complete: baseline, three architectures,
+parameter study, Pareto front, consolidated code, and a 3-D Lumerical FDTD
+grating beam as the source of the micro-lens model. Results:
+[`docs/results.md`](docs/results.md); stage-by-stage record and the
+reproduction of published results: [`docs/validation.md`](docs/validation.md).
+Not yet written: brief questions 1-6, 9, 10 and the final report.
 
 ---
 
@@ -78,7 +80,9 @@ modes of 1/e^2 intensity radius `w`:
 These reproduce the primary paper's three measured tolerances to within roughly
 20%. The product `d x theta = 0.0733 lambda / n` is independent of beam size —
 beam expansion trades positional tolerance against angular tolerance at a fixed
-exchange rate.
+exchange rate. This invariant is established theory (Joyce & DeLoach 1984;
+Gradkowski & O'Brien 2024); the project confirms it numerically, including its
+efficiency form `0.0733 lambda / (n sqrt(eta_0))` for mismatched modes.
 
 ## Validation standard
 
@@ -89,40 +93,52 @@ what was *numerically determined* here.
 
 ## Current results (numerically determined, 1310 nm, 4.6 um source waist)
 
-| | A0 top-side | A1 backside, flat | B backside + lens | B paper (measured) |
-|---|---|---|---|---|
-| Nominal loss | 0.165 dB | 6.26 dB | 0.0004 dB | - |
-| Lateral 1-dB (rel / abs) | 2.25 / 2.06 um | 6.19 um / none | 8.14 / 8.14 um | +/-7 um |
-| Angular 1-dB | 2.45 deg | 1.32 deg / none | 0.676 deg | +/-0.6 deg |
-| Longitudinal 1-dB | 52 um | 249 um / none | ~700 um | 700 um |
-| 2-D area A_1dB (abs) | 13.3 um^2 | 0 | 208 um^2 | - |
+| | A0 top-side | A1 backside, flat | B backside + lens | B_fdtd (FDTD grating beam) | Paper (measured) |
+|---|---|---|---|---|---|
+| Nominal loss | 0.165 dB | 6.26 dB | 0.0004 dB | 1.20 dB | - |
+| Lateral 1-dB (rel / abs) | 2.25 / 2.06 um | 6.19 um / none | 8.14 / 8.14 um | X 8.91, Y 8.54 / none | X +/-7, Y +/-9 um |
+| Angular 1-dB | 2.45 deg | 1.32 deg / none | 0.676 deg | 0.63 / 0.64 deg | +/-0.6 deg |
+| Longitudinal 1-dB | 52 um | 249 um / none | 713 um | 663 um | 700 um (JSTQE); 0.2 dB over 300 um (2021) |
+| 2-D area A_1dB | 13.3 um^2 (abs) | 0 (abs) | 208 um^2 (abs) | 239 um^2 (rel) | - |
+
+"rel" is measured down from the coupling peak, "abs" down from 0 dB. B_fdtd
+has no absolute 1-dB window: its best case is already 1.20 dB.
 
 - The lens converts positional into angular tolerance at a fixed exchange rate:
-  lateral x angular = 0.0960 um rad for every matched design. Longitudinal is
-  the only net gain.
+  lateral x angular = 0.0960 um rad for every matched design (the
+  Joyce-DeLoach invariant, confirmed numerically). Longitudinal is the only
+  net gain.
 - The substrate supplies the beam width; the lens makes it usable by
   flattening the phase. Without it (A1) there is no 1-dB window at all.
 - A spherical lens is optically sufficient; the conic constant has no effect.
-  The lens ROC is the critical manufacturing tolerance (1 dB at -21.7% / +40.2%).
+  The lens ROC is the critical manufacturing tolerance: 1 dB at
+  -21.7% / +40.2%, an independent reproduction of Mangal et al. 2021, Fig. 4
+  (-22.7% / +40.9%).
 - Passive alignment (+/-10 um lateral) is reached at >= 786 um of silicon with
   the ROC and fibre scaled to it, paid for in angular tolerance (0.55 deg),
   not in loss.
-- Excluded from every number: grating directionality and Fresnel reflection
-  (an uncoated Si-air face would cost 1.6 dB). See
-  [`docs/limitations.md`](docs/limitations.md).
+- With the real (FDTD) grating beam, **1.04 of the 1.20 dB is the non-Gaussian
+  emission profile** and 0.16 dB its elliptical core; tilt and walk-off cost
+  nothing. This agrees with the paper's ~1 dB attribution. The grating, not the
+  lens, then limits efficiency; an apodized grating is the next design.
+- Published results reproduced, with differences reported:
+  [`docs/validation.md`](docs/validation.md), "Reproduction of published
+  results".
 
 ## Repository layout
 
 ```
 literature/   paper screening and extracted parameters (with provenance)
 zemax/        OpticStudio models + run_config.json per model
-              baseline/ (A0)  microlens/ (A1, B, B592, B_incidence)  glasscat/ (SILICON_1310)
+              baseline/ (A0)  microlens/ (A1, B, B592, B_incidence, B_fdtd)  glasscat/ (SILICON_1310)
 python/       analytic.py          independent Gaussian model (never imports the Zemax path)
               coupling_analysis.py OpticStudio session, verified POP settings, convergence test
               alignment_sweep.py   Stages 3/5/7/8 sweeps     tolerance_map.py  2-D maps
               parameter_study.py   Stage 9                   optimization.py   Stage 10
+              fdtd_source.py       Stage 8b, Lumerical: 3-D grating FDTD -> .zbf beam file
+              fdtd_coupling.py     Stage 8b, OpticStudio: .zbf as the POP source of B + predictor
               run.py               single entry point        test_validated.py regression tests
-results/      coupling_curves/ tolerance_maps/ parameter_studies/ optimization/
+results/      coupling_curves/ tolerance_maps/ parameter_studies/ optimization/ fdtd/
 docs/         methodology, validation, results, limitations, brief-questions,
               zosapi_gotchas (every API pitfall met in this project)
 ```
@@ -145,7 +161,14 @@ cd python
 set ZEMAX_MODE=standalone
 ..\.venv\Scripts\python test_validated.py                 # + null test, A0 0.962617754, B 8.140 um, invariant
 ..\.venv\Scripts\python run.py 7                          # any stage: 3 5 6 7 8 9 10, or all
+..\.venv\Scripts\python fdtd_source.py                    # Stage 8b step 1, Lumerical (~1 h): writes the .zbf
+..\.venv\Scripts\python run.py 8b                         # Stage 8b step 2, OpticStudio
 ```
+
+Large or regenerable files are not committed: Lumerical `.fsp` projects,
+`.zbf` beam files (written to `Documents\Zemax\POP\BEAMFILES`), `.npy` field
+arrays and `*.log` (including `results/progress.log`). Regenerate them with
+the commands above.
 
 Every stage reads its settings from a `run_config.json` (models, POP tokens,
 surface settings, sweep ranges) and writes one beside its results. The binary
@@ -156,11 +179,23 @@ Extension armed. Runs append to `results/progress.log`.
 
 ## Limitations
 
-Zemax POP uses scalar diffraction theory and does not model grating period, etch
-depth, directionality, Bloch modes or silicon waveguide modes. The grating is
-represented by its equivalent Gaussian output; electromagnetic accuracy at the
-grating is addressed separately in Lumerical FDTD. No claim of PIC-level
-electromagnetic accuracy is made from the Zemax model alone.
+Full list: [`docs/limitations.md`](docs/limitations.md). The main ones:
+
+- **No Fresnel reflection.** POP's system efficiency excludes it (S = 1.000
+  everywhere). An uncoated Si-air exit face costs about 1.6 dB at normal
+  incidence; the paper expected 1.85 dB and recovered 2 dB with a coating.
+- **No coating is modelled.** Every loss figure assumes an ideal
+  anti-reflection-coated exit face.
+- **No grating directionality** (upward/downward split) and no waveguide or
+  taper loss: absolute loss is optimistic by construction.
+- **Scalar diffraction.** Zemax POP does not model grating period, etch depth,
+  Bloch modes or polarisation at sub-wavelength scale. Stages 3-10 use an
+  equivalent Gaussian source; Stage 8b replaces it with a 3-D FDTD field of an
+  **ASSUMED** uniform grating (the paper does not publish its grating), so the
+  FDTD results are representative, not a model of the paper's device. POP also
+  reads that file beam about 0.05 dB high (tolerances unaffected).
+
+No claim of PIC-level electromagnetic accuracy is made.
 
 ## References
 
@@ -170,3 +205,4 @@ electromagnetic accuracy is made from the Zemax model alone.
 4. Gradkowski & O'Brien, *Appl. Opt.* **64**(14), 4014 (2025). doi:10.1364/AO.557834
 5. Scarcella et al., *IEEE Photon. Technol. Lett.* **29**(22), 1943 (2017). doi:10.1109/LPT.2017.2757082
 6. Ansys Optics, "Integrated microlens and grating coupler for photonic integrated circuits," application gallery.
+7. W. B. Joyce and B. C. DeLoach, "Alignment of Gaussian beams," *Appl. Opt.* **23**(23), 4187–4196 (1984).
