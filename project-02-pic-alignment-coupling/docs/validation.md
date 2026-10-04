@@ -817,3 +817,134 @@ the assumptions, not a disagreement with physics. Not tuned.
 Effect on the paper discrepancy: against the paper's per-axis values the real
 beam moves Y to within 5% and angular to within 4.5-7.3% (from +12.6%), but
 moves X further away (+27%). It does not close the lateral gap on X.
+
+---
+
+## Reproduction of published results (2026-10-04)
+
+Each published number set against this project's model at the paper's own
+conditions where they are stated. Differences are reported, not tuned away.
+"Ours" is POP where a POP run exists, otherwise the Gaussian ABCD + overlap
+model, which reproduces POP to <= 0.03% for Gaussian configurations (Stages
+7-10). Paper values are **experimentally demonstrated** unless marked as the
+paper's own simulation. Sources: Mangal et al., Opt. Express 29, 7601 (2021)
+(read from the PDF); Joyce & DeLoach, Appl. Opt. 23, 4187 (1984);
+Gradkowski & O'Brien, Appl. Opt. 63, 8407 (2024).
+
+### 1. Tolerance formulas
+
+| Published statement | Published | Ours (analytic formulas, `methodology.md`) | Difference |
+|---|---|---|---|
+| Lateral 1-dB coefficient, matched modes (Gradkowski 2024) | 0.48 w | 0.4799 w | - |
+| SMF-matched grating, 9.2 um MFD (2021, Sect. 1, citing [24]) | "at best +/-2.5 um" | 2.21 um | -12% |
+| Lateral gain, 32 vs 9.2 um MFD (2021, Fig. 1) | "3x" | 3.48x | linear in w: 32/9.2 |
+| MFD 25 -> 50 um: lateral gain (2021, Sect. 1) | +/-6 um | +6.00 um | 0% |
+| MFD 25 -> 50 um: angular loss (2021, Sect. 1) | +/-0.5 deg | -0.46 deg | -8% |
+| Ideal tolerances for the 32 um beam vs measured (2021, Fig. 10) | +/-7 um, +/-0.6 deg | 7.68 um, 0.72 deg | measured = 91% / 84% of ideal |
+
+### 2. Unequal modes: the receiver sweep against the closed forms
+
+For flat Gaussian modes of radii w1 (beam) and w2 (fibre), with a = ln10/10
+and eta_0 = [2 w1 w2 / (w1^2 + w2^2)]^2 the size-mismatch efficiency:
+
+```
+lateral:   d_1dB  = sqrt(a (w1^2 + w2^2) / 2)              = 0.339 sqrt(w1^2 + w2^2)
+angular:   th_1dB = (lambda/pi) sqrt(a (w1^2 + w2^2) / 2) / (w1 w2)
+product:   d_1dB th_1dB = (a lambda/pi) (w1^2 + w2^2) / (2 w1 w2) = 0.0960 um rad / sqrt(eta_0)
+```
+
+This is Joyce & DeLoach's efficiency-tolerance trade in 1-dB form: a mismatch
+widens the relative windows only by losing efficiency. The brief identifies
+these with Gradkowski & O'Brien's Eqs. 9 and 19. **The equation numbers could
+not be checked here** (the paper is not in the repository and the publisher
+page did not render); the relations tested are the ones above, which
+`extracted_parameters.csv` row 41 already records as DERIVED.
+
+POP, Stage 9 receiver sweep (B, beam radius w1 = 16.92 um at the fibre;
+`results/parameter_studies/receiver_mfd/receiver_mfd.csv`):
+
+| Receiver MFD | T (= eta_0) | Lateral POP / formula (um) | Angular POP / formula (deg) | Product POP | 0.096015 / sqrt(T) | Diff. |
+|---|---|---|---|---|---|---|
+| 20 um | 0.7671 | 6.671 / 6.669 | 0.9415 / 0.9417 | **0.10961** | **0.10963** | -0.012% |
+| 34 um | 0.9999 | 8.140 / 8.138 | 0.6758 / 0.6760 | 0.09601 | 0.09602 | -0.009% |
+| 48 um | 0.8873 | 9.965 / 9.964 | 0.5860 / 0.5862 | 0.10192 | 0.10193 | -0.007% |
+
+All nine receiver points agree to <= 0.03% (lateral, angular) and <= 0.012%
+(product). **The 0.1096 for the 20 um receiver is exactly 0.0960/sqrt(T):**
+the smaller fibre mode costs 1.15 dB of efficiency (T = 0.767), and the
+relative 1-dB windows, measured down from that lower peak, widen by
+1/sqrt(T) = 1.142 in product. It is not a deviation from the invariant; it is
+the invariant's efficiency term.
+
+### 3. Lens radius of curvature (2021, Fig. 4 and Sect. 2(v))
+
+The paper's Fig. 4 is itself an OpticStudio simulation (600 um Si, nominal ROC
+440 um, fibre 100 um from the lens vertex). Our ABCD + overlap model at the same
+conditions (theta_Si 4.06 deg, w0 4.6 um, 32 um MFD fibre, ASSUMED to be the
+paper's 32 +/- 2 um TEC):
+
+| | Published (simulated) | Ours, paper's conditions | Ours, B (630 um, 20 um gap) |
+|---|---|---|---|
+| ROC giving best coupling | 440 um (design) | 446 um | 483 um (B uses 480) |
+| 1-dB window, low side | -100 um (-22.7%) | **-94 um** (-21.3%) | -104 um (-21.6%); POP -21.7% |
+| 1-dB window, high side | +180 um (+40.9%) | **+186 um** (+42.2%) | +194 um (+40.4%); POP +40.2% |
+
+Agreement within 6 um on both sides. Sect. 2(v) states the one-sided rule
+(larger ROC: divergent, no benefit; smaller ROC: convergent, usable for a
+longer working distance). Stages 9-10 reproduce it independently and quantify
+it; the claim itself is the paper's.
+
+### 4. Longitudinal tolerance (2021, Fig. 11)
+
+| Published (measured) | Ours |
+|---|---|
+| 0.2 dB drop over 300 um, either fibre retracted alone (one interface) | **0.16 dB** at a 300 um gap (POP, B); 0.25 dB analytic for the paper's 32 um beam |
+| 1 dB at 400 um, both fibres retracted together (two interfaces) | **0.60 dB** (2 x 0.30 dB, POP, B); 0.88 dB analytic for a 32 um beam |
+| 1-dB longitudinal 700 um (JSTQE companion paper) | 713 um from the 20 um nominal (B) |
+
+The single-interface point agrees to 0.04 dB (B) or 0.05 dB (32 um beam). The
+two-fibre point is lower in the model (0.60-0.88 vs 1 dB): the model has
+perfectly collimated, perfectly matched interfaces. The fabricated lens ROC
+(420 um, 4.5% below target, Sect. 4) does **not** explain it: by Stage 9 a
+slightly over-strong lens lengthens the working distance. Unexplained
+candidates: lens-to-grating placement error (the paper quotes a 0.5 dB penalty
+for +/-1-1.5 um), the non-Gaussian beam, and the additive two-interface
+reading of "both fibres retracted" used here.
+
+### 5. Table 1: beam diameter and collimating ROC against substrate thickness
+
+Published: Gaussian beam propagation in OpticStudio, w0 = 4.6 um,
+theta_Si = 4.06 deg, 1310 nm. Ours: the same Gaussian propagation over
+t / cos(theta_Si) in silicon (n = 3.5039) and the collimation condition
+ROC = (n - 1) R(z) / n.
+
+| Si thickness | Diameter, paper | Diameter, ours | Diff. | ROC, paper | ROC, ours | Diff. |
+|---|---|---|---|---|---|---|
+| 200 um | 13.4 | 13.9 | +3.5% | 205 | 256 | +24.9% |
+| 300 um | 16.9 | 18.1 | +7.0% | 245 | 290 | +18.4% |
+| 400 um | 21.7 | 22.7 | +4.6% | 310 | 343 | +10.6% |
+| 500 um | 26.2 | 27.5 | +5.0% | 370 | 403 | +9.0% |
+| 600 um | 31.0 | 32.5 | +4.7% | 440 | 467 | +6.2% |
+| 700 um | 36.3 | 37.5 | +3.2% | 515 | 534 | +3.6% |
+
+**Not reproduced to better than 3-7% in diameter and 4-25% in ROC.** The
+diameters are consistently ~5% smaller in the paper; matching them would need
+a Rayleigh range ~5% longer (e.g. n w0^2 5% larger), which neither the stated
+w0 nor silicon's index supplies. The ROC gap grows as the substrate thins,
+i.e. where the beam is still within a few Rayleigh ranges of its waist and
+the wavefront radius R(z) is most sensitive to the model. The paper notes its
+values hold "under the assumption of principal rays being orthogonal to the
+surface of the microlens", which may differ from the paraxial collimation
+condition used here. Note also that the two source papers are not on one
+curve: 600 um -> 440 um (2021) and 630 um -> 480 um (JSTQE); ours gives 467
+and 486 um. The JSTQE pair (used for B) agrees with ours to 1.2%; the 2021
+pair does not. Not tuned. The lens offset rule does reproduce:
+600 um x tan(4.06 deg) = 42.6 um against the paper's 43 um.
+
+### 6. Loss contributions
+
+| Published | Ours |
+|---|---|
+| Fresnel at the Si-air surface: 1.85 dB expected; 2 dB recovered by a 170 nm SiN AR coating (2021, Sect. 5; measured) | 1.61 dB at normal incidence for one uncoated face (not modelled in POP; S = 1.000) |
+| Remaining ~1 dB attributed to "mode-profile mismatch due to the exponentially decaying field profile from the grating" (2021, Sect. 5; attribution by elimination) | **1.04 dB** from the non-Gaussian profile (Stage 8b decomposition, ASSUMED uniform grating) |
+| 1-dB lateral +/-7 um along X, +/-9 um along Y (2021, Fig. 10) | B_fdtd: X 8.91, Y 8.54 um (axis order reversed; Stage 8b) |
