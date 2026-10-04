@@ -6,10 +6,21 @@ OpticStudio, with Lumerical FDTD used for the grating coupler.
 
 **Status:** Stages 1-11 and 8b complete: baseline, three architectures,
 parameter study, Pareto front, consolidated code, and a 3-D Lumerical FDTD
-grating beam as the source of the micro-lens model. Results:
-[`docs/results.md`](docs/results.md); stage-by-stage record and the
-reproduction of published results: [`docs/validation.md`](docs/validation.md).
-Not yet written: brief questions 1-6, 9, 10 and the final report.
+grating beam as the source of the micro-lens model. All eleven brief questions
+are answered in [`docs/results.md`](docs/results.md) section 6; stage-by-stage
+record and the reproduction of published results:
+[`docs/validation.md`](docs/validation.md). Final report: not yet written.
+
+## In plain words
+
+Light leaves a photonic chip through a spot about 9 um wide, so a fibre must
+be placed to within about 2 um, which needs slow, costly active alignment.
+The idea tested here: let the light spread out through the chip's silicon,
+then straighten it with a small lens etched into the back of the chip.
+Sideways placement becomes about 3.6 times easier (2.25 to 8.14 um), but tilt
+becomes exactly that much harder (2.45 to 0.68 degrees): the lens moves the
+difficulty from position to angle rather than removing it. Only the distance
+along the beam gets genuinely easier, about 14 times.
 
 ---
 
@@ -98,7 +109,7 @@ what was *numerically determined* here.
 | Nominal loss | 0.165 dB | 6.26 dB | 0.0004 dB | 1.20 dB | - |
 | Lateral 1-dB (rel / abs) | 2.25 / 2.06 um | 6.19 um / none | 8.14 / 8.14 um | X 8.91, Y 8.54 / none | X +/-7, Y +/-9 um |
 | Angular 1-dB | 2.45 deg | 1.32 deg / none | 0.676 deg | 0.63 / 0.64 deg | +/-0.6 deg |
-| Longitudinal 1-dB | 52 um | 249 um / none | 713 um | 663 um | 700 um (JSTQE); 0.2 dB over 300 um (2021) |
+| Longitudinal 1-dB, from best gap | 52 um | 249 um / none | 702 um | 663 um | 700 um (JSTQE); 0.2 dB over 300 um (2021) |
 | 2-D area A_1dB | 13.3 um^2 (abs) | 0 (abs) | 208 um^2 (abs) | 239 um^2 (rel) | - |
 
 "rel" is measured down from the coupling peak, "abs" down from 0 dB. B_fdtd
