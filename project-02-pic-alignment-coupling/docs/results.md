@@ -268,10 +268,84 @@ Two further corrections both go against B, and must be stated alongside it:
 
 ## 6. Brief, section 20: the eleven questions
 
-Questions as worded in `docs/brief-questions.md`. Questions 7 and 8 are answered
-here from the Stage 9 parameter study (`docs/validation.md`, Stage 9;
-data in `results/parameter_studies/`); question 11 from Stage 8b. The other
-eight are answered in a later pass.
+Questions as worded in `docs/brief-questions.md`. Each answer leads with one
+number, names the axis or condition, and points to the row it comes from.
+"Section 1" is the comparison table above; "rel" is measured down from the
+coupling peak, "abs" down from 0 dB. All values are **numerically determined**
+unless marked as the paper's (**experimentally demonstrated**).
+
+### Q1. What is the baseline fiber-to-PIC coupling loss?
+
+**0.165 dB** for A0 (conventional top-side, 9.2 um SMF) at the 20 um nominal
+air gap (section 1, row "Nominal loss"). It is entirely beam spreading across
+the gap: at zero gap A0 is 0.000 dB (Stage 5; section 5.2). This excludes
+grating directionality and Fresnel reflection, as every number in the project
+does (Q10).
+
+### Q2. How sensitive is the system to X/Y/Z misalignment?
+
+For A0, 1 dB of extra loss is reached at:
+
+- **X and Y: 2.250 um** lateral (rel; abs 2.055 um). The map is circular, so X
+  and Y are equal (section 1, rows "Lateral X" and "Lateral Y").
+- **Z: 51.6 um** of gap from the best position (section 1, row "Longitudinal
+  1-dB from best gap"); 36.3 um from the 20 um nominal.
+- **Tilt: 2.446 deg** (rel; abs 2.234 deg) (section 1, row "Angular").
+
+Lateral is the binding axis: about 2 um, the figure that forces active
+alignment in industry.
+
+### Q3. What is the baseline 1-dB alignment tolerance?
+
+**+/-2.25 um lateral** for A0 (rel; +/-2.06 um abs), i.e. a 1-dB area of
+**15.9 um^2** (rel; 13.3 um^2 abs) (section 1, rows "Lateral X 1-dB" and
+"2-D area A_1dB"). Angular +/-2.45 deg, longitudinal 52 um (Q2).
+
+### Q4. Does the micro-lens improve alignment tolerance?
+
+**Lateral: yes, 3.62x** (2.250 -> 8.140 um, A0 -> B, rel) (section 1, "Ratios").
+The answer depends on the axis:
+
+| Axis | A0 -> B | Verdict | Section 1 row |
+|---|---|---|---|
+| Lateral (X = Y) | 2.250 -> 8.140 um | **improves 3.62x** | Lateral X / Y 1-dB |
+| 2-D area | 15.90 -> 208.2 um^2 | **improves 13.1x** | 2-D area A_1dB |
+| Angular | 2.446 -> 0.676 deg | **degrades 3.62x** | Angular 1-dB |
+| Longitudinal (from best gap) | 51.6 -> 702 um | **improves 13.6x: the only net gain** | Longitudinal 1-dB from best gap |
+
+Lateral x angular stays at 0.0960 um rad for both (row "Lateral x angular"):
+the lens moves tolerance from position to angle at a fixed rate, the
+invariant of Joyce & DeLoach (1984) and Gradkowski & O'Brien (2024), which
+this project confirms numerically. Longitudinal is not bound by it (it scales
+with w^2), so it is the one axis with a net gain. Whether the exchange is
+worth it depends on whether the assembly holds angle better than position
+(section 5.1).
+
+### Q5. By how much?
+
+**3.62x in lateral tolerance** (2.25 -> 8.14 um), at a cost of **3.62x in
+angular** (2.45 -> 0.68 deg); **13.1x in area** and **13.6x in working
+distance** (section 1, "Ratios"). With the real FDTD grating beam (B_fdtd,
+Stage 8b) the lateral tolerance is X 8.91 / Y 8.54 um and angular
+0.63 / 0.64 deg (rel), and the 1-dB area 239.0 um^2, 14.8% larger than B's
+(`validation.md`, Stage 8b, "Predictions recorded before measuring, and
+results"). Scaling the design to 786 um of silicon reaches the +/-10 um
+passive-alignment criterion (10.01 um abs, 0.550 deg; section 8.4).
+
+### Q6. What coupling-loss penalty, if any, is introduced?
+
+Three numbers that must not be merged:
+
+| Case | Loss | What it includes | Source |
+|---|---|---|---|
+| B, ideal Gaussian source | **0.0004 dB** | the lens and gap only; no penalty against A0 (0.165 dB) | section 1, row "Nominal loss" |
+| B_fdtd, real (FDTD) grating beam, best fibre position | **1.20 dB** | 1.04 dB non-Gaussian profile + 0.16 dB elliptical core; walk-off 0.0004 dB | `validation.md` Stage 8b, decomposition rows (a), (a-i), (a-ii), (d); `results/fdtd/grating_20p_decomposition.json` |
+| Uncoated Si-air exit face (Fresnel) | **1.61 dB** at normal incidence | **not modelled** (POP S = 1.000); paper: 1.85 dB expected, 2 dB recovered by a 170 nm SiN coating | section 5.2; `limitations.md` |
+
+So the lens itself introduces no loss penalty. The penalty in a real device
+comes from the grating's emitted profile (numerically determined, for an
+ASSUMED uniform grating) and, unless the exit face is AR-coated, from Fresnel
+reflection (not modelled; experimentally demonstrated in the paper).
 
 ### Q7. Which lens parameters have the largest influence?
 
@@ -344,6 +418,70 @@ tolerance**, set by the beam size, at a fixed product. Efficiency is a separate
 axis that any mismatch degrades and nothing in the design space converts into
 tolerance.
 
+### Q9. Does the Zemax model reproduce the published behavior?
+
+**Partly. The trends and the lens design rules reproduce; the absolute lateral
+and angular tolerances do not: lateral +16.3% (8.140 vs +/-7 um along X),
+angular +12.6% (0.676 vs +/-0.6 deg)** (section 3 table, rows "Lateral 1-dB"
+and "Angular 1-dB"). Nothing was tuned to close any gap. Full comparison:
+`validation.md`, "Reproduction of published results".
+
+Where it matches:
+
+| Published | Ours | Reproduction section |
+|---|---|---|
+| ROC 1-dB window -100 / +180 um (Fig. 4, the paper's own simulation) | -94 / +186 um at the paper's conditions | 3 |
+| One-sided ROC rule (Sect. 2(v)) | reproduced and quantified (Stages 9-10) | 3 |
+| 0.2 dB over 300 um, one fibre retracted (Fig. 11) | 0.16 dB at 300 um (B, POP) | 4 |
+| 700 um 1-dB longitudinal (JSTQE) | 713 um from the 20 um nominal | 4 |
+| Lens offset 43 um = 600 tan(4.06 deg) | 42.6 um | 5 |
+| Fig. 1 scaling: +6 um lateral, -0.5 deg angular for 25 -> 50 um MFD | +6.00 um, -0.46 deg | 1 |
+| ~1 dB attributed to the grating's mode profile (Sect. 5) | 1.04 dB (Stage 8b decomposition) | 6 |
+
+Where it does **not** match:
+
+| Published | Ours | Reproduction section |
+|---|---|---|
+| Lateral +/-7 um (X), angular +/-0.6 deg (Fig. 10) | 8.14 um, 0.676 deg (B); the ideal for the paper's own 32 um beam is 7.68 um / 0.72 deg, so the measured pair is 91% / 84% of ideal and no beam size reaches both | 1; results section 3 |
+| Table 1 beam diameter and collimating ROC vs thickness | diameters +3% to +7%, ROC +4% to +25% (largest at thin substrates); the JSTQE 630/480 pair matches to 1.2%, the 2021 600/440 pair does not | 5 |
+| 1 dB at 400 um with both fibres retracted (Fig. 11) | 0.60 dB (2 x 0.30 dB, B); unexplained | 4 |
+| Lateral X +/-7 um narrower than Y +/-9 um (Fig. 10) | X 8.91 wider than Y 8.54 um (B_fdtd): axis order reversed, set by the ASSUMED grating etch and width | Stage 8b; 6 |
+
+The model also reproduces its own analytic predictions to 0.2% or better at
+every stage, so the disagreements sit between the idealised model and the
+experiment, not inside the model.
+
+### Q10. What limitations prevent us from claiming complete PIC-level electromagnetic accuracy?
+
+**The grating is not the paper's grating: all 9 grating parameters are
+ASSUMED** (`literature/extracted_parameters.csv` rows 42-50; the paper does not
+publish them). The full list is in `docs/limitations.md`; the ones that
+matter most:
+
+1. **Assumed grating.** Stage 8b's FDTD field comes from an ASSUMED uniform
+   20-period grating (etch, period, width, BOX, fill factor). Its 1.20 dB, its
+   X/Y order and its tolerances are representative of a uniform grating, not a
+   model of the paper's device. Stages 3-10 use an equivalent Gaussian source
+   with no grating physics at all.
+2. **Scalar diffraction.** Zemax POP is a scalar model: no grating period, etch
+   depth, Bloch modes, silicon waveguide modes or sub-wavelength
+   polarisation. Justified for the expanded beam (about 1.5 deg divergence),
+   but not at the grating itself, which is why FDTD supplies the field there.
+3. **No Fresnel reflection and no coating.** POP's system efficiency is 1.000
+   everywhere; an uncoated Si-air face costs 1.61 dB (paper: 1.85 dB expected,
+   2 dB recovered with a coating). No AR coating is modelled either.
+4. **No directionality.** Only the downward beam is propagated; the
+   upward/downward split, waveguide and taper losses are excluded, so absolute
+   loss is optimistic by construction.
+5. **A ~0.05 dB POP offset on the FDTD file beam.** POP reads the FDTD beam
+   0.04-0.06 dB more lossy than two independent models; the cause is not
+   identified for the lens case. Tolerances are unaffected (`validation.md`,
+   Stage 8b, "Known limit").
+
+**No PIC-level electromagnetic claim is made.** The project determines the
+free-space optics of the interface numerically; the electromagnetic behaviour
+of the grating enters only through one ASSUMED FDTD design.
+
 ### Q11. What design would be worth investigating using Lumerical/FDTD next?
 
 **Answered by doing it (Stage 8b, `docs/validation.md`), and the result names
@@ -385,8 +523,9 @@ therefore:
 The pipeline built for Stage 8b (`fdtd_source.py` -> .zbf -> B_fdtd ->
 predictor) evaluates any such grating without changes to the Zemax model.
 
-The remaining questions (1-6, 9-10) will be answered against their wording in a
-later pass. The Stage 9 evidence behind Q7 and Q8 is set out in section 7.
+All eleven questions are answered above. The Stage 9 evidence behind Q7 and
+Q8 is set out in section 7; the Stage 8b evidence behind Q5, Q6, Q10 and Q11
+in `validation.md`, Stage 8b.
 
 ---
 
