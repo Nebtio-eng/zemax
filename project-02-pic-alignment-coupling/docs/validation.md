@@ -127,8 +127,10 @@ device, so there is no paper number to compare A0 against. A0 is therefore
 checked against the analytic Gaussian-overlap relations (`methodology.md`
 section 5) and the general literature figure of roughly +/-2 um for conventional
 top-side coupling only. The comparison against the paper is deferred to Stage 8,
-where A1 and B can be set against the paper's measured +/-7 um, +/-0.6 deg and
-700 um.
+where A1 and B can be set against the paper's measured +/-7 um (X) / +/-9 um
+(Y) and +/-0.6 deg (Mangal 2021, Fig. 10), and the companion JSTQE paper's
+700 um 1-dB longitudinal tolerance. (The 2021 paper reports longitudinal as
+0.2 dB over 300 um with one fibre retracted, and 1 dB at 400 um with both.)
 
 ---
 
@@ -411,9 +413,10 @@ explanations, none tested yet:
 Longitudinal agrees with the paper to 0.3-1.9%.
 
 **Invariant check.** For B, lateral x angular = 8.140 um x 0.011795 rad =
-0.0960 um rad. The predicted invariant 0.0733 lambda/n = 0.0960 um rad (air).
-Confirmed numerically. For A1 the product is 0.142: the invariant holds only
-for flat-phase, matched modes, which A1 is not.
+0.0960 um rad, against 0.0733 lambda/n = 0.0960 um rad (air) for matched flat
+Gaussian modes (Joyce & DeLoach 1984; Gradkowski & O'Brien 2024). Confirmed
+numerically. For A1 the product is 0.142: the value 0.0960 applies to
+flat-phase, matched modes, which A1 is not.
 
 ### The revised Stage 2 hypothesis, tested
 
@@ -463,8 +466,9 @@ the < 0.5% rule at nominal, at 8 um lateral and at 0.6 deg. B592's POP pilot
 radius (15.999 um) matches ABCD to < 0.01%.
 
 **A0 invariant prediction (0.0911, 5% below ideal) did not hold.** A0 sits on the
-ideal 0.0960 um rad, as B does. The ideal is a minimum for matched flat modes;
-mismatch raises the product (A1: 0.142), so curvature cannot pull A0 below it.
+ideal 0.0960 um rad, as B does. 0.0960 is the value for matched flat modes;
+mismatch raises the relative product while costing efficiency (A1: 0.142), so
+curvature cannot pull A0 below it.
 Explained in `results.md` section 2.
 
 **B592 (2021-paper pair: 592 um Si, R = -461 um, 32 um MFD receiver)** is a
@@ -536,7 +540,9 @@ of longitudinal tolerance.
   paper.
 - **Lens radius alone, 20 um gap (partly confirmed: asymmetric).** 1 dB is
   reached at **-21.7% (376 um) or +40.2% (673 um)**, not a symmetric ~30%. A
-  lens that is too strongly curved over-focuses and fails sooner. Radius error
+  lens that is too strongly curved over-focuses and fails sooner. (Published
+  already: Mangal et al. 2021, Fig. 4, -100 / +180 um about 440 um, i.e.
+  -22.7% / +40.9%; this is an independent reproduction.) Radius error
   also moves the working distance strongly (longitudinal 1-dB: 966 um at
   420 um, 293 um at 700 um).
 - **Lens radius alone, 700 um gap (confirmed, on the absolute convention).**
@@ -580,14 +586,16 @@ of longitudinal tolerance.
   0.66 at 630 um, so a wafer-thickness error of 10 um acts like a lens-radius
   error of 6.6 um.
 
-### Invariant as a diagnostic
+### The lateral x angular product across the sweeps
 
 The product stayed at 0.0960 um rad whenever beam and receiver stayed matched
 and flat: thickness with matched fiber, conic, re-pointed incidence, gap
 < 200 um. It rose whenever a mismatch was introduced: receiver MFD (0.110 at
 20 um), radius error (0.117 at 300 um), thickness with a fixed fiber (0.105 at
 1000 um), aperture truncation (0.132 at 20 um). Every rise coincides with
-nominal loss, which confirms the diagnostic reading.
+nominal loss. For a pure size mismatch the rise is exactly 1/sqrt(eta_0)
+(Joyce & DeLoach's efficiency-tolerance trade; checked to 0.012% in
+"Reproduction of published results").
 
 ### Stage 9 narrative: corrections to the predictions
 
@@ -595,20 +603,23 @@ Full discussion in `docs/results.md` section 7. In brief:
 
 1. **ROC tolerance is asymmetric:** 1 dB at -21.7% / +40.2% of radius (predicted
    symmetric, about 30%). In surface power (proportional to 1/R) it is nearly
-   symmetric, +28% / -29%.
+   symmetric, +28% / -29%. Reported before us by Mangal et al. (2021, Fig. 4
+   and section 2(v)).
 2. **Aperture threshold at 2.4x the beam radius** (flat above 80 um diameter),
    not the 3x quoted beforehand. The 1-dB point is at 1.05x the beam radius.
 3. **Conic constant: no effect.** A spherical lens is optically sufficient; no
    aspheric correction is required.
 4. **Qualification of "the product never falls below 0.0960":** it fell to
-   0.0958 in the aperture sweep (50-60 um). The floor applies to
+   0.0958 in the aperture sweep (50-60 um). The 0.0960 value is exact for
    Gaussian-to-Gaussian coupling, and a truncated beam is not Gaussian.
 
 **Paper discrepancy: closed as far as this model can close it.** B592 (smaller
 beam) and a 24 um receiver both reach the paper's lateral value (7.68 and
 7.04 um) while the angular discrepancy grows (+19.4% and +38.0%). That is the
-invariant, and the paper's own pair sits 24% below its floor. Only the
-elliptical-beam hypothesis (Stage 8b) remains as a structural test.
+lateral x angular trade. The ideal matched tolerances for the paper's 32 um
+beam are 7.68 um and 0.72 deg; the measured +/-7 um and +/-0.6 deg are 91%
+and 84% of ideal. The elliptical-beam hypothesis was tested in Stage 8b and
+does not close it (X moves away, Y and angular move closer).
 
 ---
 
@@ -628,7 +639,7 @@ in `docs/results.md` section 8.
   964.8 um). 18 of 25 front designs are below collimation; none above. The
   Stage 9 point itself is dominated by 700 um / rho 0.95.
 - Matched collimated designs: product 0.09600-0.09601 um rad against the exact
-  floor 0.096015 (-0.011% to -0.002%).
+  matched value 0.096015 (-0.011% to -0.002%).
 - Predictions confirmed: 800 um -> 10.17 um / 0.541 deg / 1078 um / 0.0004 dB;
   1000 um -> 12.61 um / 0.436 deg.
 - Passive alignment (absolute lateral >= 10 um) first reached at 786 um:

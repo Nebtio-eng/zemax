@@ -35,6 +35,9 @@ The expected answer, already derived (see `docs/methodology.md`): beam expansion
 does not create tolerance, it *moves* it. Lateral tolerance improves linearly
 with expansion factor, longitudinal improves quadratically, angular degrades
 linearly, and the lateral-angular product is invariant at `0.0733*lambda/n`.
+The invariant is not ours: the offset/angle/efficiency trade is Joyce &
+DeLoach, *Appl. Opt.* 23(23), 4187 (1984); the 1-dB equations are Gradkowski &
+O'Brien, *Appl. Opt.* 63, 8407 (2024). This project confirms it numerically.
 The project's job is to demonstrate this numerically and quantify the exchange
 rate — not to rediscover it from scratch, and not to assume it without proof.
 
@@ -334,8 +337,11 @@ collimated and would look like a modelling fault.
 | Angular 1-dB | - | - | **0.677 deg** |
 | Longitudinal 1-dB | - | - | **700 um** |
 
-Paper measured, for comparison with B: +/-7 um lateral, +/-0.6 deg angular,
-700 um longitudinal.
+Paper measured, for comparison with B: +/-7 um lateral along X and +/-9 um
+along Y, +/-0.6 deg angular (Mangal 2021, Fig. 10). Longitudinal: the 2021
+paper reports 0.2 dB over 300 um (one fibre retracted) and 1 dB at 400 um
+(both fibres retracted); the 700 um 1-dB value is from the companion JSTQE
+paper.
 
 Coupling formula used (validated: reproduces POP's A0 eta = 0.962618 to 6 dp):
 
@@ -381,7 +387,7 @@ Falsifiable consequences to check at Stage 7/8:
 |---|---|---|---|
 | 1 | Substrate thickness (ROC re-matched) | Sets beam width: lateral ∝ w, longitudinal ∝ w². 400→630 um gives lateral 5.44→8.13 um, working distance 294→681 um | yes |
 | 2 | Receiver MFD | 20 um: 1.15 dB / 6.67 um. 34 um: 0.0004 dB / 8.14 um. 48 um: 0.52 dB / 9.97 um | yes, to 2 dp |
-| 3 | Lens ROC alone | 1 dB at about **-21% / +42%** — **asymmetric** | magnitude yes, asymmetry NO |
+| 3 | Lens ROC alone | 1 dB at about **-21% / +42%** — **asymmetric** | magnitude yes, asymmetry NO (but published: Mangal 2021 Fig. 4, -22.7% / +40.9%) |
 | 4 | Incidence angle | 0.033 dB at 6 deg off normal. Negligible | yes |
 | 5 | Gap | 0.011 dB at 100 um, 0.065 at 200 um | yes |
 | 6 | Aperture | Flat above ~80 um diameter (**2.4x** beam radius, not the 3x rule of thumb); 0.11 dB at 50 um | threshold yes, value too conservative |
@@ -392,7 +398,9 @@ Falsifiable consequences to check at Stage 7/8:
 
 **1. A deliberately over-strong lens buys working distance.** Going *below* the
 collimating ROC trades loss for working distance; going *above* it is strictly
-worse on both counts. One-sided trade.
+worse on both counts. One-sided trade. Stated qualitatively by Mangal 2021,
+section 2(v), and the ROC window is their Fig. 4; ours is an independent
+reproduction and quantification.
 
 | ROC | Loss | Working distance |
 |---|---|---|
@@ -418,12 +426,12 @@ flat. The only real freedoms are:
 Stage 10 should optimise over those two axes and state explicitly that the others
 were shown flat. A high-dimensional search would be dishonest about Stage 9.
 
-**3. The invariant product is a mismatch meter, confirmed across all 8 sweeps.**
-Flat at 0.09601 whenever the configuration stays matched (conic: all 7 points;
-gap: 0 to 200 um). Rises whenever it does not (receiver 20 um: 0.1096; ROC
-300 um: 0.1172). **Never falls below 0.0960.** Use it as a diagnostic in Stage 10:
-any Pareto point whose product exceeds 0.0960 is mismatched, and the amount of
-excess quantifies by how much.
+**3. The lateral x angular product, across all 8 sweeps.** 0.09601 whenever
+the configuration stays matched (conic: all 7 points; gap: 0 to 200 um). Rises
+whenever it does not (receiver 20 um: 0.1096; ROC 300 um: 0.1172). For a pure
+size mismatch the rise is exactly `0.0960/sqrt(eta_0)` (receiver sweep, all 9
+points to 0.012%): Joyce & DeLoach's trade, a larger product paid for in
+efficiency. Exact only for Gaussian modes (a truncated beam gave 0.0958).
 
 ### The paper discrepancy is now closed as far as this model can close it
 
@@ -433,7 +441,27 @@ paper's 0.6 deg (worse than B's +12.6%).
 
 So **two independent attempts** to close the lateral gap (B592's smaller beam,
 and a smaller receiver) both fail the same way: lateral improves, angular
-worsens. That is the invariant. Combined with the paper's own pair sitting 24%
-below the theoretical floor, the remaining discrepancy is attributable to the
-experiment's definitions or measurement geometry, **not** to anything this model
+worsens. That is the invariant. The ideal matched tolerances for the paper's
+32 um beam are 7.68 um / 0.72 deg; the measured 7 / 0.6 are 91% / 84% of
+ideal. The remaining discrepancy is attributable to the experiment's
+definitions, measurement geometry or hardware, **not** to anything this model
 omits. Do not keep hunting for a parameter that closes both.
+
+---
+
+## Stage 8b findings (2026-10-04) — FDTD grating source
+
+- 3-D FDTD of an ASSUMED uniform 20-period grating, 12 um wide, as the POP
+  source of B. Best fibre position 1.204 dB; lateral X 8.91 / Y 8.54 um,
+  angular 0.63 / 0.64 deg, longitudinal 663 um (relative; **no absolute 1-dB
+  window exists**, the peak is already above 1 dB). Map agrees with the
+  predictor to 0.16%.
+- **Decomposition: 1.04 dB is the non-Gaussian profile** (overlap with its own
+  best-fit Gaussian 0.787), 0.16 dB the core ellipticity (3.54 x 4.23 um).
+  Walk-off/tilt 0.0004 dB; lens position <= 0.026 dB. Not walk-off. Agrees
+  with Mangal 2021's ~1 dB "mode-profile mismatch" attribution.
+- X wider than Y, the reverse of the paper (+/-7 X, +/-9 Y); set by ASSUMED
+  etch and width. Reported, not tuned.
+- Known limit: ~0.05 dB POP offset on the FDTD file beam (cause not identified
+  for the lens case; POP is pilot-dependent at strongly oblique refraction).
+  Tolerances unaffected. Do not chase further.

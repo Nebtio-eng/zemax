@@ -42,7 +42,8 @@ the hardware working.
 **The closed-form version already reproduces three independent measurements.**
 Gaussian overlap theory, containing no grating whatsoever, predicts 7.7 um
 lateral against a measured +/-7 um, 0.72 deg angular against +/-0.6 deg, and
-about 625 um longitudinal against 700 um. A simplification that still predicts
+about 625 um longitudinal against 700 um (the 1-dB value of the companion
+JSTQE paper; the 2021 paper reports 0.2 dB over 300 um). A simplification that still predicts
 three independent axes to within roughly 20% is capturing the governing physics,
 not evading it.
 
@@ -59,6 +60,17 @@ is anisotropic.** Any X/Y asymmetry in the published or measured behaviour
 cannot be reproduced by a circularly symmetric source, and must not be
 explained away by tuning other parameters.
 
+**Stage 8b replaced the Gaussian by a 3-D FDTD grating field** (uniform grating,
+all grating parameters ASSUMED). Numerically determined: the beam's Gaussian
+core is elliptical (3.54 x 4.23 um, x narrower, with a long x tail), the
+tolerance becomes axis-dependent (X 8.91, Y 8.54 um), and the profile costs
+1.04 dB that no Gaussian model sees (1.20 dB in total at the best fibre
+position). The axis order is the reverse of the paper's (+/-7 um X,
++/-9 um Y), which follows from the ASSUMED etch depth and grating width. The
+FDTD source carries its own limits: an un-apodized ASSUMED design, the
+downward beam only (no directionality), and a ~0.05 dB POP offset on file
+beams (`validation.md`, Stage 8b).
+
 ---
 
 ## 2. Accuracy, output by output
@@ -71,7 +83,7 @@ which is part of the result.
 | Alignment tolerance (lateral, longitudinal, angular) | **Good** | Governed by beam geometry and mode overlap, which the model represents properly |
 | Relative comparison between architectures A and B | **Good** | Both share the same approximations, so systematic error largely cancels |
 | Absolute coupling loss | **Optimistic by construction** | Excludes grating directionality, grating scattering and waveguide/taper loss. Will be lower than the paper's measured insertion loss. This is expected and is not to be corrected by tuning. |
-| X versus Y asymmetry | **Wrong** | Source is circularly symmetric; the real beam is elliptical. Addressed at Stage 8b. |
+| X versus Y asymmetry | **Wrong in A0/A1/B; qualitative in B_fdtd** | Gaussian source is circularly symmetric. The Stage 8b FDTD source gives X/Y asymmetry, but its sign depends on ASSUMED grating etch and width (reversed against the paper). |
 | Any claim about grating design | **Out of scope** | No grating physics in the model at all |
 
 ---
@@ -105,17 +117,22 @@ the 480 um lens radius with a 630 um substrate, which gives a 34 um beam. A
 630/480 pair (B). Rebuilding on the 592/461 pair (B592, `docs/results.md`
 section 3) moves the lateral tolerance from 8.14 to 7.68 um: 6.6 of the 16.3
 percentage points of disagreement with the paper come from this choice, not
-from missing physics. Separately, the paper's own tolerance pair
-(7 um x 0.6 deg = 0.0733 um rad) lies 24% below the minimum lateral x angular
-product for peak-referenced Gaussian coupling (0.0960 um rad at 1310 nm). The
-tolerances are therefore probably referenced differently from this model's
-convention, and must not be compared without stating that.
+from missing physics. Separately, the ideal matched Gaussian tolerances for
+the paper's 32 um beam are 7.68 um and 0.72 deg; the measured +/-7 um and
++/-0.6 deg are 91% and 84% of ideal. Both sit below the ideal, so the measured
+pair is not reachable by any choice of beam size in this model on the
+peak-referenced (relative) convention. The paper's tolerances may be
+referenced differently (fixed loss level, angular pivot, or a different
+definition of +/-), and must not be compared without stating that.
 
-**Fresnel reflection is not counted.** POP reports system efficiency S = 1.000
-in every configuration. An uncoated Si-air exit face (A1, B) reflects 30.9%
-(1.61 dB) at normal incidence; an oxide-air exit (A0) about 3.3% (0.15 dB). The
-model therefore flatters the backside configurations unless the real exit face
-is anti-reflection coated.
+**Fresnel reflection is not counted, and no coating is modelled.** POP reports
+system efficiency S = 1.000 in every configuration. An uncoated Si-air exit face
+(A1, B) reflects 30.9% (1.61 dB) at normal incidence; an oxide-air exit (A0)
+about 3.3% (0.15 dB). The experiment confirms the scale: Mangal et al. (2021,
+Section 5) expected 1.85 dB from the silicon-air reflection and measured a
+2 dB improvement after a 170 nm SiN anti-reflection coating. The model
+therefore flatters the backside configurations unless the real exit face is
+anti-reflection coated.
 
 **Two assumed parameters.** The microlens clear aperture and the receiving
 fiber's mode field diameter are not reported in the primary paper. Both are

@@ -95,7 +95,9 @@ each one surfaced is in brackets. Where code works around it, the place is named
 30. **POP fibre tilt enters as tan(theta)**: 2 deg gives 0.862084 against
     0.862188 (small-angle) and 0.862240 (sin). Negligible below 2 deg. [Stage 6]
 31. **POP system efficiency S excludes Fresnel reflection** (S = 1.000 in every
-    configuration). An uncoated Si-air face would lose 30.9% (1.61 dB). [Stage 8]
+    configuration). An uncoated Si-air face would lose 30.9% (1.61 dB); the
+    experiment expected 1.85 dB and recovered 2 dB with a 170 nm SiN coating
+    (Mangal et al. 2021). [Stage 8]
 32. **Grid-doubling convergence is weakly discriminating for ideal Gaussians**
     (0.0000% in A0). It needs a lens, an aperture or long propagation to bite;
     deliberately bad settings (64-point grid, 40 um window) were used to show the

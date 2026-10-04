@@ -185,7 +185,7 @@ eta(z) = 1 / (1 + (z / (2*z_R))^2),   z_R = pi * w^2 * n / lambda
 |---|---|---|
 | Lateral 1-dB, 32 µm expanded beam (w = 16 µm) | 0.48 × 16 = **7.7 µm** | **±7 µm** |
 | Angular 1-dB, same beam | 0.1528 × 1.31/16 = 0.0125 rad = **0.72°** | **±0.6°** |
-| Longitudinal 1-dB, same beam (z_R = 614 µm) | **≈625 µm** | **700 µm** |
+| Longitudinal 1-dB, same beam (z_R = 614 µm) | **≈625 µm** | **700 µm** (JSTQE companion paper; the 2021 paper reports 0.2 dB over 300 µm with one fiber retracted, 1 dB at 400 µm with both) |
 
 The analytic framework already reproduces all three published tolerances to
 within ~20% before a single Zemax surface has been entered. This is the correct
@@ -206,6 +206,14 @@ d_1dB * theta_1dB  =  (0.48 * w) * (0.1528 * lambda / (n * w))  =  0.0733 * lamb
 a constant set only by wavelength and index — it cannot be improved by beam
 expansion. Expanding the beam buys lateral tolerance and spends angular tolerance
 at exactly the same rate.
+
+This is not new. The trade between offset tolerance, angular tolerance and
+coupling efficiency for Gaussian beams is due to Joyce & DeLoach, "Alignment of
+Gaussian beams", *Appl. Opt.* 23(23), 4187 (1984); the 1-dB tolerance
+equations are in Gradkowski & O'Brien, *Appl. Opt.* 63(32), 8407 (2024). This
+project **confirms it numerically** in POP. For unequal flat Gaussian modes the
+product becomes `0.0733 lambda / (n sqrt(eta_0))`, with `eta_0` the
+mode-mismatch efficiency: a larger product is paid for in efficiency.
 
 So the honest answer to "does the micro-lens improve alignment tolerance?" is
 **not** a yes. It is:

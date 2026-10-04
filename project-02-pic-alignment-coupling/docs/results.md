@@ -61,15 +61,19 @@ A1 = 0.1423. A0 and B are both on the ideal 0.0733 lambda = 0.0960 to four
 figures. The premise that curvature pulls A0 *below* the ideal is wrong, for a
 structural reason:
 
-> 0.0733 lambda/n is not a value every coupling obeys. It is the **minimum** of
-> the lateral x angular product, reached only when the arriving beam and the
-> fiber mode are matched and flat. Any mismatch (size, or wavefront curvature)
-> raises the product. It never lowers it.
+> 0.0733 lambda/n is the lateral x angular product of two **matched, flat**
+> Gaussian modes (relative convention). The trade-off between offset
+> tolerance, angular tolerance and coupling efficiency is due to Joyce &
+> DeLoach (1984); the 1-dB form is in Gradkowski & O'Brien (2024). For
+> unequal flat modes the product becomes 0.0733 lambda / sqrt(eta_0), with
+> eta_0 the mode-mismatch efficiency: a mismatch buys a larger product only by
+> losing efficiency (confirmed numerically to 0.012%, `validation.md`,
+> "Reproduction of published results").
 
 A0's curvature mismatch is small (R = 149 um against a 51 um Rayleigh range at
 20 um). It shortens the lateral tolerance by about 2% and lengthens the angular
 one by about as much, so the product barely moves. A1's large mismatch pushes it
-to 0.142, 48% above the minimum. The absolute-convention product for A0 (0.080)
+to 0.142, 48% above the matched value. The absolute-convention product for A0 (0.080)
 is lower only because its 0.17 dB nominal loss uses up part of the 1 dB budget.
 That is a property of the convention, not of the optics.
 
@@ -79,9 +83,18 @@ That is a property of the convention, not of the optics.
 
 | Quantity | B (Zemax) | Paper | Difference |
 |---|---|---|---|
-| Lateral 1-dB | 8.140 um | +/-7 um | **+16.3%** |
+| Lateral 1-dB | 8.140 um | +/-7 um (X; +/-9 um along Y) | **+16.3%** (Y: -9.6%) |
 | Angular 1-dB | 0.676 deg | +/-0.6 deg | **+12.6%** |
-| Longitudinal 1-dB | 713 um (from 20 um), 702 um (from best gap) | 700 um | +1.9% / +0.3% |
+| Longitudinal 1-dB | 713 um (from 20 um), 702 um (from best gap) | 700 um (JSTQE 2020) | +1.9% / +0.3% |
+
+Sources of the paper column: Mangal et al. 2021 (Opt. Express 29, 7601),
+Fig. 10, for lateral (+/-7 um along the grating axis X, +/-9 um along Y) and
+angular; the 1-dB longitudinal 700 um is from the companion JSTQE paper. The
+2021 paper itself reports longitudinal differently (Fig. 11): **a 0.2 dB drop
+over 300 um when either fibre alone is retracted**, and **1 dB at 400 um when
+both fibres are retracted together** (two interfaces). Those two points are
+compared in `validation.md`, "Reproduction of published results"
+(single interface, B: 0.16 dB at 300 um).
 
 The model reproduces its own analytic prediction to 0.2%, so these gaps sit
 between the idealised model and the experiment, not inside the model. Candidate
@@ -93,7 +106,10 @@ explanations:
    penalty) but *widens* the angular one. Untested.
 2. **The real grating beam is elliptical**, not circular (`limitations.md`
    section 1). Measured tolerance is then axis-dependent; a circular model
-   cannot reproduce that. Stage 8b tests it.
+   cannot reproduce that. **Tested in Stage 8b**: the FDTD beam's core is
+   elliptical (3.54 x 4.23 um) and the tolerance is axis-dependent, but with X
+   wider (8.91 um) than Y (8.54 um), the reverse of the paper's order, which
+   follows from ASSUMED grating etch and width (`validation.md`, Stage 8b).
 3. **Angular measurement pivot.** If the fiber was rotated about a point behind
    its facet, each tilt adds a lateral offset and the measured angular
    tolerance falls. The model tilts about the facet centre. Untested.
@@ -126,20 +142,17 @@ adopted, not from missing physics. The remaining 9.7 points are attributable to
 explanations 1-4.
 
 **This does not close the angular gap; it widens it, from +12.6% to +19.4%.**
-A smaller beam has a wider angular tolerance; that is the invariant again. No
-choice of beam size can close both gaps at once: the paper's own pair,
-7 um x 0.6 deg, gives a product of 0.0733 um rad, **24% below the theoretical
-minimum** of 0.0960 for a peak-referenced (relative) 1-dB tolerance between
-Gaussian modes at 1310 nm. In this model class that pair cannot be reached on
-the relative convention. A product below the minimum *is* possible on the
-absolute convention when there is nominal excess loss (A0's absolute product is
-0.080), so one candidate is that the paper's tolerances are referenced to a
-fixed loss level rather than to the peak. Others: the angular pivot,
-non-Gaussian modes, or a different definition of +/-. All lie outside the
-simulation. This is the strongest single argument
-that the remaining discrepancy is about the experiment's definitions or real
-hardware, not about the simulation. It is recorded as a limitation of the
-source material in `limitations.md`.
+A smaller beam has a wider angular tolerance; that is the lateral x angular
+trade (Joyce & DeLoach 1984) again. The ideal matched Gaussian tolerances for
+the paper's 32 um beam are **7.68 um and 0.72 deg**; the measured +/-7 um and
++/-0.6 deg are **91% and 84% of ideal**. Both measured values sit below the
+ideal, so no choice of beam size reproduces both at once. Plausible reasons,
+all outside the simulation: the angular pivot (candidate 3), real lens and
+placement imperfections (candidate 4), the non-Gaussian grating beam
+(candidate 2), or tolerances referenced to a fixed loss level rather than to
+the peak (on the absolute convention a nominal excess loss shrinks both
+windows; A0's absolute product is 0.080 against 0.096 relative). Recorded in
+`limitations.md`.
 
 ### Status: closed as far as this model can close it (after Stage 9)
 
@@ -153,12 +166,17 @@ value, and both fail the same way:
 | B with a 24 um receiver (candidate 1) | 7.040 um | **+0.6%** | 0.828 deg | **+38.0%** | Stage 9, `receiver_mfd/` |
 
 Lateral improves and angular worsens by the same factor each time: that is the
-lateral x angular invariant. Together with the paper's own pair sitting 24%
-below the theoretical floor of that product, the remaining discrepancy is
-attributed to the experiment's definitions or measurement geometry, not to a
-parameter this Gaussian model omits. No further parameter hunting is warranted.
-One structural hypothesis remains testable: candidate 2, the real (elliptical)
-grating beam, which is not a Gaussian-model parameter. Stage 8b tests it.
+lateral x angular trade. With the paper's measured pair at 91% (lateral) and
+84% (angular) of the ideal for its own 32 um beam, the remaining discrepancy is
+attributed to the experiment's definitions, measurement geometry or hardware,
+not to a parameter this Gaussian model omits. No further parameter hunting is
+warranted.
+
+**Stage 8b (the real grating beam, candidate 2) does not close it either.**
+Against the paper's per-axis values the FDTD beam moves Y to within 5%
+(8.54 vs 9 um) and angular to +4.5% / +7.3% (from +12.6%), but moves X further
+away (8.91 vs 7 um, +27%), because the axis order comes out reversed
+(`validation.md`, Stage 8b).
 
 ---
 
@@ -172,8 +190,9 @@ grating beam, which is not a Gaussian-model parameter. Stage 8b tests it.
 > **+/-2.45 deg to +/-0.68 deg (3.6x)**, a large-mode TEC receiver becomes
 > mandatory, the chip needs a backside lens process, and the silicon-air exit
 > face must be anti-reflection coated. Without that coating, Fresnel reflection
-> alone (31%, 1.6 dB) is ten times A0's entire nominal loss and is not counted by
-> this model. The lens does not create alignment tolerance; it **converts
+> alone (31%, 1.6 dB at normal incidence; 1.85 dB expected and 2 dB recovered
+> with a 170 nm SiN coating in Mangal et al. 2021) is ten times A0's entire
+> nominal loss and is not counted by this model. The lens does not create alignment tolerance; it **converts
 > positional tolerance into angular tolerance at a fixed exchange rate**. The
 > only net gain is longitudinal. The substrate alone (A1) is not a working
 > interface: 6.26 dB of loss and no 1-dB window at all. **The lens's
@@ -193,11 +212,15 @@ backside processing are not available.
 
 **Correct, and it is the central result, not a weakness to hide.** Measured:
 lateral x3.618, angular /3.619. The lateral x angular product is 0.0960 um rad
-for both A0 and B, to four figures. This is the invariant from
-`methodology.md` section 6 appearing in the architecture comparison. Gaussian
-coupling conserves the product of positional and angular acceptance (a
-phase-space, or etendue, argument), so beam expansion cannot enlarge it. It can
-only change its shape.
+for both A0 and B, to four figures. This is the invariant of
+`methodology.md` section 6 appearing in the architecture comparison. It is not
+a finding of this project: the trade between offset tolerance, angular
+tolerance and coupling efficiency for Gaussian beams is due to Joyce & DeLoach
+(Appl. Opt. 23, 4187, 1984), and its 1-dB form is given by Gradkowski &
+O'Brien (Appl. Opt. 63, 8407, 2024). This project **confirms it numerically**
+in POP. Gaussian coupling conserves the product of positional and angular
+acceptance (a phase-space, or etendue, argument), so beam expansion cannot
+enlarge it. It can only change its shape.
 
 What survives the objection:
 
@@ -228,8 +251,13 @@ Two further corrections both go against B, and must be stated alongside it:
 - **Fresnel reflection is not modelled** (POP system efficiency S = 1.000
   everywhere). B's uncoated Si-air exit face reflects 30.9% (1.61 dB) at normal
   incidence. A0's oxide cladding exit reflects about 3.3% (0.15 dB). Uncoated,
-  the real loss comparison favours **A0**. Whether the paper's lens was
-  AR-coated has not been checked.
+  the real loss comparison favours **A0**. The paper confirms the size of the
+  effect experimentally: of the extra loss of its backside interface, **1.85 dB
+  was expected from Fresnel reflection at the silicon-air surface**, and a
+  **170 nm SiN anti-reflection coating improved the measured coupling by
+  2 dB** (Mangal et al. 2021, Section 5). Our 1.61 dB is for normal incidence
+  on one face; the paper attributes its slightly larger value to off-normal
+  incidence on the lens.
 - **Grating directionality is excluded** for all three (`methodology.md`
   section 4). A backside configuration collects the *downward* grating
   emission, while A0 collects the upward one. How the two compare depends on
@@ -262,7 +290,7 @@ sensitivities). Ranking by one yardstick alone gives a misleading order.
 
 | Rank | Parameter | Sensitivity | Source |
 |---|---|---|---|
-| 1 | **Lens radius** (and its twin, wafer thickness: 10 um of thickness acts like 6.6 um of radius) | +/-10% radius costs 0.19 / 0.10 dB at a 20 um gap. 1 dB at -21.7% / +40.2% (nearly symmetric in surface power, +28% / -29%; section 7.2). At a 700 um gap the absolute window is **+1.4%** (6.7 um) on the large side | `radius_alone/` |
+| 1 | **Lens radius** (and its twin, wafer thickness: 10 um of thickness acts like 6.6 um of radius) | +/-10% radius costs 0.19 / 0.10 dB at a 20 um gap. 1 dB at -21.7% / +40.2% (nearly symmetric in surface power, +28% / -29%; section 7.2; independently reproduces Mangal et al. 2021 Fig. 4, -22.7% / +40.9%). At a 700 um gap the absolute window is **+1.4%** (6.7 um) on the large side | `radius_alone/` |
 | 2 | **Incidence angle** (grating emission angle in Si) | Optically benign once the fiber is re-pointed (0.033 dB at 6 deg; 4th by loss alone, section 7.1), but ranked here by its system consequence: the fiber must be tilted 3.5x the incidence angle (21.5 deg at 6 deg), and an un-re-pointed fiber passes 1 dB at 0.19 deg | `incidence/` |
 | 3 | **Gap** | Negligible below 200 um (0.065 dB). The absolute lateral window falls from 8.1 to 2.6 um at 700 um | `gap/` |
 | 4 | **Aperture** | Threshold: none at or above 80 um diameter (radius 2.4 w, not the 3 w rule of thumb); 0.1 dB at 50.7 um; 1 dB at 35.7 um (radius 1.05 w) | `aperture/` |
@@ -412,6 +440,14 @@ un-re-pointed fibre passes 1 dB at only 0.19 deg (Q7 answer below).
   also pulls the waist out to several hundred microns, so it *lengthens* the
   working distance (966 um at 420 um ROC) while a too-weak lens shortens it
   (293 um at 700 um). This is the origin of Stage 10's one-sided trade.
+  **Both results are published.** Mangal et al. (2021) report the ROC window
+  from their own OpticStudio model, -100 / +180 um about a 440 um nominal
+  (-22.7% / +40.9%, fibre 100 um from the lens; Fig. 4), and state the
+  one-sided rule in section 2(v): a larger ROC gives a divergent beam with no
+  benefit, a smaller one a convergent beam usable for a longer working
+  distance. This project's numbers are an **independent reproduction**: at the
+  paper's conditions our model gives -94 / +186 um (`validation.md`,
+  "Reproduction of published results").
 - **Gap.** B's beam is collimated with a ~686 um Rayleigh range, so nothing
   changes until the gap becomes a sizeable fraction of that. At 700 um the beam
   has grown and curved enough that B starts at 0.92 dB, and the absolute window
@@ -442,7 +478,9 @@ Three corrections:
 
 1. **The lens ROC tolerance is asymmetric: 1 dB at -21.7% / +40.2%**, not a
    symmetric ~30%. The asymmetry comes from measuring a 1/R quantity in R; in
-   surface power the window is nearly symmetric (+28% / -29%).
+   surface power the window is nearly symmetric (+28% / -29%). The asymmetry
+   was a wrong prediction here but is not new: Mangal et al. (2021, Fig. 4)
+   report -22.7% / +40.9%.
 2. **The aperture threshold sits at 2.4x the beam radius** (flat above 80 um
    diameter, w = 16.9 um), **not the 3x rule of thumb** (102 um) quoted
    beforehand. 3x is safe but over-conservative. The 1-dB point is at 1.05x the
@@ -452,11 +490,13 @@ Three corrections:
    sufficient; no aspheric correction is required.** Lens-process effort should
    go into ROC control (rank 3), not surface shape.
 
-One statement in CLAUDE.md needs qualifying: the invariant product "never falls
-below 0.0960". It did, by 0.2%, in the aperture sweep (0.0958 at 50-60 um
-diameter). 0.0960 is the floor for Gaussian-to-Gaussian coupling; a slightly
-truncated beam is no longer Gaussian, so that floor no longer strictly binds it.
-As a mismatch meter for Gaussian configurations the rule stands.
+How to read the product. For flat Gaussian modes the relative-convention
+product is 0.0960 um rad / sqrt(eta_0), where eta_0 is the size-mismatch
+efficiency (Joyce & DeLoach 1984; verified to 0.012% across the receiver
+sweep, `validation.md`, "Reproduction of published results"). A larger
+product is therefore paid for in efficiency. The relation is exact only for
+Gaussian modes: in the aperture sweep a slightly truncated (non-Gaussian) beam
+gave 0.0958 at 50-60 um diameter, 0.2% below the matched value.
 
 ---
 
@@ -478,7 +518,8 @@ over the only two real freedoms:
   and the ROC scaled with it. This chooses *where on the lateral/angular
   invariant* the design sits.
 - **rho = ROC / collimating ROC**: below 1 the lens is slightly focusing, which
-  buys working distance at a loss.
+  buys working distance at a loss (the convergent-beam option of Mangal et al.
+  2021, section 2(v), quantified here).
 
 Grid: t = 400, 500, 630, 700, 786, 800, 900, 1000, 1200 um x rho = 0.80-1.05
 (54 designs) plus the two Stage 9 reference points. Objectives (absolute
@@ -511,15 +552,15 @@ the same or *less* distance.
 
 ### 8.3 The invariant across the front
 
-Every matched, collimated design sits on the floor: lateral x angular =
-0.09600-0.09601 um rad against the exact floor (ln10/10) lambda/pi =
+Every matched, collimated design sits on the matched value: lateral x angular
+= 0.09600-0.09601 um rad against the exact (ln10/10) lambda/pi =
 0.096015 um rad, i.e. -0.011% to -0.002%. That is within the 1e-4 precision of
 POP's tan(theta) tilt convention (`docs/zosapi_gotchas.md` #30). The focusing
 (rho < 1) front designs sit slightly above it: +0.003% to +0.22%, rising as rho
 falls. Their curvature mismatch is real but small. The largest excess on the
 whole grid is +10.3%, at a dominated rho = 0.80 design. Note:
 `design_grid.csv` column `product_excess_pct` was computed against the rounded
-0.0733 lambda (0.096023); the figures here use the exact floor.
+0.0733 lambda (0.096023); the figures here use the exact value.
 
 ### 8.4 Engineering criterion: passive alignment
 
