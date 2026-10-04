@@ -31,9 +31,9 @@ def nominal_gap(cfgd):
     return cfgd["parameters"]["gap_um"] if "parameters" in cfgd else cfgd["sweep_lateral"]["nominal_gap_um"]
 
 
-def eta_at(ps, x_um, y_um):
-    ps.set("POP_FPARAM3", x_um / 1000)
-    ps.set("POP_FPARAM4", y_um / 1000)
+def eta_at(ps, x_um, y_um, centre=(0.0, 0.0)):
+    ps.set("POP_FPARAM3", (centre[0] + x_um) / 1000)
+    ps.set("POP_FPARAM4", (centre[1] + y_um) / 1000)
     return ps.popd()
 
 
@@ -44,7 +44,8 @@ def cut_area(r):
 
 
 def run_map(app, zos, cfg_path=A0_CONFIG, tag="A0", ref_radius_um=STAGE5_TOL_UM,
-            half=3.5, step=0.25, n_angles=24, r_max=3.2, r_step=0.1):
+            half=3.5, step=0.25, n_angles=24, r_max=3.2, r_step=0.1, centre_um=(0.0, 0.0), fixed_tokens=None):
+    """centre_um / fixed_tokens: map about a re-pointed fibre (Stage 8b: the asymmetric FDTD beam)."""
     cfgd = json.loads(Path(cfg_path).read_text())
     gap_um = nominal_gap(cfgd)
     OUT.mkdir(parents=True, exist_ok=True)
@@ -52,7 +53,9 @@ def run_map(app, zos, cfg_path=A0_CONFIG, tag="A0", ref_radius_um=STAGE5_TOL_UM,
     t0 = time.time()
     try:
         ps.set_gap_um(gap_um)
-        e0 = eta_at(ps, 0.0, 0.0)
+        for tok, val in (fixed_tokens or {}).items():
+            ps.set(tok, val)
+        e0 = eta_at(ps, 0.0, 0.0, centre_um)
         l0 = float(loss_db(e0[0]))
         radii = [float(r) for r in np.round(np.arange(0, r_max + r_step / 2, r_step), 6)]
         cuts = []
@@ -60,7 +63,7 @@ def run_map(app, zos, cfg_path=A0_CONFIG, tag="A0", ref_radius_um=STAGE5_TOL_UM,
             phi = 2 * math.pi * k / n_angles
             rows = [(0.0, *e0, l0)]
             for r in radii[1:]:
-                e = eta_at(ps, r * math.cos(phi), r * math.sin(phi))
+                e = eta_at(ps, r * math.cos(phi), r * math.sin(phi), centre_um)
                 rows.append((r, *e, float(loss_db(e[0]))))
             arr = np.array(rows)
             t = AN.tolerance(arr[:, 0], arr[:, 4], 0.0)
@@ -69,8 +72,10 @@ def run_map(app, zos, cfg_path=A0_CONFIG, tag="A0", ref_radius_um=STAGE5_TOL_UM,
         grid = np.zeros((len(xs), len(xs)))
         for i, y in enumerate(xs):
             for j, x in enumerate(xs):
-                grid[i, j] = float(loss_db(eta_at(ps, x, y)[0]))
+                grid[i, j] = float(loss_db(eta_at(ps, x, y, centre_um)[0]))
     finally:
+        for tok in (fixed_tokens or {}):
+            ps.set(tok, cfgd["pop_tokens"].get(tok, 0.0))
         ps.set("POP_FPARAM3", 0.0)
         ps.set("POP_FPARAM4", 0.0)
         ps.set_gap_um(gap_um)
@@ -106,7 +111,8 @@ def run_map(app, zos, cfg_path=A0_CONFIG, tag="A0", ref_radius_um=STAGE5_TOL_UM,
         configuration=cfgd.get("configuration", tag), source_config=str(Path(cfg_path).resolve().relative_to(ROOT)),
         opticstudio=dict(build=str(app.OpticStudioVersion), license=str(app.LicenseStatus), mode=str(app.Mode)),
         pop_tokens=cfgd["pop_tokens"], surface_settings=cfgd.get("surface_settings"),
-        grid=dict(half_width_um=half, step_um=step, points=len(xs) ** 2),
+        grid=dict(half_width_um=half, step_um=step, points=len(xs) ** 2, centre_um=list(centre_um),
+                  fixed_tokens=fixed_tokens or {}),
         radial_cuts=dict(n_angles=n_angles, r_max_um=r_max, r_step_um=r_step),
         settings_readbacks_passed=nchecks, results=res, wall_time_s=time.time() - t0), indent=2))
     return res

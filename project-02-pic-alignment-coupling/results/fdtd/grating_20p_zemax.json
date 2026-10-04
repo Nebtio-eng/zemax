@@ -1,0 +1,359 @@
+{
+  "tag": "grating_20p",
+  "predicted_chief_ray": {
+    "loss_dB": 1.4935055713283827,
+    "base": {},
+    "lateral_x_rel_sides": [
+      5.338682465547429,
+      15.288630683597562
+    ],
+    "lateral_x_rel": 10.313656574572496,
+    "lateral_y_rel_sides": [
+      8.524502119450586,
+      8.55368606492365
+    ],
+    "lateral_y_rel": 8.539094092187117,
+    "angular_x_rel_sides": [
+      0.5050616642145901,
+      0.835724562914481
+    ],
+    "angular_x_rel": 0.6703931135645356,
+    "angular_y_rel_sides": [
+      0.6484119196943711,
+      0.6389939770333071
+    ],
+    "angular_y_rel": 0.643702948363839,
+    "longitudinal_rel": 537.3824711431873,
+    "product_x_rel": 0.12067563094563154,
+    "product_y_rel": 0.09593446655598849,
+    "lateral_x_abs_sides": [
+      NaN,
+      NaN
+    ],
+    "lateral_x_abs": NaN,
+    "lateral_y_abs_sides": [
+      NaN,
+      NaN
+    ],
+    "lateral_y_abs": NaN,
+    "angular_x_abs_sides": [
+      NaN,
+      NaN
+    ],
+    "angular_x_abs": NaN,
+    "angular_y_abs_sides": [
+      NaN,
+      NaN
+    ],
+    "angular_y_abs": NaN,
+    "longitudinal_abs": NaN,
+    "product_x_abs": NaN,
+    "product_y_abs": NaN
+  },
+  "predicted_optimum": {
+    "dx": -4.782448286534472,
+    "tx": -0.19112491568041243
+  },
+  "predicted": {
+    "loss_dB": 1.1511580665363024,
+    "base": {
+      "dx": -4.782448286534472,
+      "tx": -0.19112491568041243
+    },
+    "lateral_x_rel_sides": [
+      8.546330293090442,
+      9.2875666344226
+    ],
+    "lateral_x_rel": 8.91694846375652,
+    "lateral_y_rel_sides": [
+      8.522886987203977,
+      8.552149941575143
+    ],
+    "lateral_y_rel": 8.53751846438956,
+    "angular_x_rel_sides": [
+      0.6104587978324671,
+      0.6431419358181986
+    ],
+    "angular_x_rel": 0.6268003668253328,
+    "angular_y_rel_sides": [
+      0.6485150465573382,
+      0.6391000720757625
+    ],
+    "angular_y_rel": 0.6438075593165503,
+    "longitudinal_rel": 665.086734111903,
+    "product_x_rel": 0.0975490099889296,
+    "product_y_rel": 0.09593235264254686,
+    "lateral_x_abs_sides": [
+      NaN,
+      NaN
+    ],
+    "lateral_x_abs": NaN,
+    "lateral_y_abs_sides": [
+      NaN,
+      NaN
+    ],
+    "lateral_y_abs": NaN,
+    "angular_x_abs_sides": [
+      NaN,
+      NaN
+    ],
+    "angular_x_abs": NaN,
+    "angular_y_abs_sides": [
+      NaN,
+      NaN
+    ],
+    "angular_y_abs": NaN,
+    "longitudinal_abs": NaN,
+    "product_x_abs": NaN,
+    "product_y_abs": NaN
+  },
+  "config": "zemax\\microlens\\B_fdtd\\grating_20p\\run_config.json",
+  "chief_ray_nominal": {
+    "eta": 0.7006252294523833,
+    "S": 1.0,
+    "T": 0.7006252294523833,
+    "loss_dB": 1.545142278309604
+  },
+  "chief_ray": {
+    "x_lens_um": 35.29525854831614,
+    "x_fibre_um": 35.55479365960024,
+    "exit_angle_air_deg": 0.6981190193567864,
+    "stop_surface": 1
+  },
+  "window": {
+    "surface_1": {
+      "grid": 2048,
+      "width_mm": 0.8,
+      "pilot_size_um": 4.5582,
+      "beam_width_um": [
+        4.5581700000000005,
+        4.34809
+      ],
+      "edge_power_fraction": 1.34184011796378e-16,
+      "centroid_um": [
+        -0.02794892075867453,
+        -0.015605551555139981
+      ],
+      "eff": [
+        1.0,
+        0.135133,
+        0.135133
+      ]
+    },
+    "surface_2": {
+      "grid": 2048,
+      "width_mm": 0.79855,
+      "pilot_size_um": 17.044,
+      "beam_width_um": [
+        90.67219999999999,
+        20.229899999999997
+      ],
+      "edge_power_fraction": 7.78355165298608e-08,
+      "centroid_um": [
+        0.8373816985055992,
+        -0.015532992187575588
+      ],
+      "eff": [
+        1.0,
+        0.704109,
+        0.704109
+      ]
+    },
+    "surface_3": {
+      "grid": 2048,
+      "width_mm": 0.79855,
+      "pilot_size_um": 17.045,
+      "beam_width_um": [
+        91.225,
+        20.2516
+      ],
+      "edge_power_fraction": 1.914146928475446e-08,
+      "centroid_um": [
+        0.8417329891543568,
+        -0.013796463183679952
+      ],
+      "eff": [
+        1.0,
+        0.700625,
+        0.700625
+      ]
+    }
+  },
+  "optimum": {
+    "dx": -4.775480581127267,
+    "tx": -0.19095643882122,
+    "eta": 0.757901519535084,
+    "S": 1.0,
+    "T": 0.757901519535084,
+    "loss_dB": 1.2038722220576745,
+    "nfev": 31
+  },
+  "sweeps": {
+    "lateral_x": {
+      "x0": -4.775480581127267,
+      "L0": 1.2038722220576745,
+      "rel_plus": 8.539812173335367,
+      "rel_minus": 9.279381539627286,
+      "rel": 8.909596856481325,
+      "abs_plus": NaN,
+      "abs_minus": NaN,
+      "abs": NaN
+    },
+    "lateral_y": {
+      "x0": 0.0,
+      "L0": 1.2038722220576745,
+      "rel_plus": 8.522787170691533,
+      "rel_minus": 8.551902581069902,
+      "rel": 8.537344875880716,
+      "abs_plus": NaN,
+      "abs_minus": NaN,
+      "abs": NaN
+    },
+    "angular_x": {
+      "x0": -0.19095643882122,
+      "L0": 1.2038722220576745,
+      "rel_plus": 0.6107749105176001,
+      "rel_minus": 0.6436681670657769,
+      "rel": 0.6272215387916885,
+      "abs_plus": NaN,
+      "abs_minus": NaN,
+      "abs": NaN
+    },
+    "angular_y": {
+      "x0": 0.0,
+      "L0": 1.2038722220576745,
+      "rel_plus": 0.6390935481007393,
+      "rel_minus": 0.6485148769382194,
+      "rel": 0.6438042125194794,
+      "abs_plus": NaN,
+      "abs_minus": NaN,
+      "abs": NaN
+    },
+    "longitudinal": {
+      "x0": 20.0,
+      "L0": 1.2038722220576745,
+      "rel_plus": 662.9861357496176,
+      "rel_minus": NaN,
+      "rel": 662.9861357496176,
+      "abs_plus": NaN,
+      "abs_minus": NaN,
+      "abs": NaN
+    }
+  },
+  "longitudinal_peak": {
+    "gap_um": 3.7730393014548366e-10,
+    "loss_dB": 1.1983706221939037
+  },
+  "product_x_rel": 0.09753407838809201,
+  "product_y_rel": 0.09592990341581113,
+  "product_x_abs": NaN,
+  "product_y_abs": NaN,
+  "convergence": [
+    {
+      "point": "optimum",
+      "eta": {
+        "base": 0.757901519535084,
+        "grid x2": 0.7575533709362784,
+        "grid x2 (report grid, width)": [
+          4096,
+          0.79858
+        ],
+        "grid x2, window x2": 0.7579135403967352,
+        "grid x2, window x2 (report grid, width)": [
+          4096,
+          1.597
+        ]
+      },
+      "change_pct": {
+        "grid x2": -0.04593586235572822,
+        "grid x2, window x2": 0.0015860717179416943
+      },
+      "passed": true
+    },
+    {
+      "point": "lateral x end (+24 um)",
+      "eta": {
+        "base": 0.08919835014642076,
+        "grid x2": 0.08954426439274726,
+        "grid x2 (report grid, width)": [
+          4096,
+          0.79858
+        ],
+        "grid x2, window x2": 0.08918617961707302,
+        "grid x2, window x2 (report grid, width)": [
+          4096,
+          1.597
+        ]
+      },
+      "change_pct": {
+        "grid x2": 0.3878034131334031,
+        "grid x2, window x2": -0.01364434356438202
+      },
+      "passed": true
+    },
+    {
+      "point": "lateral y end (+24 um)",
+      "eta": {
+        "base": 0.11317646494041868,
+        "grid x2": 0.11312486302536917,
+        "grid x2 (report grid, width)": [
+          4096,
+          0.79858
+        ],
+        "grid x2, window x2": 0.11315989616833164,
+        "grid x2, window x2 (report grid, width)": [
+          4096,
+          1.597
+        ]
+      },
+      "change_pct": {
+        "grid x2": -0.04559420995935185,
+        "grid x2, window x2": -0.014639768167139898
+      },
+      "passed": true
+    },
+    {
+      "point": "angular x end (+1.6 deg)",
+      "eta": {
+        "base": 0.13829399256567945,
+        "grid x2": 0.13781575954800057,
+        "grid x2 (report grid, width)": [
+          4096,
+          0.79858
+        ],
+        "grid x2, window x2": 0.1383061403431788,
+        "grid x2, window x2 (report grid, width)": [
+          4096,
+          1.597
+        ]
+      },
+      "change_pct": {
+        "grid x2": -0.34580896017717855,
+        "grid x2, window x2": 0.008784024001325495
+      },
+      "passed": true
+    },
+    {
+      "point": "gap end (2000 um)",
+      "eta": {
+        "base": 0.2402096298879069,
+        "grid x2": 0.23967619424536532,
+        "grid x2 (report grid, width)": [
+          4096,
+          0.79858
+        ],
+        "grid x2, window x2": 0.2401959701424483,
+        "grid x2, window x2 (report grid, width)": [
+          4096,
+          1.597
+        ]
+      },
+      "change_pct": {
+        "grid x2": -0.22207088150067106,
+        "grid x2, window x2": -0.005686593607823812
+      },
+      "passed": true
+    }
+  ],
+  "wall_time_s": 1208.9462144374847
+}

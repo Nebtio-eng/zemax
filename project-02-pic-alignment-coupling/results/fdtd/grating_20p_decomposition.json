@@ -1,0 +1,118 @@
+{
+ "stage": "8b",
+ "purpose": "decomposition of the 1.2 dB B_fdtd loss; fibre decentre + tilt re-optimised for every row (Nelder-Mead on POPD; predictor optimum for predictions)",
+ "best_fit_elliptical_gaussian": {
+  "wx_um": 3.537514052358784,
+  "wy_um": 4.226481299514709,
+  "x0_um": -0.008253054236960414,
+  "y0_um": -0.015621010105741694,
+  "tilt_deg": -0.4312875913524749,
+  "Rx_um": -1805.4086962738104,
+  "Ry_um": 3848.568513479443,
+  "overlap_FDTD_with_fit": 0.7865938622148813,
+  "overlap_loss_dB": 1.0424944670914522
+ },
+ "best_fit_params_wx_wy_x0_y0_sx_cx_cy": [
+  3.537514052358784,
+  4.226481299514709,
+  -0.008253054236960414,
+  -0.015621010105741694,
+  -0.007527317406680152,
+  -0.0005538912059435095,
+  0.0002598368709034395
+ ],
+ "method": {
+  "predictor": "fdtd_coupling.predicted_optimum / predicted_loss (reciprocity, ABCD)",
+  "exact_model": "chip-frame scalar angular spectrum: FDTD near field (grating_20p_near.npy) on 4096 x 0.1953 um, 630 um Si, lens as thin element with exact spherical sag (R 480 um), 20 um air, tilted 17 um fibre mode",
+  "zemax": "B_fdtd/grating_20p model, POP 2048 x 0.8 mm, sources written with fdtd_source.write_zbf (conjugated, launch x pre-shrink 3.213 deg; header waists = fit wx, wy)",
+  "note": "session diagnostics; scripts were not added to python/"
+ },
+ "measurement_fibre_positions": {
+  "(b) fit amplitude x FDTD phase": {
+   "dx": -5.5657763148084305,
+   "tx": -0.21092079176587544
+  },
+  "(b2) FDTD amplitude x fit phase": {
+   "dx": -4.966531419815519,
+   "tx": -0.11423266258994813
+  },
+  "(c) grating | lens on axis": {
+   "dx": -4.775,
+   "tx": -0.191
+  },
+  "(c) grating | lens centred on beam": {
+   "dx": -4.7424676183611165,
+   "tx": -0.16734365842938423
+  },
+  "(c) gaussian | lens on axis": {
+   "dx": 0.00025,
+   "tx": 0.0
+  },
+  "(c) gaussian | lens centred on beam": {
+   "dx": -0.0032500000000000003,
+   "tx": 0.0025625
+  }
+ },
+ "rows": [
+  {
+   "row": "(d) ideal 4.6 um Gaussian, same 3.18 deg emission angle",
+   "predicted_dB": 0.00036257982342207925,
+   "measured_dB": 0.000393,
+   "source": "results/fdtd/control_field_angle.json"
+  },
+  {
+   "row": "(a) FDTD field (rotated-plane .zbf) -> fibre mode",
+   "predicted_dB": 1.1511580665363024,
+   "measured_dB": 1.203872,
+   "source": "results/fdtd/grating_20p_zemax.json"
+  },
+  {
+   "row": "(a-i) FDTD field vs its own best-fit elliptical Gaussian (no optics)",
+   "predicted_dB": 1.0424944670914522,
+   "measured_dB": null,
+   "source": "overlap integral only"
+  },
+  {
+   "row": "(a-ii) best-fit elliptical Gaussian -> fibre mode",
+   "predicted_dB": 0.15616058600521782,
+   "measured_dB": 0.155,
+   "source": "OpticStudio, P02_decomp_fit.ZBF"
+  },
+  {
+   "row": "(b) best-fit Gaussian amplitude x FDTD phase",
+   "predicted_dB": 0.8218659941402028,
+   "measured_dB": 0.8568124915414854,
+   "source": "OpticStudio, P02_decomp_ampfit.ZBF"
+  },
+  {
+   "row": "(b') FDTD amplitude x best-fit Gaussian phase",
+   "predicted_dB": 0.603591149692774,
+   "measured_dB": 0.6198821353005405,
+   "source": "OpticStudio, P02_decomp_phasefit.ZBF"
+  },
+  {
+   "row": "(c) FDTD field, lens on system axis (current; beam lands 35.3 um off vertex)",
+   "predicted_dB": 1.1395866904890988,
+   "measured_dB": 1.2038722450255663,
+   "source": "prediction: exact chip-frame model; OpticStudio surface-2 decentre 0"
+  },
+  {
+   "row": "(c) FDTD field, lens centred on beam (decentre t*tan(theta) = 35.37 um)",
+   "predicted_dB": 1.136132569030765,
+   "measured_dB": 1.1776773438269554,
+   "source": "prediction: exact chip-frame model; OpticStudio surface-2 decentre +35.37 um, returned after"
+  },
+  {
+   "row": "(c) Gaussian control, lens on axis",
+   "predicted_dB": 0.002985736321800343,
+   "measured_dB": 0.00039276420684538916,
+   "source": "as above"
+  },
+  {
+   "row": "(c) Gaussian control, lens centred on beam (34.98 um)",
+   "predicted_dB": 0.0019409895179788568,
+   "measured_dB": 0.0035105545651493925,
+   "source": "as above"
+  }
+ ]
+}

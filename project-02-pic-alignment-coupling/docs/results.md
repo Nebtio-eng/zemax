@@ -242,8 +242,8 @@ Two further corrections both go against B, and must be stated alongside it:
 
 Questions as worded in `docs/brief-questions.md`. Questions 7 and 8 are answered
 here from the Stage 9 parameter study (`docs/validation.md`, Stage 9;
-data in `results/parameter_studies/`). The other nine are answered in a later
-pass.
+data in `results/parameter_studies/`); question 11 from Stage 8b. The other
+eight are answered in a later pass.
 
 ### Q7. Which lens parameters have the largest influence?
 
@@ -316,7 +316,48 @@ tolerance**, set by the beam size, at a fixed product. Efficiency is a separate
 axis that any mismatch degrades and nothing in the design space converts into
 tolerance.
 
-The remaining questions (1-6, 9-11) will be answered against their wording in a
+### Q11. What design would be worth investigating using Lumerical/FDTD next?
+
+**Answered by doing it (Stage 8b, `docs/validation.md`), and the result names
+the next design: an apodized grating whose emission is Gaussian, with a round
+core.**
+
+What was done: a 3-D FDTD of a uniform 20-period grating (all grating
+parameters ASSUMED) supplied the real emitted field as the POP source of B,
+with every Zemax number predicted first. Numerically determined:
+
+- **Loss at the best fibre position: 1.20 dB** (B with a Gaussian source:
+  0.0004 dB). Of this, **1.04 dB is the non-Gaussian shape** of the emitted
+  field (overlap with its own best-fit elliptical Gaussian 0.787) and
+  **0.16 dB is the ellipticity** of that Gaussian core (3.54 x 4.23 um).
+  Walk-off and tilt cost 0.0004 dB; the lens position (on axis or centred on
+  the beam) changes the loss by at most 0.026 dB.
+- **Tolerances barely change**: lateral x 8.91, y 8.54 um; angular 0.63 /
+  0.64 deg; longitudinal 663 um (relative to the 1.20 dB peak; no absolute
+  1-dB window exists, because the peak is already above 1 dB). The 1-dB area
+  is 14.8% larger than B's.
+
+So the grating, not the micro-lens, now limits the interface, and it limits
+**efficiency, not tolerance**. The design worth investigating next is
+therefore:
+
+1. **An apodized grating** (period or fill factor varying along x) that emits a
+   Gaussian profile, to recover most of the 1.04 dB. Mangal et al. (2021)
+   attribute their remaining ~1 dB to the same cause and project < 2 dB per
+   interface with apodized gratings; this work supports that attribution
+   numerically.
+2. **Grating width and etch depth chosen for a round core**, to recover the
+   0.16 dB and to set which axis gets the wider tolerance (here X; in the
+   paper Y).
+3. **A bottom reflector or directionality optimisation**, which this project
+   does not model at all (POP sees only the downward beam; the paper reports
+   -7.5 dB backside grating efficiency without a metal reflector against
+   -2.3 dB with one).
+
+The pipeline built for Stage 8b (`fdtd_source.py` -> .zbf -> B_fdtd ->
+predictor) evaluates any such grating without changes to the Zemax model.
+
+The remaining questions (1-6, 9-10) will be answered against their wording in a
 later pass. The Stage 9 evidence behind Q7 and Q8 is set out in section 7.
 
 ---

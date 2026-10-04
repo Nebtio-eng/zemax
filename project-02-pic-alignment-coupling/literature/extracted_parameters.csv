@@ -39,3 +39,12 @@ Beam radius leaving back face (predicted),w_exit,16.94,um,"derived: ABCD, w0 = 4
 Rayleigh range in air at w=16 um,z_R,614,um,"derived: pi*w^2/lambda",DERIVED,no,Justifies gap insensitivity for A1/B
 Rayleigh range in air at w=4.6 um,z_R0,51,um,"derived: pi*w^2/lambda",DERIVED,no,Shows gap IS load-bearing for A0
 Lateral 1-dB coefficient (unequal modes),-,0.339,-,derived from Gaussian overlap,DERIVED,yes,"d_1dB = 0.339*sqrt(w1^2+w2^2); reduces to 0.48*w when w1=w2"
+Grating Si device-layer thickness,t_dev,220,nm,"not published in Mangal 2021; standard 220 nm SOI platform",ASSUMED,stage8b,"FDTD only (python/fdtd_source.py)"
+Grating buried-oxide thickness,t_BOX,2.0,um,"not published; common 2 um BOX",ASSUMED,stage8b,"Sets substrate back-reflection interference, hence directionality"
+Grating etch depth,e,70,nm,"not published; standard shallow etch",ASSUMED,stage8b,-
+Grating fill factor,FF,0.5,-,not published,ASSUMED,stage8b,"Uniform grating; no apodisation"
+Grating period,Lambda,0.4895,um,"derived from ASSUMED t_dev/etch: average slab neff 2.8498, for 10 deg air-equivalent emission",ASSUMED,stage8b,"Predicted angle in Si 2.84 deg; FDTD reports the actual angle"
+Grating number of periods,N,20,-,not published,ASSUMED,stage8b,"Length 9.79 um; sets the beam size along x (swept to trace ellipticity)"
+Grating width,W_g,12,um,"not published; typical taper end width",ASSUMED,stage8b,"Sets the beam size along y"
+Grating input polarisation,-,TE fundamental,-,"Mangal 2021: TE grating couplers",ASSUMED,stage8b,-
+FDTD materials,-,"Si (Silicon) - Palik / SiO2 (Glass) - Palik",-,Lumerical material database,ASSUMED,stage8b,"Palik Si n = 3.5069 at 1310 nm vs 3.5039 in Zemax (0.09%)"

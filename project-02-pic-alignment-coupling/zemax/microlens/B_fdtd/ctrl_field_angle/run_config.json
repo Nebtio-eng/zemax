@@ -1,0 +1,109 @@
+{
+  "id": "B_fdtd_ctrl_field_angle",
+  "configuration": "B with the FDTD grating beam (ctrl_field_angle) as POP source; field angle 11.2020 deg (air)",
+  "stage": "8b",
+  "model": "zemax/microlens/B_fdtd/ctrl_field_angle/B_fdtd.zmx",
+  "wavelength_um": 1.31,
+  "catalogs": [
+    "PROJECT02"
+  ],
+  "lens_units": "Millimeters",
+  "surfaces": [
+    {
+      "comment": "OBJ unused (POP starts at 1)",
+      "thickness_mm": "inf"
+    },
+    {
+      "comment": "Grating source plane, in Si",
+      "thickness_mm": 0.63,
+      "material": "SILICON_1310",
+      "radius_mm": "inf"
+    },
+    {
+      "comment": "Si exit face to air gap",
+      "thickness_mm": 0.02,
+      "material": "",
+      "radius_mm": -0.48
+    },
+    {
+      "comment": "TEC fiber facet (receiver)"
+    }
+  ],
+  "gap_surface": 2,
+  "parameters": {
+    "_comment": "Provenance in literature/extracted_parameters.csv",
+    "source_waist_um": 4.6,
+    "substrate_um": 630,
+    "gap_um": 20,
+    "receiver_mfd_um": 34.0,
+    "receiver_waist_entry_um": 17.0,
+    "lens_clear_aperture": "none modelled (D_L not reported; ASSUMED unlimited, see validation.md)"
+  },
+  "pop_tokens": {
+    "_comment": "Window and sampling justified in docs/validation.md Stage 7",
+    "POP_WAVE": 1,
+    "POP_FIELD": 1,
+    "POP_START": 1,
+    "POP_END": 3,
+    "POP_BEAMTYPE": 4,
+    "POP_PARAM1": 0.0046,
+    "POP_PARAM2": 0.0046,
+    "POP_PARAM3": 0.0,
+    "POP_PARAM4": 0.0,
+    "POP_SURFTOBEAM": 0.0,
+    "POP_SAMPX": 7,
+    "POP_SAMPY": 7,
+    "POP_WIDEX": 0.8,
+    "POP_WIDEY": 0.8,
+    "POP_COMPUTE": 1,
+    "POP_FIBERTYPE": 0,
+    "POP_FPARAM1": 0.017,
+    "POP_FPARAM2": 0.017,
+    "POP_FPARAM3": 0.0,
+    "POP_FPARAM4": 0.0,
+    "POP_TILTX": 0.0,
+    "POP_TILTY": 0.0
+  },
+  "surface_settings": {
+    "_comment": "Identical for A1 and B. Propagator choice re-examined for Si in Stage 7.",
+    "1": {
+      "UseAngularSpectrumPropagator": true
+    },
+    "2": {
+      "UseAngularSpectrumPropagator": true,
+      "ResampleAfterRefraction": false
+    }
+  },
+  "sweeps": {
+    "lateral_um": [
+      -24.0,
+      24.0,
+      0.25
+    ],
+    "angular_deg": [
+      -1.6,
+      1.6,
+      0.02
+    ],
+    "gap_um": [
+      0.0,
+      2000.0,
+      20.0
+    ]
+  },
+  "glass_catalog_file": "zemax/glasscat/PROJECT02.AGF",
+  "opticstudio": {
+    "version": "2026 R1.00",
+    "build": "260127",
+    "license": "EnterpriseEdition",
+    "mode": "Plugin"
+  },
+  "pop_strings": {
+    "_comment": "string tokens: not byte-verifiable; verified by eta",
+    "POP_SOURCEFILE": "P02_ctrl_field_angle.ZBF"
+  },
+  "field_x_deg": 11.20198682849987,
+  "source": {
+    "control": "B Gaussian, compensated, at field angle"
+  }
+}

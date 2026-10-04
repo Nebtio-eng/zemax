@@ -1,0 +1,169 @@
+{
+  "id": "B_fdtd_grating_20p_coarse",
+  "configuration": "B with the FDTD grating beam (grating_20p_coarse) as POP source; field angle 11.2020 deg (air)",
+  "stage": "8b",
+  "model": "zemax/microlens/B_fdtd/grating_20p_coarse/B_fdtd.zmx",
+  "wavelength_um": 1.31,
+  "catalogs": [
+    "PROJECT02"
+  ],
+  "lens_units": "Millimeters",
+  "surfaces": [
+    {
+      "comment": "OBJ unused (POP starts at 1)",
+      "thickness_mm": "inf"
+    },
+    {
+      "comment": "Grating source plane, in Si",
+      "thickness_mm": 0.63,
+      "material": "SILICON_1310",
+      "radius_mm": "inf"
+    },
+    {
+      "comment": "Si exit face to air gap",
+      "thickness_mm": 0.02,
+      "material": "",
+      "radius_mm": -0.48
+    },
+    {
+      "comment": "TEC fiber facet (receiver)"
+    }
+  ],
+  "gap_surface": 2,
+  "parameters": {
+    "_comment": "Provenance in literature/extracted_parameters.csv",
+    "source_waist_um": 4.6,
+    "substrate_um": 630,
+    "gap_um": 20,
+    "receiver_mfd_um": 34.0,
+    "receiver_waist_entry_um": 17.0,
+    "lens_clear_aperture": "none modelled (D_L not reported; ASSUMED unlimited, see validation.md)"
+  },
+  "pop_tokens": {
+    "_comment": "Window and sampling justified in docs/validation.md Stage 7",
+    "POP_WAVE": 1,
+    "POP_FIELD": 1,
+    "POP_START": 1,
+    "POP_END": 3,
+    "POP_BEAMTYPE": 4,
+    "POP_PARAM1": 0.0046,
+    "POP_PARAM2": 0.0046,
+    "POP_PARAM3": 0.0,
+    "POP_PARAM4": 0.0,
+    "POP_SURFTOBEAM": 0.0,
+    "POP_SAMPX": 7,
+    "POP_SAMPY": 7,
+    "POP_WIDEX": 0.8,
+    "POP_WIDEY": 0.8,
+    "POP_COMPUTE": 1,
+    "POP_FIBERTYPE": 0,
+    "POP_FPARAM1": 0.017,
+    "POP_FPARAM2": 0.017,
+    "POP_FPARAM3": 0.0,
+    "POP_FPARAM4": 0.0,
+    "POP_TILTX": 0.0,
+    "POP_TILTY": 0.0
+  },
+  "surface_settings": {
+    "_comment": "Identical for A1 and B. Propagator choice re-examined for Si in Stage 7.",
+    "1": {
+      "UseAngularSpectrumPropagator": true
+    },
+    "2": {
+      "UseAngularSpectrumPropagator": true,
+      "ResampleAfterRefraction": false
+    }
+  },
+  "sweeps": {
+    "lateral_um": [
+      -24.0,
+      24.0,
+      0.25
+    ],
+    "angular_deg": [
+      -1.6,
+      1.6,
+      0.02
+    ],
+    "gap_um": [
+      0.0,
+      2000.0,
+      20.0
+    ]
+  },
+  "glass_catalog_file": "zemax/glasscat/PROJECT02.AGF",
+  "opticstudio": {
+    "version": "2026 R1.00",
+    "build": "260127",
+    "license": "EnterpriseEdition",
+    "mode": "Plugin"
+  },
+  "pop_strings": {
+    "_comment": "string tokens: not byte-verifiable; verified by eta",
+    "POP_SOURCEFILE": "P02_grating_20p_coarse.ZBF"
+  },
+  "field_x_deg": 11.20198682849987,
+  "source": {
+    "tag": "grating_20p_coarse",
+    "angle_si_deg": 3.178294941363824,
+    "angle_si_peak_deg": 2.716003634673826,
+    "angle_air_equivalent_deg": 11.20198682849987,
+    "rotated_radii_um": {
+      "x": 4.472512379770998,
+      "y": 4.345282360474773
+    },
+    "ellipticity_wx_over_wy": 1.0292800349301865,
+    "residual_tilt_deg": {
+      "x": -0.10906468403512619,
+      "y": 9.763335715491606e-06
+    },
+    "n_si_fdtd": 3.5068525745481187,
+    "zbf_variants": {
+      "base": {
+        "file": "P02_grating_20p_coarse.ZBF",
+        "n": 2048,
+        "dx_um": 0.390625,
+        "x_pitch_written_um": 0.38377328136333416,
+        "width_mm": 0.8,
+        "radii_um": [
+          4.472512379770998,
+          4.345282360474773
+        ],
+        "residual_tilt_deg": [
+          -0.10906468403512619,
+          9.763335715491606e-06
+        ]
+      },
+      "_g2": {
+        "file": "P02_grating_20p_coarse_g2.ZBF",
+        "n": 4096,
+        "dx_um": 0.1953125,
+        "x_pitch_written_um": 0.19188664068166708,
+        "width_mm": 0.8,
+        "radii_um": [
+          4.506476526775749,
+          4.3453875795213355
+        ],
+        "residual_tilt_deg": [
+          -0.025101109069225653,
+          1.5993769081021743e-10
+        ]
+      },
+      "_g2w2": {
+        "file": "P02_grating_20p_coarse_g2w2.ZBF",
+        "n": 4096,
+        "dx_um": 0.390625,
+        "x_pitch_written_um": 0.38377328136333416,
+        "width_mm": 1.6,
+        "radii_um": [
+          4.472512379770998,
+          4.345282360474773
+        ],
+        "residual_tilt_deg": [
+          -0.10906468403512619,
+          9.763335715491606e-06
+        ]
+      }
+    }
+  }
+}

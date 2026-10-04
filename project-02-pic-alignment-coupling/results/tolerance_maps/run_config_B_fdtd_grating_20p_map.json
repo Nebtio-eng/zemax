@@ -1,0 +1,85 @@
+{
+  "configuration": "B with the FDTD grating beam (grating_20p) as POP source; field angle 11.3265 deg (air)",
+  "source_config": "zemax\\microlens\\B_fdtd\\grating_20p\\run_config.json",
+  "opticstudio": {
+    "build": "260127",
+    "license": "EnterpriseEdition",
+    "mode": "Plugin"
+  },
+  "pop_tokens": {
+    "_comment": "Window and sampling justified in docs/validation.md Stage 7",
+    "POP_WAVE": 1,
+    "POP_FIELD": 1,
+    "POP_START": 1,
+    "POP_END": 3,
+    "POP_BEAMTYPE": 4,
+    "POP_PARAM1": 0.0046,
+    "POP_PARAM2": 0.0046,
+    "POP_PARAM3": 0.0,
+    "POP_PARAM4": 0.0,
+    "POP_SURFTOBEAM": 0.0,
+    "POP_SAMPX": 7,
+    "POP_SAMPY": 7,
+    "POP_WIDEX": 0.8,
+    "POP_WIDEY": 0.8,
+    "POP_COMPUTE": 1,
+    "POP_FIBERTYPE": 0,
+    "POP_FPARAM1": 0.017,
+    "POP_FPARAM2": 0.017,
+    "POP_FPARAM3": 0.0,
+    "POP_FPARAM4": 0.0,
+    "POP_TILTX": 0.0,
+    "POP_TILTY": 0.0
+  },
+  "surface_settings": {
+    "_comment": "Identical for A1 and B. Propagator choice re-examined for Si in Stage 7.",
+    "1": {
+      "UseAngularSpectrumPropagator": true
+    },
+    "2": {
+      "UseAngularSpectrumPropagator": true,
+      "ResampleAfterRefraction": false
+    }
+  },
+  "grid": {
+    "half_width_um": 12,
+    "step_um": 1.0,
+    "points": 625,
+    "centre_um": [
+      -4.775,
+      0.0
+    ],
+    "fixed_tokens": {
+      "POP_TILTY": -0.191
+    }
+  },
+  "radial_cuts": {
+    "n_angles": 16,
+    "r_max_um": 12,
+    "r_step_um": 0.5
+  },
+  "settings_readbacks_passed": 2025,
+  "results": {
+    "config": "B_fdtd_grating_20p",
+    "gap_um": 20,
+    "eta0": 0.757901515526882,
+    "L0_dB": 1.2038722450255663,
+    "r_rel_mean_um": 8.718527075454588,
+    "r_rel_min_um": 8.52278727114051,
+    "r_rel_max_um": 9.279836949794438,
+    "x_rel_um": 8.539223286103825,
+    "y_rel_um": 8.52278727114051,
+    "x_abs_um": NaN,
+    "y_abs_um": NaN,
+    "circularity": 0.0888265369731116,
+    "circular": false,
+    "A1dB_rel_from_cuts_um2": 238.98267568952463,
+    "A1dB_abs_from_cuts_um2": 0.0,
+    "A1dB_rel_from_grid_contour_um2": 237.89549612895178,
+    "A1dB_abs_from_grid_contour_um2": 0.0,
+    "reference_radius_um": 8.1399,
+    "pi_r2_reference_um2": 208.15555810837418,
+    "area_rel_vs_pi_r2_pct": 14.809653828748882
+  },
+  "wall_time_s": 1787.373164176941
+}

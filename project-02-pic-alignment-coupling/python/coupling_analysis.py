@@ -181,6 +181,10 @@ class PopSession:
         self.st.SaveTo(self.cfg)
         for tok, val in self.tokens.items():
             self.st.ModifySettings(self.cfg, tok, repr(val))
+        # string settings (POP_SOURCEFILE): no byte read-back possible; verified by their effect on eta
+        for tok, val in cfgd.get("pop_strings", {}).items():
+            if not tok.startswith("_"):
+                self.st.ModifySettings(self.cfg, tok, val)
         self.verify()
         self._operands()
 
@@ -302,9 +306,10 @@ class PopSession:
         need(abs(float(g(r"Beam wavelength is ([\d.]+)").group(1)) - self.cfgd["wavelength_um"]) < 1e-6, "wavelength")
         need(int(g(r"Total Irradiance surface (\d+)").group(1)) == t["POP_END"], "end surface")
         size, waist, pos = (float(x) for x in g(r"Pilot: Size= ([\d.Ee+-]+), Waist= ([\d.Ee+-]+), Pos= ([\d.Ee+-]+)").groups())
+        bw = g(r"Beam Width X = ([\d.Ee+-]+), Y = ([\d.Ee+-]+)")
         eff = [float(x) for x in g(r"Fiber Efficiency: System ([\d.Ee+-]+), Receiver ([\d.Ee+-]+), Coupling ([\d.Ee+-]+)").groups()]
         return dict(grid=n, width_mm=width, pilot_size_um=size * 1000, pilot_waist_um=waist * 1000,
-                    pilot_pos_um=pos * 1000, eff=eff, messages=self.pop.GetResults().NumberOfMessages, text=txt)
+                    pilot_pos_um=pos * 1000, eff=eff, beam_width_um=[float(v) * 1000 for v in bw.groups()] if bw else None, messages=self.pop.GetResults().NumberOfMessages, text=txt)
 
     def close(self):
         self.pop.Close()

@@ -1,0 +1,123 @@
+{
+  "tag": "grating_20p",
+  "params": {
+    "wavelength_um": 1.31,
+    "t_si_um": 0.22,
+    "etch_um": 0.07,
+    "box_um": 2.0,
+    "fill_factor": 0.5,
+    "period_um": 0.4895,
+    "n_periods": 20,
+    "width_um": 12.0,
+    "clad_top_um": 1.0,
+    "sub_monitor_depth_um": 0.4,
+    "input_length_um": 2.0,
+    "si_material": "Si (Silicon) - Palik",
+    "ox_material": "SiO2 (Glass) - Palik",
+    "mesh_accuracy": 2,
+    "sim_time_fs": 1500.0,
+    "zbf_n": 2048,
+    "zbf_dx_um": 0.390625,
+    "zbf_index": 3.5039127043661025
+  },
+  "geometry": {
+    "grating_length_um": 9.79,
+    "z_monitor_um": -2.51,
+    "x_range_um": [
+      -2.0,
+      11.79
+    ],
+    "y_half_um": 8.0
+  },
+  "n_si_fdtd": 3.5068525745481187,
+  "wall_time_s": 163.04020285606384,
+  "component": "y",
+  "power_fractions": [
+    0.0005224250355153392,
+    0.999290375503496,
+    0.00018719946098868712
+  ],
+  "angle_si_deg": 3.2132129297352043,
+  "angle_si_peak_deg": 2.8131372366709315,
+  "angle_air_equivalent_deg": 11.32654558358265,
+  "near_radii_um": {
+    "x": 4.584808581208389,
+    "y": 4.347008505844944
+  },
+  "centroid_um": {
+    "x": 3.031576161576286,
+    "y": 2.4352974645983766e-08
+  },
+  "zbf_variants": {
+    "base": {
+      "file": "P02_grating_20p.ZBF",
+      "n": 2048,
+      "dx_um": 0.390625,
+      "x_pitch_written_um": 0.38362020048962664,
+      "width_mm": 0.8,
+      "radii_um": [
+        4.5581696890886665,
+        4.348087203698426
+      ],
+      "residual_tilt_deg": [
+        -0.10769560931116601,
+        1.0441683386824179e-05
+      ]
+    },
+    "_g2": {
+      "file": "P02_grating_20p_g2.ZBF",
+      "n": 4096,
+      "dx_um": 0.1953125,
+      "x_pitch_written_um": 0.19181010024481332,
+      "width_mm": 0.8,
+      "radii_um": [
+        4.590732959146524,
+        4.348176786639344
+      ],
+      "residual_tilt_deg": [
+        -0.03262036607189498,
+        -1.2354093401671897e-09
+      ]
+    },
+    "_g2w2": {
+      "file": "P02_grating_20p_g2w2.ZBF",
+      "n": 4096,
+      "dx_um": 0.390625,
+      "x_pitch_written_um": 0.38362020048962664,
+      "width_mm": 1.6,
+      "radii_um": [
+        4.5581696890886665,
+        4.348087203698426
+      ],
+      "residual_tilt_deg": [
+        -0.10769560931116601,
+        1.0441683386824179e-05
+      ]
+    }
+  },
+  "residual_tilt_deg": {
+    "x": -0.10769560931116601,
+    "y": 1.0441683386824179e-05
+  },
+  "zbf": "C:\\Users\\Home\\Documents\\Zemax\\POP\\BEAMFILES\\P02_grating_20p.ZBF",
+  "rotated_radii_um": {
+    "x": 4.5581696890886665,
+    "y": 4.348087203698426
+  },
+  "ellipticity_wx_over_wy": 1.0483160699287604,
+  "other_component_power_fraction": 0.000491523084098197,
+  "projection": {
+    "plane_centre_um": [
+      3.0876279146368013,
+      2.4352974645983766e-08,
+      -3.515835272092102
+    ],
+    "normal": [
+      0.05605175306051537,
+      0.0,
+      -0.9984278646846967
+    ],
+    "distance_um": 1.0,
+    "half_width_um": 16.0
+  }
+}

@@ -633,3 +633,176 @@ in `docs/results.md` section 8.
   1000 um -> 12.61 um / 0.436 deg.
 - Passive alignment (absolute lateral >= 10 um) first reached at 786 um:
   10.005 um, 0.550 deg, 1042 um, 0.0004 dB.
+
+---
+
+## Stage 8b — FDTD grating beam as the POP source of B (2026-10-03/04)
+
+Scripts: `python/fdtd_source.py` (Lumerical, lumapi only) and
+`python/fdtd_coupling.py` (OpticStudio side and an independent reciprocity
+predictor). Model: `zemax/microlens/B_fdtd/grating_20p/` (B unchanged except
+the POP source, a .zbf file, and the field angle). Outputs: `results/fdtd/`,
+`results/tolerance_maps/B_fdtd_grating_20p_*`. All values **numerically
+determined**; every Zemax number was predicted first (log: `results/progress.log`,
+tag `[stage8b]`).
+
+### What the FDTD is, and where the y profile comes from
+
+- **3-D FDTD** (`addfdtd(dimension="3D")`). A uniform grating of 20 periods
+  (period 0.4895 um, 9.79 um long, 70 nm etch in 220 nm Si on 2 um BOX) at the
+  end of a **12 um wide** waveguide, fed with its TE fundamental mode. Every
+  grating parameter is ASSUMED (`extracted_parameters.csv` rows 42-50): the
+  paper does not publish them.
+- **The y profile is computed, not assumed**: it is the 3-D emission of the
+  12 um wide grating, i.e. the lateral shape of the waveguide mode
+  (cosine-like, not Gaussian). The x profile is set by the emission decay
+  along the grating.
+- The field is taken on a monitor in the substrate, projected
+  (`farfieldexact`) onto a plane normal to the mean beam direction, and written
+  as a .zbf. Dominant component Ey (99.9% of |E|^2).
+
+### Predictions recorded before measuring, and results
+
+| Quantity | Predicted | Measured |
+|---|---|---|
+| Beam angle in Si (grating equation) | 2.84 deg (peak) | peak 2.813 deg; mean 3.213 deg (used as chief ray) |
+| Beam shape | ~1.5:1 ellipse (x longer) | 2-sigma radii 4.558 x 4.348 um (1.048); best-fit Gaussian core **3.54 x 4.23 um (x narrower)** |
+| Chief-ray loss (fibre on the chief ray) | 1.494 dB | **1.545 dB** |
+| Re-optimised fibre (dx, tilt) | -4.782 um, -0.1911 deg | **-4.775 um, -0.1910 deg** |
+| Loss at the optimum | 1.151 dB | **1.204 dB** |
+| Lateral 1-dB x, rel (+ / -) | 8.917 (+8.546 / -9.288) um | **8.910 (+8.540 / -9.279) um** |
+| Lateral 1-dB y, rel | 8.538 um | **8.537 um** |
+| Angular 1-dB x / y, rel | 0.6268 / 0.6438 deg | **0.6272 / 0.6438 deg** |
+| Longitudinal 1-dB, rel (peak at gap 0) | 665.1 um | **663.0 um** |
+| 2-D map: mean / min / max 1-dB radius | 8.722 / 8.523 / 9.295 um | **8.719 / 8.523 / 9.280 um** (worst of 16 directions -0.16%) |
+| 2-D map: area A_1dB, rel | 239.2 um^2 | **239.0 um^2** (grid contour 237.9); +14.8% over B's 208.2 |
+
+**Both tolerance conventions.** The relative values above are measured down
+from the 1.204 dB peak. **Absolute 1-dB tolerances do not exist** for this
+beam: the best-case loss is already above 1 dB, so there is no fibre position
+at which the loss is below 1 dB. Products (rel): x 0.0975, y 0.0959 um rad.
+
+The 1.5:1 ellipse prediction was wrong twice over: by the second-moment
+measure the beam is nearly round (1.048), and its Gaussian core is elliptical
+the other way (x narrower, 1.19:1), with a long x tail from the emission
+decay that inflates the x second moment.
+
+### Controls (all passed)
+
+| Control | Result |
+|---|---|
+| Predictor self-test (B's Gaussian through the reciprocity route) | lateral 8.1382 um, angular 0.6760 deg, longitudinal 712.8 um (B: 8.140, 0.676, 713) |
+| Elliptical Gaussian .zbf (3.5 x 4.6 um): resolves X/Y | worst deviation 0.04% |
+| Phase-sign convention (+1 deg tilted Gaussian) | best fibre +11.102 um vs predicted +11.091 after conjugating on write (`zosapi_gotchas.md` #33) |
+| Launch stretch at the field angle | window 0.400000 mm, Gaussian round at the lens (X/Y 0.9983) after compensation (#34) |
+| Window holds the beam (0.8 mm, 2048 points) | edge power 1.9e-8 at the fibre, 7.8e-8 at the lens (#35) |
+| Tilted Gaussian at the FDTD angle (3.18 deg) | **0.0004 dB**, lateral 8.131 / 8.138 um |
+
+### Convergence (project rule: < 0.5%)
+
+The source pixel is fixed by the .zbf, so the source was re-written with the
+grid (`_g2`, `_g2w2`). Five points (optimum and four sweep ends):
+grid x2 worst **0.39%** (lateral x end, +24 um); grid x2 + window x2 worst
+**0.016%**. Coarse vs fine FDTD mesh: angle 1.1%, radius x 1.9%, predicted
+optimum loss 0.003 dB apart. **Passed.**
+
+### Known limit: a ~0.05 dB POP offset on the FDTD beam
+
+Zemax reads the FDTD beam 0.04-0.06 dB more lossy than the predictor and than
+an independent exact model (scalar angular spectrum in the chip frame, FDTD
+near field, exact spherical sag). The offset is the same at every fibre
+position, so **it does not change any tolerance** (the map agrees with the
+predictor to 0.16%). What was established:
+
+- Not the predictor's paraxial approximation: an exact angular-spectrum model at
+  normal incidence agrees with ABCD to <= 0.15%, for the Gaussian and the
+  FDTD beam.
+- Not the high-angle side lobes, not the predictor's crop: light beyond 4 deg
+  in Si contributes nothing to coupling; all power lies within +/-20 um.
+- **A related, larger POP error exists at oblique refraction.** In a diagnostic
+  with a flat exit face (beam leaving at 11.3 deg), POP reads the FDTD beam
+  14% low (eta ratio 0.863 against the exact model), and the result moves by
+  +2.1% / +5.9% when only the pilot waist in the .zbf header is changed by
+  -10% / +10%, which physically it must not. At normal incidence the same
+  case agrees (0.9989). A Gaussian file beam is unaffected (0.999).
+- **The B_fdtd offset itself (1.2% in eta) persists at normal launch (0.988) and
+  does not depend on the pilot.** Its cause is not identified. It was not
+  chased further (decision recorded 2026-10-04).
+
+Consequence: B_fdtd's nominal loss is probably ~0.05 dB too high; tolerances
+are unaffected.
+
+### Decomposition of the 1.2 dB
+
+Fibre decentre and tilt re-optimised for every row. Predictions: reciprocity
+predictor (rows a, b, d) and the exact chip-frame model (row c). Data:
+`results/fdtd/grating_20p_decomposition.json`.
+
+| Row | Isolates | Predicted | Measured (Zemax) |
+|---|---|---|---|
+| (d) Ideal 4.6 um Gaussian at the same 3.18 deg angle | tilt and walk-off | 0.0004 dB | **0.0004 dB** |
+| (a) FDTD field -> fibre | everything | 1.151 dB | **1.204 dB** |
+| (a-i) FDTD field against its own best-fit elliptical Gaussian | **non-Gaussian shape** | **1.042 dB** (overlap 0.787) | overlap only |
+| (a-ii) Best-fit elliptical Gaussian (3.54 x 4.23 um) -> fibre | core size/ellipticity | 0.156 dB | **0.155 dB** |
+| (b) Best-fit Gaussian amplitude x FDTD phase | phase distortion (+ core) | 0.822 dB | **0.857 dB** |
+| (b') FDTD amplitude x best-fit Gaussian phase | amplitude distortion (+ core) | 0.604 dB | **0.620 dB** |
+| (c) Lens on the system axis (beam lands 35.3 um off the vertex) | lens position | 1.140 dB (exact) | **1.204 dB** |
+| (c) Lens centred on the beam (+35.37 um, Mangal's design rule t tan(theta)) | lens position | 1.136 dB (exact) | **1.178 dB** |
+| (c) Gaussian control, lens on axis / centred | lens position | 0.003 / 0.002 dB | **0.0004 / 0.0035 dB** |
+
+**The loss is the non-Gaussian profile of the grating beam.** 1.04 dB of the
+1.20 dB is the FDTD field's overlap with its own best possible elliptical
+Gaussian; the remaining ~0.16 dB is that Gaussian core's ellipticity against a
+round fibre mode. Phase and amplitude distortion both contribute (phase is the
+larger: about 0.67 dB beyond the core mismatch, against 0.45 dB; the parts are
+not additive). **Walk-off and tilt contribute nothing** (0.0004 dB), and the
+lens position changes the loss by at most 0.026 dB (exact model: 0.0035 dB).
+A prior expectation that "most of the loss is walk-off" is contradicted.
+
+**Agreement with the paper.** Mangal et al. (2021, Section 5) attribute the
+remaining ~1 dB of their single-interface loss to "the mode-profile mismatch
+due to the exponentially decaying field profile from the grating". This
+numerical decomposition agrees: 1.04 dB from the profile. Theirs is an
+experimental attribution by elimination; ours is numerically determined for
+an ASSUMED uniform grating.
+
+I predicted that POP would read the lens-centred case high, by analogy with
+the flat-exit diagnostic. It did not: it read it 0.04 dB above the exact
+model, slightly *less* than the on-axis case (0.06 dB).
+
+### Hypothesis verdicts
+
+1. **"The real grating beam is elliptical, so tolerance is axis-dependent"
+   (`results.md` section 3, candidate 2).** Partly right. The core is
+   elliptical (1.19:1) and the tolerance is axis-dependent: x 8.91 um, y
+   8.54 um (+4.4%), and x is lopsided (+8.54 / -9.28 um) towards the emission
+   tail. But the axis order is the reverse of the paper's (below).
+2. **Grating length.** The x size of the beam is set by the emission decay
+   length (about 1.5-3 um for this ASSUMED 70 nm etch), not by the 9.8 um
+   grating length, which is several decay lengths. Sweeping the number of
+   periods would therefore not have changed the beam, and was not needed.
+
+### X and Y against the paper (reported, not tuned)
+
+Mangal et al. measured **+/-7 um along X** (the grating axis) and **+/-9 um
+along Y**, and attribute the difference to the asymmetric beam from the
+grating (2021, Fig. 10). This model gives **X 8.91 um, Y 8.54 um: X wider**.
+
+| Axis | Paper (experimentally demonstrated) | B (Gaussian source) | B_fdtd (numerically determined) |
+|---|---|---|---|
+| Lateral X | +/-7 um | 8.14 um (+16%) | 8.91 um (+27%) |
+| Lateral Y | +/-9 um | 8.14 um (-10%) | 8.54 um (-5%) |
+| Angular | +/-0.6 deg | 0.676 deg (+12.6%) | x 0.627 (+4.5%), y 0.644 deg (+7.3%) |
+
+Why the order flips: the lens images the source's angular spectrum onto the
+fibre, so the **narrower** source axis gives the **wider** beam at the fibre
+and the larger lateral tolerance. Here x is narrower at the source (3.54 um
+core, the short decay of a strongly etched grating), so X is wider at the
+fibre. The paper's Y-wider result implies their emission is longer in x than
+the waveguide mode is wide in y. Both quantities are ASSUMED here (etch depth
+and grating width are not published), so the axis order is a consequence of
+the assumptions, not a disagreement with physics. Not tuned.
+
+Effect on the paper discrepancy: against the paper's per-axis values the real
+beam moves Y to within 5% and angular to within 4.5-7.3% (from +12.6%), but
+moves X further away (+27%). It does not close the lateral gap on X.

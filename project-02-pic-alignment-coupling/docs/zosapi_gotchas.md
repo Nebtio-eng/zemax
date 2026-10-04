@@ -100,3 +100,37 @@ each one surfaced is in brackets. Where code works around it, the place is named
     (0.0000% in A0). It needs a lens, an aperture or long propagation to bite;
     deliberately bad settings (64-point grid, 40 um window) were used to show the
     test can fail. [Stage 3, 7]
+
+## File beams (.zbf) and Lumerical [Stage 8b]
+
+33. **Lumerical and OpticStudio use opposite phase signs.** Lumerical fields are
+    e^{+ikz}; OpticStudio reads .zbf phase with the opposite sign. A Gaussian
+    written with a +1 deg tilt put the best fibre at -11.102 um instead of the
+    predicted +11.091 um; after conjugating, +11.102 um. A pure decentre
+    (+3 um) is blind to the sign (2.603 vs 2.604 um), so test with a tilt.
+    `fdtd_source.write_zbf` conjugates on write, `read_zbf` conjugates back.
+34. **POP launches a file beam on the air side of surface 1** and refracts it in
+    at the field angle. At 11.202 deg in air (3.178 deg in Si) the x axis is
+    stretched by cos(theta_Si)/cos(theta_air) = 1.01785: the launch window
+    became 0.407140 mm instead of 0.4 mm. The x pitch is written pre-shrunk by
+    that factor (`fdtd_source.launch_x_factor`); a compensated Gaussian then
+    arrives round at the lens (X/Y 0.9983) with the window exactly as set. The
+    remaining 0.17% (0.40644 mm at the lens) is real oblique refraction at the
+    curved face, not an error.
+35. **B's 0.4 mm window does not hold a real grating beam.** 4.3% of its power
+    leaves at 11-29 deg in Si (side lobes), and 0.41% reached the window edge
+    at the lens. B_fdtd uses 2048 points on 0.8 mm (same pixel as B). A file
+    source fixes the pixel itself, so the grid-doubling convergence test must
+    re-write the .zbf at the new pitch (`_g2`, `_g2w2` variants), or it tests
+    nothing.
+36. **Lumerical: save before `run`.** Otherwise a save dialog appears; cancelling
+    it returns no data, without an error.
+37. **Lumerical: monitor data are on the non-uniform simulation mesh** under a
+    mesh override. The first beam-angle estimate, made before this was
+    noticed, was 0.90 deg; the correct mean angle is 3.2 deg. Use the
+    returned x, y vectors and weight sums by the cell width
+    (`np.gradient(x)`, `fdtd_source`).
+38. **Lumerical: `farfieldexact` takes a list of points; `farfieldexact3d`
+    treats its inputs as grid axes.** Same arguments, different meaning.
+39. **Lumerical: `getindex` returns a 2-D array** even for a 1-D query; index it
+    explicitly.
