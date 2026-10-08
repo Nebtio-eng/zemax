@@ -192,7 +192,6 @@ A meaningful continuation would change the optical architecture rather than simp
 led-collimator-uniform-illumination/
 ├── README.md
 ├── REFERENCES.md
-├── LICENSE
 ├── .gitignore
 ├── src/
 │   └── zemax_led_optimizer.py
@@ -216,6 +215,6 @@ led-collimator-uniform-illumination/
     └── capture_diagnostic.csv
 ```
 
-## 12. License
+## 12. Usage
 
-MIT License. See [`LICENSE`](LICENSE).
+All rights reserved. This repository is public so that the work can be viewed and evaluated. Copying, modifying or reusing the code, models or results requires written permission from the author.
